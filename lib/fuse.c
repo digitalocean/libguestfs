@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@
 #endif
 
 #if HAVE_FUSE
-/* See <attr/xattr.h> */
+/* See <sys/xattr.h> */
 #ifndef ENOATTR
 #define ENOATTR ENODATA
 #endif

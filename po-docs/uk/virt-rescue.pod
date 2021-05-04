@@ -17,13 +17,14 @@ virt-rescue — запуск оболонки відновлення у вірт
 
 =head1 ОПИС
 
-virt-rescue is like a Rescue CD, but for virtual machines, and without the
-need for a CD.  virt-rescue gives you a rescue shell and some simple
-recovery tools which you can use to examine or rescue a virtual machine or
-disk image.
+virt-rescue — є образом компакт-диска для порятунку системи, але призначеним
+для віртуальних машин. Його особливістю також є те, що для роботи йому не
+потрібен фізичний носій. virt-rescue надає у ваше розпорядження командну
+оболонку порятунку системи та деякі прості інструменти, якими ви можете
+скористатися для аналізу і виправлення віртуальної машини або образу диска.
 
-You can run virt-rescue on any virtual machine known to libvirt, or directly
-on disk image(s):
+Ви можете запускати virt-rescue для будь-якої віртуальної машини, відомої
+libvirt, або безпосередньо для образів дисків:
 
  virt-rescue -d Назва_гостьової_системи -i
 
@@ -31,21 +32,24 @@ on disk image(s):
 
  virt-rescue -a /dev/sdc
 
-For live VMs you I<must> use the I<--ro> option.
+Для активних віртуальних машин вам I<слід> використовувати параметр I<--ro>.
 
-When you run virt-rescue on a virtual machine or disk image, you are placed
-in an interactive bash shell where you can use many ordinary Linux
-commands.  What you see in F</> (F</bin>, F</lib> etc) is the rescue
-appliance.  You must mount the virtual machine’s filesystems.  There is an
-empty directory called F</sysroot> where you can mount filesystems.
+При роботі з virt-rescue над віртуальною машиною або образом диска ви
+матимете справу із інтерактивною командною оболонкою bash, у якій можна
+скористатися багатьма звичайними командами Linux. Те, що зберігатиметься у
+F</> (F</bin>, F</lib> тощо) є рятівною базовою системою. Для роботи з
+файловими системами віртуальної машини вам слід їх змонтувати. Для
+монтування файлових систем передбачено порожній каталог із назвою
+F</sysroot>.
 
-To automatically mount the virtual machine’s filesystems under F</sysroot>
-use the I<-i> option.  This uses libguestfs inspection to find the
-filesystems and mount them in the right place.  You can also mount
-filesystems individually using the I<-m> option.
+Щоб автоматично змонтувати файлові системи віртуальної машини до
+F</sysroot>, скористайтеся параметром I<-i>. У відповідь програма використає
+засоби інспектування libguestfs для виявлення файлових систем і монтування
+їх до належних каталогів. Ви також можете змонтувати окремі файлові системи
+за допомогою параметра  I<-m>.
 
-Another way is to list the logical volumes (with L<lvs(8)>) and partitions
-(with L<parted(8)>) and mount them by hand:
+Іншим способом монтування є отримання списку логічних томів (за допомогою
+L<lvs(8)>) і розділів (за допомогою L<parted(8)>) і монтування їх вручну:
 
  ><rescue> lvs
  LV      VG        Attr   LSize   Origin Snap%  Move Log Copy%  Convert
@@ -55,32 +59,35 @@ Another way is to list the logical volumes (with L<lvs(8)>) and partitions
  ><rescue> mount /dev/vda1 /sysroot/boot
  ><rescue> ls /sysroot
 
-Another command to list available filesystems is L<virt-filesystems(1)>.
+Іншою програмою для побудови списку доступних файлових систем є
+L<virt-filesystems(1)>.
 
-To run commands in a Linux guest (for example, grub), you should chroot into
-the /sysroot directory first:
+Для запуску програм у гостьовій системі Linux (наприклад, програми grub) вам
+слід спочатку змінити кореневий каталог на /sysroot:
 
  ><rescue> chroot /sysroot
 
 =head2 ПРИМІТКИ
 
-Virt-rescue can be used on I<any> disk image file or device, not just a
-virtual machine.  For example you can use it on a blank file if you want to
-partition that file (although we would recommend using L<guestfish(1)>
-instead as it is more suitable for this purpose).  You can even use
-virt-rescue on things like USB drives, SD cards and hard disks.
+Virt-rescue можна використовувати для I<будь-якого> файла образу диска або
+пристрою, не лише для віртуальної машини. Наприклад, ви можете скористатися
+програмою для порожнього файла, якщо хочете додати розділ у цей файл (втім,
+ми рекомендуємо для цього користуватися L<guestfish(1)>, оскільки цю
+програму краще пристосовано для виконання подібних завдань). Ви навіть
+можете використовувати virt-rescue для роботи з дисками USB, картками SD та
+жорсткими дисками.
 
-You can get virt-rescue to give you scratch disk(s) to play with.  This is
-useful for testing out Linux utilities (see I<--scratch>).
+Ви можете наказати virt-rescue створити для вас тестовий диск. Це корисно
+для тестування інструментів Linux (див. I<--scratch>).
 
 Для роботи virt-rescue не потрібні права користувача root. Вам знадобляться
 права доступу root, лише якщо вам потрібні права root для відкриття образу
 диска.
 
-This tool is just designed for quick interactive hacking on a virtual
-machine.  For more structured access to a virtual machine disk image, you
-should use L<guestfs(3)>.  To get a structured shell that you can use to
-make scripted changes to guests, use L<guestfish(1)>.
+Цю програму було розроблено для швидкої інтерактивної роботи з віртуальною
+машиною. Для структурованішого доступу до образу диска віртуальної машини
+варто використовувати L<guestfs(3)>. Структурованою командною оболонкою для
+внесення змін до гостьової системи за певним сценарієм є L<guestfish(1)>.
 
 =head1 ПАРАМЕТРИ
 
@@ -131,12 +138,13 @@ libvirt не буде використовуватися взагалі.
 
 =item B<-e none>
 
-Вимкнути клавішу Esc.
+Вимкнути клавішу екранування.
 
 =item B<-e> КЛАВІША
 
-Set the escape key to the given key sequence.  The default is C<^]>.  To
-specify the escape key you can use:
+Встановлює для керівних клавіш вказану послідовність натискання
+клавіш. Типовою є C<^]>. Для визначення керівних клавіш ви можете
+скористатися такими рядками:
 
 =over 4
 
@@ -146,11 +154,11 @@ specify the escape key you can use:
 
 =item C<none>
 
-I<-e none> means there is no escape key, escapes are disabled.
+I<-e none> означає «без клавіші екранування», екранування вимкнено.
 
 =back
 
-See L</ESCAPE KEY> below for further information.
+Див. L</КЛАВІША ЕКРАНУВАННЯ> нижче, щоб дізнатися більше.
 
 =item B<--format=raw|qcow2|..>
 
@@ -183,30 +191,31 @@ See L</ESCAPE KEY> below for further information.
 
 =item B<--inspector>
 
-Using L<virt-inspector(1)> code, inspect the disks looking for an operating
-system and mount filesystems as they would be mounted on the real virtual
-machine.
+Використовуючи код L<virt-inspector(1)>, виконати інспектування дисків,
+шукаючи операційну систему і монтуючи файлові системи так, як їх мало б бути
+змонтовано у справжній віртуальній машині.
 
-The filesystems are mounted on F</sysroot> in the rescue environment.
+Файлові системи у середовищі порятунку системи монтуються до F</sysroot>.
 
 =item B<--memsize> МБ
 
-Change the amount of memory allocated to the rescue system.  The default is
-set by libguestfs and is small but adequate for running system tools.  The
-occasional program might need more memory.  The parameter is specified in
-megabytes.
+Змінити обсяг пам'яті, який надається системі для порятунку. Типове значення
+встановлюється libguestfs і є малим, але достатнім для запуску інструментів
+для роботи із системою. Певні програми можуть потребувати додаткового обсягу
+пам'яті. Значення слід вказувати у мегабайтах.
 
 =item B<-m> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
 =item B<--mount> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
-Mount the named partition or logical volume on the given mountpoint B<in the
-guest> (this has nothing to do with mountpoints in the host).
+Змонтувати вказаний за назвою розділ або логічний том до вказаної точки
+монтування B<у гостьовій системі> (немає нічого спільного із точками
+монтування у основній системі).
 
-If the mountpoint is omitted, it defaults to F</>.  You have to mount
-something on F</>.
+Якщо точку монтування не вказано, типовим значенням є F</>. Вам слід
+змонтувати щось до F</>.
 
-The filesystems are mounted under F</sysroot> in the rescue environment.
+Файлові системи у середовищі порятунку системи монтуються до F</sysroot>.
 
 Третьою (і нечасто використовуваною) частиною параметра монтування є список
 параметрів монтування, які використовуються для того, щоб змонтувати
@@ -228,7 +237,8 @@ The filesystems are mounted under F</sysroot> in the rescue environment.
 
 =item B<--network>
 
-Enable QEMU user networking in the guest.  See L</NETWORK>.
+Уможливити для користувача QEMU роботу у мережі у гостьовій
+системі. Див. L</МЕРЕЖА>.
 
 =item B<-r>
 
@@ -236,9 +246,9 @@ Enable QEMU user networking in the guest.  See L</NETWORK>.
 
 Відкрити образ у режимі лише читання.
 
-The option must always be used if the disk image or virtual machine might be
-running, and is generally recommended in cases where you don't need write
-access to the disk.
+Цей параметр слід завжди використовувати, якщо образ диска або віртуальна
+машина може працювати. Загалом, рекомендуємо використовувати його у
+випадках, коли вам не потрібен доступ на запис до диска.
 
 Див. також L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
@@ -246,30 +256,34 @@ access to the disk.
 
 =item B<--scratch=N>
 
-The I<--scratch> option adds a large scratch disk to the rescue appliance.
-I<--scratch=N> adds C<N> scratch disks.  The scratch disk(s) are deleted
-automatically when virt-rescue exits.
+Використання параметра I<--scratch> призводить до додавання великого
+тестового диска до базової системи для порятунку віртуальних машин. Запис
+I<--scratch=N> призводить до додавання C<N> тестових дисків. Тестові диски
+автоматично вилучаються, якщо virt-rescue завершує роботу.
 
-You can also mix I<-a>, I<-d> and I<--scratch> options.  The scratch disk(s)
-are added to the appliance in the order they appear on the command line.
+Ви також можете поєднувати параметри I<-a>, I<-d> і I<--scratch>. Тестові
+диски додаються до базової системи у порядку, у якому їх було вказано у
+рядку команди.
 
 =item B<--selinux>
 
-This option is provided for backwards compatibility and does nothing.
+Цей параметр призначено для забезпечення зворотної сумісності, його
+використання не матиме жодних наслідків.
 
 =item B<--smp> N
 
-Enable N E<ge> 2 virtual CPUs in the rescue appliance.
+Увімкнути N E<ge> 2 віртуальних процесорів у базовій системі для порятунку.
 
 =item B<--suggest>
 
-This option was used in older versions of virt-rescue to suggest what
-commands you could use to mount filesystems under F</sysroot>.  For the
-current version of virt-rescue, it is easier to use the I<-i> option
-instead.
+Цей параметр використовувався у застарілих версіях virt-rescue для надання
+пропозицій команд, якими ви могли б скористатися для монтування файлових
+систем до F</sysroot>. У сучасних версіях virt-rescue простіше скористатися
+параметром I<-i>.
 
-This option implies I<--ro> and is safe to use even if the guest is up or if
-another virt-rescue is running.
+Цей параметр неявно використовує I<--ro> і є безпечним для використання,
+навіть якщо гостьова система працює або запущено інший екземпляр
+virt-rescue.
 
 =item B<-v>
 
@@ -287,8 +301,8 @@ another virt-rescue is running.
 
 =item B<--rw>
 
-This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
-mounts are done read-write.
+Змінює дію параметрів I<-a>, I<-d> і I<-m> таким чином, що диски додаються і
+монтуються у режимі читання і запису.
 
 Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
@@ -300,7 +314,7 @@ mounts are done read-write.
 
 =head1 ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ
 
-Previous versions of virt-rescue allowed you to write either:
+У попередніх версіях virt-rescue можна було скомандувати ось так:
 
  virt-rescue disk.img [disk.img ...]
 
@@ -317,31 +331,32 @@ Previous versions of virt-rescue allowed you to write either:
 
 =head1 МЕРЕЖА
 
-Adding the I<--network> option enables QEMU user networking in the rescue
-appliance.  There are some differences between user networking and ordinary
-networking:
+Додавання параметра I<--network> вмикає для користувача мережу QEMU у
+базовій системі для порятунку. Існують певні відмінності між звичайною
+роботою у мережі і роботою у мережі для користувача:
 
 =over 4
 
 =item луна-імпульс не працює
 
-Because the ICMP ECHO_REQUEST protocol generally requires root in order to
-send the ping packets, and because virt-rescue must be able to run as
-non-root, QEMU user networking is not able to emulate the L<ping(8)>
-command.  The ping command will appear to resolve addresses but will not be
-able to send or receive any packets.  This does not mean that the network is
-not working.
+Оскільки протокол ICMP ECHO_REQUEST загалом вимагає прав доступу root для
+надсилання пакетів луна-імпульсів, і оскільки virt-rescue повинна мати
+можливість бути запущеною не від імені root, мережа для користувача у QEMU
+не може емулювати роботу команди L<ping(8)>. Команда ping зможе визначати
+адреси, але не зможе надсилати або отримувати будь-які пакети. Це не
+означає, що працювати у мережі буде неможливо.
 
-=item не вдається отримувати з'єднання
+=item не можна отримувати з'єднання
 
-QEMU user networking cannot receive incoming connections.
+У режимі мережі для користувача QEMU не можна отримувати вхідні з'єднання.
 
-=item making TCP connections
+=item встановлення з'єднань TCP
 
-The virt-rescue appliance needs to be small and so does not include many
-network tools.  In particular there is no L<telnet(1)> command.  You can
-make TCP connections from the shell using the magical
-F</dev/tcp/E<lt>hostnameE<gt>/E<lt>portE<gt>> syntax:
+Базова система virt-rescue має бути невеликою за розміром, тому до неї не
+включено багато інструментів для роботи у мережі. Зокрема, у ній немає
+програми L<telnet(1)>. Ви можете встановити TCP-з'єднання з командної
+оболонки за допомогою магічної команди
+F</dev/tcp/E<lt>назва_вузлаE<gt>/E<lt>портE<gt>>:
 
  exec 3<>/dev/tcp/redhat.com/80
  echo "GET /" >&3
@@ -351,16 +366,18 @@ F</dev/tcp/E<lt>hostnameE<gt>/E<lt>portE<gt>> syntax:
 
 =back
 
-=head1 ESCAPE KEY
+=head1 КЛАВІША ЕКРАНУВАННЯ
 
-Virt-rescue supports various keyboard escape sequences which are entered by
-pressing C<^]> (Control key + C<]> key).
+У virt-rescue передбачено підтримку різноманітних клавіатурних комбінацій із
+клавішею екранування, які вводяться натисканням C<^]> (клавіші Ctrl і
+клавіші C<]>).
 
-You can change the escape key using the I<-e> option on the command line
-(see above), and you can disable escapes completely using I<-e none>.  The
-rest of this section assumes the default escape key.
+Змінити клавішу екранування можна за допомогою параметра I<-e> рядка команди
+(див. вище). Повністю вимкнути клавішу екранування можна за допомогою
+параметра I<-e none>. У решті цього розділу ми припускаємо, що працює типова
+клавіша екранування.
 
-The following escapes can be used:
+Можна використовувати такі клавіші:
 
 =over 4
 
@@ -368,12 +385,13 @@ The following escapes can be used:
 
 =item C<^] h>
 
-Prints a brief help text about escape sequences.
+Виводить коротке довідкове повідомлення щодо керівних послідовностей.
 
 =item C<^] i>
 
-Prints brief libguestfs inspection information for the guest.  This only
-works if you used I<-i> on the virt-rescue command line.
+Виводить короткі дані інспектування libguestfs для гостьової
+системи. Працюватиме, лише якщо вами було використано I<-i> у рядку команди
+virt-rescue.
 
 =item C<^] q>
 
@@ -392,26 +410,28 @@ works if you used I<-i> on the virt-rescue command line.
 
 =item C<^] z>
 
-Suspend virt-rescue (like pressing C<^Z> except that it affects virt-rescue
-rather than the program inside the rescue shell).
+Призупинити роботу virt-rescue (подібно до натискання C<^Z>, але стосується
+virt-rescue, а не програми, яка працює у оболонці порятунку системи).
 
 =item C<^] ^]>
 
-Sends the literal character C<^]> (ASCII 0x1d) through to the rescue shell.
+Надсилає сам символ C<^]> (ASCII 0x1d) крізь оболонку порятунку системи.
 
 =back
 
-=head1 CAPTURING CORE DUMPS
+=head1 ПЕРЕХОПЛЕННЯ ДАМПІВ ЯДРА
 
-If you are testing a tool inside virt-rescue and the tool (B<not>
-virt-rescue) segfaults, it can be tricky to capture the core dump outside
-virt-rescue for later analysis.  This section describes one way to do this.
+Якщо ви працюєте з якоюсь програмою у virt-rescue, і програма (B<не>
+virt-rescue) завершує роботу у аварійному режимі, перехопити дамп ядра
+програми поза virt-rescue для подальшого аналізу є доволі складним
+завданням. У цьому розділі описано один спосіб, у який можна досягти
+виконання цього завдання.
 
 =over 4
 
 =item 1.
 
-Create a scratch disk for core dumps:
+Створіть тестовий диск для дампів ядра:
 
  truncate -s 4G /tmp/corefiles
  virt-format --partition=mbr --filesystem=ext2 -a /tmp/corefiles
@@ -419,18 +439,19 @@ Create a scratch disk for core dumps:
 
 =item 2.
 
-When starting virt-rescue, attach the core files disk last:
+Під час запуску virt-rescue долучіть диск для файлів дампів останнім:
 
  virt-rescue --rw [-a ...] -a /tmp/corefiles
 
-B<NB.> If you use the I<--ro> option, then virt-rescue will silently not
-write any core files to F</tmp/corefiles>.
+B<NB.> Якщо ви використовуєте параметр I<--ro>, virt-rescue без додаткових
+питань не записуватиме ніяких файлів дампів ядра до F</tmp/corefiles>.
 
 =item 3.
 
-Inside virt-rescue, mount the core files disk.  Note replace F</dev/sdb1>
-with the last disk index.  For example if the core files disk is the last of
-four disks, you would use F</dev/sdd1>.
+У virt-rescue змонтуйте диск для файлів дампів ядра. Не забудьте замінити
+F</dev/sdb1> записом із індексом останнього диска. Наприклад, якщо диск
+файлів дампів ядра є останнім із чотирьох дисків, вам слід використовувати
+F</dev/sdd1>.
 
  ><rescue> mkdir /tmp/mnt
  ><rescue> mount /dev/sdb1 /tmp/mnt
@@ -445,8 +466,8 @@ four disks, you would use F</dev/sdd1>.
 
 =item 5.
 
-Run the tool that caused the core dump.  The core dump will be written to
-F</tmp/mnt/core.I<PID>>.
+Запустіть програму, яка аварійно завершує роботу, записуючи дамп ядра. Дамп
+ядра буде записано до F</tmp/mnt/core.I<PID>>.
 
  ><rescue> ls -l /tmp/mnt
  total 1628
@@ -455,15 +476,16 @@ F</tmp/mnt/core.I<PID>>.
 
 =item 6.
 
-Before exiting virt-rescue, unmount (or at least sync) the disks:
+Перш ніж завершувати роботу virt-rescue, демонтуйте (або принаймні
+синхронізуйте) диски:
 
  ><rescue> umount /tmp/mnt
  ><rescue> exit
 
 =item 7.
 
-Outside virt-rescue, the core dump(s) can be removed from the disk using
-L<guestfish(1)>.  For example:
+Поза межами virt-rescue файли дампів ядра можна вилучити з диска за
+допомогою L<guestfish(1)>. Приклад:
 
  guestfish --ro -a /tmp/corefiles -m /dev/sda1
  ><fs> ll /
@@ -473,8 +495,8 @@ L<guestfish(1)>.  For example:
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
-Several environment variables affect virt-rescue.  See
-L<guestfs(3)/ENVIRONMENT VARIABLES> for the complete list.
+На роботу virt-rescue впливають декілька змінних середовища. Повний список
+змінних наведено у розділі L<guestfs(3)/ЗМІННІ СЕРЕДОВИЩА>.
 
 =head1 ФАЙЛИ
 
@@ -488,8 +510,8 @@ L<guestfs(3)/ENVIRONMENT VARIABLES> for the complete list.
 
 =item /etc/libguestfs-tools.conf
 
-This configuration file controls the default read-only or read-write mode
-(I<--ro> or I<--rw>).
+Цей файл налаштувань керує типовим режимом — лише читання чи читання і запис
+(I<--ro> або I<--rw>).
 
 Див. L<libguestfs-tools.conf(5)>.
 
@@ -507,5 +529,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [38])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_minor],   [40])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
@@ -161,6 +161,10 @@ HEADING([Checking for Go])
 m4_include([m4/guestfs-golang.m4])
 HEADING([Checking for GObject Introspection])
 m4_include([m4/guestfs-gobject.m4])
+
+dnl virt-v2v, virt-p2v.
+HEADING([Checking the virt-v2v and virt-p2v dependencies])
+m4_include([m4/guestfs-v2v.m4])
 
 dnl Bash completion.
 HEADING([Checking for bash completion])
@@ -361,9 +365,11 @@ AC_CONFIG_FILES([Makefile
                  tools/Makefile
                  utils/boot-analysis/Makefile
                  utils/boot-benchmark/Makefile
+                 utils/max-disks/Makefile
                  utils/qemu-boot/Makefile
                  utils/qemu-speed-test/Makefile
                  v2v/Makefile
+                 v2v/config.ml
                  v2v/test-harness/Makefile
                  v2v/test-harness/META
                  website/index.html])

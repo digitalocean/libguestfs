@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,6 +193,7 @@ static const char *const commands[] = {
   "event",
   "exists",
   "extlinux",
+  "f2fs-expand",
   "fallocate",
   "fallocate64",
   "feature-available",
@@ -297,6 +298,7 @@ static const char *const commands[] = {
   "inspect-get-major-version",
   "inspect-get-minor-version",
   "inspect-get-mountpoints",
+  "inspect-get-osinfo",
   "inspect-get-package-format",
   "inspect-get-package-management",
   "inspect-get-product-name",
@@ -395,6 +397,7 @@ static const char *const commands[] = {
   "lvm-canonical-lv-name",
   "lvm-clear-filter",
   "lvm-remove-all",
+  "lvm-scan",
   "lvm-set-filter",
   "lvremove",
   "lvrename",

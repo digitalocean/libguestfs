@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@ AC_DEFINE_UNQUOTED([host_cpu],["$host_cpu"],[Host architecture.])
 
 dnl Headers.
 AC_CHECK_HEADERS([\
-    attr/xattr.h \
     byteswap.h \
     endian.h \
     sys/endian.h \
@@ -299,8 +298,8 @@ LIBS="$LIBS $LIBXML2_LIBS"
 AC_CHECK_FUNCS([xmlBufferDetach])
 LIBS="$old_LIBS"
 
-dnl Check for yajl JSON library (required).
-PKG_CHECK_MODULES([YAJL], [yajl >= 2.0.4])
+dnl Check for Jansson JSON library (required).
+PKG_CHECK_MODULES([JANSSON], [jansson >= 2.7])
 
 dnl Check for C++ (optional, we just use this to test the header works).
 AC_PROG_CXX

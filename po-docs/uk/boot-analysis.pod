@@ -9,44 +9,46 @@ boot-analysis — трасування і аналіз процесу заван
 
 =head1 ОПИС
 
-Trace and analyze the appliance boot process to find out which steps are
-taking the most time.  It is not part of the standard tests.
+Трасування і аналіз процесу завантаження базової системи для визначення, які
+з кроків тривають найдовше. Не є частиною стандартних тестів.
 
-This needs to be run on a quiet machine, so that other processes disturb the
-timing as little as possible.  The program is completely safe to run at any
-time.  It doesn't read or write any external files, and it doesn't require
-root.
+Слід запускати на бездіяльній машині, щоб інші процеси якомога менше
+впливали на час виконання. Програма є повністю безпечною до виконання у
+будь-який момент часу. Вона не читає і не записує зовнішні файли і не
+потребує прав доступу користувача root.
 
-You can run it from the build directory on the built copy of libguestfs like
-this:
+Ви можете запускати програму з каталогу збирання у зібраній копії
+libguestfs, ось так:
 
  make
  ./run utils/boot-analysis/boot-analysis
 
-If you omit C<./run> then it is run on the installed copy of libguestfs.
+Якщо ви пропустите C<./run>, програму буде запущено для встановленої копії
+libguestfs.
 
 =head2 Як це працює
 
-We create a libguestfs handle and register callback handlers so we can see
-appliance messages, trace events and so on.
+Ми створюємо дескриптор libguestfs і реєструємо обробники зворотних
+викликів, щоб можна було бачити повідомлення базової системи, трасувати
+події тощо.
 
-We then launch the handle and shut it down as quickly as possible.
+Далі, ми запускаємо дескриптор і вимикаємо його якомога швидше.
 
-While the handle is running, events (seen by the callback handlers)  are
-written verbatim into an in-memory buffer, with timestamps.
+Доки дескриптор працює, події разом із позначками часу (які визначаються за
+обробниками зворотних викликів) записуються буквального до буфера у пам'яті.
 
-Afterwards we analyze the result using regular expressions to try to
-identify a "timeline" for the handle (eg. at what time did the BIOS hand
-control to the kernel).  This analysis is done in
+Після цього, ми аналізуємо результат за допомогою формальних виразів у
+спробі визначити «розклад» дескриптора (тобто момент часу, коли BIOS було
+передано керування ядру). Цей аналіз виконується у
 F<utils/boot-analysis/boot-analysis-timeline.c>.
 
-The whole process is repeated across a few runs, and the final timeline
-(including statistical analysis of the variation between runs) gets printed.
+Увесь процес повторюється декілька разів і виводиться остаточне значення
+розкладу (включаючи статистичний аналіз дисперсії значень між запусками).
 
-The program is very sensitive to the specific messages printed by
-BIOS/kernel/supermin/userspace.  It only works on x86-64 or aarch64.  It
-will require periodic adjustment of the regular expressions in order to keep
-things up to date.
+Робота програми є дуже чутливою до певних повідомлень, які виводяться
+BIOS/ядром/supermin/програмами у просторі користувача. Програма працює лише
+на архітектурах x86-64 і aarch64. Програма потребує регулярного коригування
+формальних виразів з метою підтримання своєї актуальності.
 
 =head1 ПАРАМЕТРИ
 
@@ -64,24 +66,24 @@ things up to date.
 
 =item B<--colour>
 
-Output colours (as ANSI escape sequences), even if the output is not a
-terminal.
+Розфарбовувати виведене (за допомогою екранованих послідовностей символів
+ANSI), навіть якщо дані виводяться не на термінал.
 
 =item B<-m> МБ
 
 =item B<--memsize> МБ
 
-Set the appliance memory size in MB.
+Встановити розмір базової системи у МБ.
 
 =item B<--smp> N
 
-Enable C<N> virtual CPUs.
+Увімкнути C<N> віртуальних процесорів.
 
 =item B<-v>
 
 =item B<--verbose>
 
-More verbose output, useful for debugging problems.
+Режим докладніших повідомлень, корисно для діагностики.
 
 =back
 

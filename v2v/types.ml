@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ type source = {
   s_hypervisor : source_hypervisor;
   s_name : string;
   s_orig_name : string;
+  s_genid : string option;
   s_memory : int64;
   s_vcpu : int;
   s_cpu_vendor : string option;
@@ -71,8 +72,8 @@ and source_nic = {
   s_mac : string option;
   s_nic_model : s_nic_model option;
   s_vnet : string;
-  s_vnet_orig : string;
   s_vnet_type : vnet_type;
+  s_mapping_explanation : string option;
 }
 and s_nic_model = Source_other_nic of string |
                   Source_rtl8139 | Source_e1000 | Source_virtio_net
@@ -109,6 +110,7 @@ and source_cpu_topology = {
 let rec string_of_source s =
   sprintf "    source name: %s
 hypervisor type: %s
+       VM genid: %s
          memory: %Ld (bytes)
        nr vCPUs: %d
      CPU vendor: %s
@@ -128,6 +130,7 @@ NICs:
 "
     s.s_name
     (string_of_source_hypervisor s.s_hypervisor)
+    (Option.default "" s.s_genid)
     s.s_memory
     s.s_vcpu
     (Option.default "" s.s_cpu_vendor)
@@ -224,7 +227,7 @@ and string_of_source_removable { s_removable_type = typ;
 and string_of_source_nic { s_mac = mac; s_nic_model = model; s_vnet = vnet;
                            s_vnet_type = typ } =
   sprintf "\t%s \"%s\"%s%s"
-    (match typ with Bridge -> "Bridge" | Network -> "Network")
+    (string_of_vnet_type typ)
     vnet
     (match mac with
     | None -> ""
@@ -232,6 +235,10 @@ and string_of_source_nic { s_mac = mac; s_nic_model = model; s_vnet = vnet;
     (match model with
     | None -> ""
     | Some model -> " [" ^ string_of_nic_model model ^ "]")
+
+and string_of_vnet_type = function
+  | Bridge -> "Bridge"
+  | Network -> "Network"
 
 and string_of_nic_model = function
   | Source_virtio_net -> "virtio"
@@ -281,30 +288,39 @@ and string_of_source_cpu_topology { s_cpu_sockets; s_cpu_cores;
   sprintf "sockets: %d cores/socket: %d threads/core: %d"
     s_cpu_sockets s_cpu_cores s_cpu_threads
 
+type disk_stats = {
+  mutable target_estimated_size : int64 option;
+  mutable target_actual_size : int64 option;
+}
+
 type overlay = {
   ov_overlay_file : string;
   ov_sd : string;
   ov_virtual_size : int64;
   ov_source : source_disk;
+  ov_stats : disk_stats;
 }
 
 let string_of_overlay ov =
-  sprintf "\
-ov_overlay_file = %s
-ov_sd = %s
-ov_virtual_size = %Ld
-ov_source = %s
+  sprintf "             overlay file: %s
+      overlay device name: %s
+overlay virtual disk size: %Ld
+  overlay source qemu URI: %s
+    target estimated size: %s
+       target actual size: %s
 "
     ov.ov_overlay_file
     ov.ov_sd
     ov.ov_virtual_size
     ov.ov_source.s_qemu_uri
+    (match ov.ov_stats.target_estimated_size with
+    | None -> "None" | Some i -> Int64.to_string i)
+    (match ov.ov_stats.target_actual_size with
+    | None -> "None" | Some i -> Int64.to_string i)
 
 type target = {
   target_file : target_file;
   target_format : string;
-  target_estimated_size : int64 option;
-  target_actual_size : int64 option;
   target_overlay : overlay;
 }
 and target_file =
@@ -312,21 +328,13 @@ and target_file =
   | TargetURI of string
 
 let string_of_target t =
-  sprintf "\
-target_file = %s
-target_format = %s
-target_estimated_size = %s
-target_overlay = %s
-target_overlay.ov_source = %s
+  sprintf "          target file: %s
+        target format: %s
 "
     (match t.target_file with
      | TargetFile s -> "[file] " ^ s
      | TargetURI s -> "[qemu] " ^ s)
     t.target_format
-    (match t.target_estimated_size with
-    | None -> "None" | Some i -> Int64.to_string i)
-    t.target_overlay.ov_overlay_file
-    t.target_overlay.ov_source.s_qemu_uri
 
 type target_firmware = TargetBIOS | TargetUEFI
 
@@ -342,6 +350,7 @@ type inspect = {
   i_root : string;
   i_type : string;
   i_distro : string;
+  i_osinfo : string;
   i_arch : string;
   i_major_version : int;
   i_minor_version : int;
@@ -364,6 +373,7 @@ let string_of_inspect inspect =
 i_root = %s
 i_type = %s
 i_distro = %s
+i_osinfo = %s
 i_arch = %s
 i_major_version = %d
 i_minor_version = %d
@@ -379,6 +389,7 @@ i_windows_current_control_set = %s
 " inspect.i_root
   inspect.i_type
   inspect.i_distro
+  inspect.i_osinfo
   inspect.i_arch
   inspect.i_major_version
   inspect.i_minor_version
@@ -401,6 +412,7 @@ type guestcaps = {
   gcaps_virtio_rng : bool;
   gcaps_virtio_balloon : bool;
   gcaps_isa_pvpanic : bool;
+  gcaps_machine : guestcaps_machine;
   gcaps_arch : string;
   gcaps_acpi : bool;
 }
@@ -412,6 +424,7 @@ and requested_guestcaps = {
 and guestcaps_block_type = Virtio_blk | Virtio_SCSI | IDE
 and guestcaps_net_type = Virtio_net | E1000 | RTL8139
 and guestcaps_video_type = QXL | Cirrus
+and guestcaps_machine = I440FX | Q35 | Virt
 
 let string_of_block_type = function
   | Virtio_blk -> "virtio-blk"
@@ -424,17 +437,23 @@ let string_of_net_type = function
 let string_of_video = function
   | QXL -> "qxl"
   | Cirrus -> "cirrus"
+let string_of_machine = function
+  | I440FX -> "i440fx"
+  | Q35 -> "q35"
+  | Virt -> "virt"
 
 let string_of_guestcaps gcaps =
   sprintf "\
 gcaps_block_bus = %s
 gcaps_net_bus = %s
 gcaps_video = %s
+gcaps_machine = %s
 gcaps_arch = %s
 gcaps_acpi = %b
 " (string_of_block_type gcaps.gcaps_block_bus)
   (string_of_net_type gcaps.gcaps_net_bus)
   (string_of_video gcaps.gcaps_video)
+  (string_of_machine gcaps.gcaps_machine)
   gcaps.gcaps_arch
   gcaps.gcaps_acpi
 
@@ -462,7 +481,7 @@ type target_buses = {
 
 and target_bus_slot =
   | BusSlotEmpty
-  | BusSlotTarget of target
+  | BusSlotDisk of source_disk
   | BusSlotRemovable of source_removable
 
 let string_of_target_bus_slots bus_name slots =
@@ -472,7 +491,7 @@ let string_of_target_bus_slots bus_name slots =
         sprintf "%s slot %d:\n" bus_name slot_nr ^
           (match slot with
            | BusSlotEmpty -> "\t(slot empty)\n"
-           | BusSlotTarget t -> string_of_target t
+           | BusSlotDisk d -> string_of_source_disk d
            | BusSlotRemovable r -> string_of_source_removable r ^ "\n"
           )
     ) slots in
@@ -497,10 +516,10 @@ end
 class virtual output = object
   method precheck () = ()
   method virtual as_options : string
-  method virtual prepare_targets : source -> target list -> target list
   method virtual supported_firmware : target_firmware list
   method check_target_firmware (_ : guestcaps) (_ : target_firmware) = ()
-  method check_target_free_space (_ : source) (_ : target list) = ()
+  method override_output_format (_ : overlay) = (None : string option)
+  method virtual prepare_targets : source -> (string * overlay) list -> target_buses -> guestcaps -> inspect -> target_firmware -> target_file list
   method disk_create = (open_guestfs ())#disk_create
   method virtual create_metadata : source -> target list -> target_buses -> guestcaps -> inspect -> target_firmware -> unit
   method keep_serial_console = true

@@ -1191,6 +1191,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1extlinux
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _f2fs_expand
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1f2fs_1expand
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _fallocate
  * Signature: (JLjava/lang/String;I)V
  */
@@ -1987,6 +1995,14 @@ JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1min
  * Signature: (JLjava/lang/String;)[Ljava/lang/String;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1mountpoints
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _inspect_get_osinfo
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1osinfo
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
@@ -2940,6 +2956,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lvm_1clear_1filte
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lvm_1remove_1all
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _lvm_scan
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lvm_1scan
+  (JNIEnv *, jobject, jlong, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS

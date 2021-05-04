@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -451,6 +451,23 @@ struct command_entry exists_cmd_entry = {
           "",
   .synopsis = "exists path",
   .run = run_exists
+};
+
+struct command_entry f2fs_expand_cmd_entry = {
+  .name = "f2fs-expand",
+  .help = "NAME\n"
+          "    f2fs-expand - expand a f2fs filesystem\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     f2fs-expand device\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    This expands a f2fs filesystem to match the size of the underlying\n"
+          "    device.\n"
+          "\n"
+          "",
+  .synopsis = "f2fs-expand device",
+  .run = run_f2fs_expand
 };
 
 struct command_entry filesystem_walk_cmd_entry = {
@@ -1340,8 +1357,8 @@ struct command_entry luks_open_cmd_entry = {
           "    writes to this block device are decrypted from and encrypted to the\n"
           "    underlying \"device\" respectively.\n"
           "\n"
-          "    If this block device contains LVM volume groups, then calling \"vgscan\"\n"
-          "    followed by \"vg_activate_all\" will make them visible.\n"
+          "    If this block device contains LVM volume groups, then calling \"lvm_scan\"\n"
+          "    with the \"activate\" parameter \"true\" will make them visible.\n"
           "\n"
           "    Use \"list_dm_devices\" to list all device mapper devices.\n"
           "\n"
@@ -2127,6 +2144,13 @@ struct command_entry vgscan_cmd_entry = {
           "DESCRIPTION\n"
           "    This rescans all block devices and rebuilds the list of LVM physical\n"
           "    volumes, volume groups and logical volumes.\n"
+          "\n"
+          "    *This function is deprecated.* In new code, use the \"lvm-scan\" call\n"
+          "    instead.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
           "\n"
           "",
   .synopsis = "vgscan",

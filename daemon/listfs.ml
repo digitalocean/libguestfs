@@ -1,5 +1,5 @@
 (* guestfs-inspection
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,53 +20,33 @@ open Printf
 
 open Std_utils
 
+(* Enumerate block devices (including MD, LVM, LDM and partitions) and use
+ * vfs-type to check for filesystems on devices.  Some block devices cannot
+ * contain filesystems, so we filter them out.
+ *)
 let rec list_filesystems () =
   let has_lvm2 = Optgroups.lvm2_available () in
   let has_ldm = Optgroups.ldm_available () in
 
+  (* Devices. *)
   let devices = Devsparts.list_devices () in
-  let partitions = Devsparts.list_partitions () in
-  let mds = Md.list_md_devices () in
-
-  (* Look to see if any devices directly contain filesystems
-   * (RHBZ#590167).  However vfs-type will fail to tell us anything
-   * useful about devices which just contain partitions, so we also
-   * get the list of partitions and exclude the corresponding devices
-   * by using part-to-dev.
-   *)
-  let devices_containing_partitions = List.fold_left (
-    fun set part ->
-      StringSet.add (Devsparts.part_to_dev part) set
-  ) StringSet.empty partitions in
-  let devices = List.filter (
-    fun dev ->
-      not (StringSet.mem dev devices_containing_partitions)
-  ) devices in
-
-  (* Use vfs-type to check for filesystems on devices. *)
+  let devices = List.filter is_not_partitioned_device devices in
   let ret = List.filter_map check_with_vfs_type devices in
 
-  (* Use vfs-type to check for filesystems on partitions, but
-   * ignore MBR partition type 42 used by LDM.
-   *)
-  let ret =
-    ret @
-      List.filter_map (
-        fun part ->
-          if not has_ldm || not (is_mbr_partition_type_42 part) then
-            check_with_vfs_type part
-          else
-            None                (* ignore type 42 *)
-      ) partitions in
+  (* Partitions. *)
+  let partitions = Devsparts.list_partitions () in
+  let partitions = List.filter is_partition_can_hold_filesystem partitions in
+  let ret = ret @ List.filter_map check_with_vfs_type partitions in
 
-  (* Use vfs-type to check for filesystems on md devices. *)
+  (* MD. *)
+  let mds = Md.list_md_devices () in
+  let mds = List.filter is_not_partitioned_device mds in
   let ret = ret @ List.filter_map check_with_vfs_type mds in
 
   (* LVM. *)
   let ret =
     if has_lvm2 then (
       let lvs = Lvm.lvs () in
-      (* Use vfs-type to check for filesystems on LVs. *)
       ret @ List.filter_map check_with_vfs_type lvs
     )
     else ret in
@@ -75,15 +55,69 @@ let rec list_filesystems () =
   let ret =
     if has_ldm then (
       let ldmvols = Ldm.list_ldm_volumes () in
-      let ldmparts = Ldm.list_ldm_partitions () in
-      (* Use vfs-type to check for filesystems on Windows dynamic disks. *)
-      ret @
-        List.filter_map check_with_vfs_type ldmvols @
-        List.filter_map check_with_vfs_type ldmparts
+      ret @ List.filter_map check_with_vfs_type ldmvols
     )
     else ret in
 
   List.flatten ret
+
+(* Look to see if device can directly contain filesystem (RHBZ#590167).
+ * Partitioned devices cannot contain filesystem, so we will exclude
+ * such devices.
+ *)
+and is_not_partitioned_device device =
+  assert (String.is_prefix device "/dev/");
+  let dev_name = String.sub device 5 (String.length device - 5) in
+  let dev_dir = "/sys/block/" ^ dev_name in
+
+  (* Open the device's directory under /sys/block/<dev_name> and
+   * look for entries starting with <dev_name>, eg. /sys/block/sda/sda1
+   *)
+  let is_device_partition file = String.is_prefix file dev_name in
+  let files = Array.to_list (Sys.readdir dev_dir) in
+  let has_partition = List.exists is_device_partition files in
+
+  not has_partition
+
+(* We should ignore Windows Logical Disk Manager (LDM) partitions,
+ * because these are members of a Windows dynamic disk group.  Trying
+ * to read them will cause errors (RHBZ#887520).  Assuming that
+ * libguestfs was compiled with ldm support, we'll get the filesystems
+ * on these later.  We also ignore Microsoft Reserved Partition and
+ * Windows Snapshot Partition as well as MBR extended partitions.
+ *)
+and is_partition_can_hold_filesystem partition =
+  let device = Devsparts.part_to_dev partition in
+  let partnum = Devsparts.part_to_partnum partition in
+  let parttype = Parted.part_get_parttype device in
+
+  let is_gpt = parttype = "gpt" in
+  let is_mbr = parttype = "msdos" in
+  let is_gpt_or_mbr = is_gpt || is_mbr in
+
+  if is_gpt_or_mbr then (
+    if is_mbr_extended parttype device partnum then
+      false
+    else (
+      (* MBR partition id will be converted into corresponding GPT type. *)
+      let gpt_type = Parted.part_get_gpt_type device partnum in
+      match gpt_type with
+      (* Windows Logical Disk Manager metadata partition. *)
+      | "5808C8AA-7E8F-42E0-85D2-E1E90434CFB3"
+      (* Windows Logical Disk Manager data partition. *)
+      | "AF9B60A0-1431-4F62-BC68-3311714A69AD"
+      (* Microsoft Reserved Partition. *)
+      | "E3C9E316-0B5C-4DB8-817D-F92DF00215AE"
+      (* Windows Snapshot Partition. *)
+      | "CADDEBF1-4400-4DE8-B103-12117DCF3CCF" -> false
+      | _ -> true
+    )
+  )
+  else true
+
+and is_mbr_extended parttype device partnum =
+  parttype = "msdos" &&
+    Parted.part_get_mbr_part_type device partnum = "extended"
 
 (* Use vfs-type to check for a filesystem of some sort of [device].
  * Returns [Some [device, vfs_type; ...]] if found (there may be
@@ -140,20 +174,3 @@ and check_with_vfs_type device =
 
   else
     Some [mountable, vfs_type]
-
-(* We should ignore partitions that have MBR type byte 0x42, because
- * these are members of a Windows dynamic disk group.  Trying to read
- * them will cause errors (RHBZ#887520).  Assuming that libguestfs was
- * compiled with ldm support, we'll get the filesystems on these later.
- *)
-and is_mbr_partition_type_42 partition =
-  try
-    let partnum = Devsparts.part_to_partnum partition in
-    let device = Devsparts.part_to_dev partition in
-    let mbr_id = Parted.part_get_mbr_id device partnum in
-    mbr_id = 0x42
-  with exn ->
-     if verbose () then
-       eprintf "is_mbr_partition_type_42: %s: %s\n"
-               partition (Printexc.to_string exn);
-     false

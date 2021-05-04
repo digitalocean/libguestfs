@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -788,6 +788,9 @@ struct command_entry inspect_get_distro_cmd_entry = {
           "\n"
           "    \"gentoo\"\n"
           "        Gentoo.\n"
+          "\n"
+          "    \"kalilinux\"\n"
+          "        Kali Linux.\n"
           "\n"
           "    \"linuxmint\"\n"
           "        Linux Mint.\n"

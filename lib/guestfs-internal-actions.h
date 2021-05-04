@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -79,6 +79,7 @@ extern char *guestfs_impl_get_tmpdir (guestfs_h *g);
 extern int guestfs_impl_get_trace (guestfs_h *g);
 extern int guestfs_impl_get_verbose (guestfs_h *g);
 extern char *guestfs_impl_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r, const struct guestfs_inspect_get_icon_argv *optargs);
+extern char *guestfs_impl_inspect_get_osinfo (guestfs_h *g, const char *root);
 extern struct guestfs_application_list *guestfs_impl_inspect_list_applications (guestfs_h *g, const char *root);
 extern struct guestfs_application2_list *guestfs_impl_inspect_list_applications2 (guestfs_h *g, const char *root);
 extern int guestfs_impl_internal_get_console_socket (guestfs_h *g);

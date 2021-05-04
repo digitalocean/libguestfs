@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,9 @@ v}
   </foo>
 v}
 *)
+
+val doc_to_string : doc -> string
+(** Convert a document to a string representation. *)
 
 val doc_to_chan : out_channel -> doc -> unit
 (** Write the XML document to an output channel. *)

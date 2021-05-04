@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -398,6 +398,9 @@ dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_EXTLINUX:
       extlinux_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_F2FS_EXPAND:
+      f2fs_expand_stub (xdr_in);
       break;
     case GUESTFS_PROC_FALLOCATE:
       fallocate_stub (xdr_in);
@@ -884,6 +887,9 @@ dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_LVM_REMOVE_ALL:
       lvm_remove_all_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LVM_SCAN:
+      lvm_scan_stub (xdr_in);
       break;
     case GUESTFS_PROC_LVM_SET_FILTER:
       lvm_set_filter_stub (xdr_in);

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -194,6 +194,7 @@ SUBDIRS += utils/boot-analysis
 endif
 SUBDIRS += \
 	utils/boot-benchmark \
+	utils/max-disks \
 	utils/qemu-boot \
 	utils/qemu-speed-test
 
@@ -353,6 +354,7 @@ po/POTFILES-ml: configure.ac
 	cd $(srcdir); \
 	find builder common/ml* customize dib get-kernel resize sparsify sysprep v2v -name '*.ml' | \
 	grep -v '^builder/templates/' | \
+	grep -v '^v2v/config.ml$$' | \
 	LC_ALL=C sort > $@-t
 	mv $@-t $@
 

@@ -41,20 +41,8 @@
 #include <string.h>
 
 #include "assure.h"
-#include "intprops.h"
 
-/* xstrtoll.c and xstrtoull.c, which include this file, require that
-   ULLONG_MAX, LLONG_MAX, LLONG_MIN are defined, but <limits.h> does not
-   define them on all platforms.  */
-#ifndef ULLONG_MAX
-# define ULLONG_MAX TYPE_MAXIMUM (unsigned long long)
-#endif
-#ifndef LLONG_MAX
-# define LLONG_MAX TYPE_MAXIMUM (long long int)
-#endif
-#ifndef LLONG_MIN
-# define LLONG_MIN TYPE_MINIMUM (long long int)
-#endif
+#define TYPE_SIGNED(t) (! ((t) 0 < (t) -1))
 
 static strtol_error
 bkm_scale (__strtol_t *x, int scale_factor)

@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -4444,6 +4444,23 @@ func (g *Guestfs) Extlinux (directory string) *GuestfsError {
     return nil
 }
 
+/* f2fs_expand : expand a f2fs filesystem */
+func (g *Guestfs) F2fs_expand (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("f2fs_expand")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_f2fs_expand (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "f2fs_expand")
+    }
+    return nil
+}
+
 /* fallocate : preallocate a file in the guest filesystem */
 func (g *Guestfs) Fallocate (path string, len int) *GuestfsError {
     if g.g == nil {
@@ -6236,6 +6253,24 @@ func (g *Guestfs) Inspect_get_mountpoints (root string) (map[string]string, *Gue
     }
     defer free_string_list (r)
     return return_hashtable (r), nil
+}
+
+/* inspect_get_osinfo : get a possible osinfo short ID corresponding to this operating system */
+func (g *Guestfs) Inspect_get_osinfo (root string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("inspect_get_osinfo")
+    }
+
+    c_root := C.CString (root)
+    defer C.free (unsafe.Pointer (c_root))
+
+    r := C.guestfs_inspect_get_osinfo (g.g, c_root)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "inspect_get_osinfo")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
 }
 
 /* inspect_get_package_format : get package format used by the operating system */
@@ -8882,6 +8917,23 @@ func (g *Guestfs) Lvm_remove_all () *GuestfsError {
 
     if r == -1 {
         return get_error_from_handle (g, "lvm_remove_all")
+    }
+    return nil
+}
+
+/* lvm_scan : scan for LVM physical volumes, volume groups and logical volumes */
+func (g *Guestfs) Lvm_scan (activate bool) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("lvm_scan")
+    }
+
+    var c_activate C.int
+    if activate { c_activate = 1 } else { c_activate = 0 }
+
+    r := C.guestfs_lvm_scan (g.g, c_activate)
+
+    if r == -1 {
+        return get_error_from_handle (g, "lvm_scan")
     }
     return nil
 }

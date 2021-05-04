@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-guestfs-lua - How to use libguestfs from Lua
+guestfs-lua — як використовувати libguestfs з Lua
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -14,24 +14,25 @@ guestfs-lua - How to use libguestfs from Lua
 
 =head1 ОПИС
 
-This manual page documents how to call libguestfs from the Lua programming
-language.  This page just documents the differences from the C API and gives
-some examples.  If you are not familiar with using libguestfs, you also need
-to read L<guestfs(3)>.
+На цій сторінці підручника наведено документацію щодо викликів libguestfs з
+коду мовою програмування Lua. На сторінці задокументовано відмінності від
+програмного інтерфейсу C та подано декілька прикладів. Якщо ви не дуже
+знайомі із користуванням libguestfs, вам також слід прочитати підручник з
+L<guestfs(3)>.
 
-=head2 REQUIRING THE MODULE
+=head2 ВСТАНОВЛЕННЯ ВИМОГИ ЩОДО МОДУЛЯ
 
-C<require "guestfs"> returns the module, so you have to assign it to a local
-variable.  Typical usage is:
+C<require "guestfs"> повертає модуль, тому вам слід пов'язати це значення із
+локальною змінною. Типове використання:
 
  local G = require "guestfs"
 
-(you can use any name you want instead of C<G>, but in the examples in this
-man page we always use C<G>).
+(ви можете використовувати будь-яку назву замість C<G>, але у прикладах на
+цій сторінці підручника ми завжди використовуватимемо C<G>).
 
 =head2 ВІДКРИТТЯ І ЗАКРИТТЯ ДЕСКРИПТОРА
 
-To create a new handle, call:
+Для створення дескриптора викличте:
 
  g = G.create ()
 
@@ -39,26 +40,26 @@ To create a new handle, call:
 
  g = G.create { environment = 0, close_on_exit = 0 }
 
-to set the flags C<GUESTFS_CREATE_NO_ENVIRONMENT> and/or
+для встановлення прапорців C<GUESTFS_CREATE_NO_ENVIRONMENT> і/або
 C<GUESTFS_CREATE_NO_CLOSE_ON_EXIT>.
 
-The handle will be closed by the garbage collector, but you can also close
-it explicitly by doing:
+Дескриптор буде закрито засобом збирання сміття, але ви також можете закрити
+його явним чином, ось так:
 
  g:close ()
 
 =head2 ЯК ВИКЛИКАТИ МЕТОДИ
 
-Use the ordinary Lua convention for calling methods on the handle.  For
-example:
+Скористайтеся звичайною методикою Lua для виклику методів для
+дескриптора. Приклад:
 
  g:set_verbose (true)
 
-=head2 ФУНКЦІЇ І ДОДАТКОВІ ПАРАМЕТРИ
+=head2 ФУНКЦІЇ І НЕОБОВ'ЯЗКОВІ ПАРАМЕТРИ
 
-For functions that take optional arguments, the first arguments are the
-non-optional ones.  The optional final argument is a table supplying the
-optional arguments.
+Для функцій, які приймають необов'язкові аргументи, першими аргументами
+мають бути обов'язкові. Необов'язковим останнім аргументом є таблиця із
+необов'язковими аргументами.
 
  g:add_drive ("test.img")
 
@@ -68,33 +69,34 @@ optional arguments.
 
 =head2 64-БІТОВІ ЗНАЧЕННЯ
 
-Currently 64 bit values must be passed as strings, and are returned as
-strings.  This is because 32 bit Lua cannot handle 64 bit integers
-properly.  We hope to come up with a better solution later.
+У поточній версії 64-бітові значення має бути передано як рядки, також ці
+значення повертаються функціями як рядки. Причиною є те, що у 32-бітовому
+інтерпретаторі Lua неможлива належна обробка цілих 64-бітових
+чисел. Сподіваємося, згодом нами буде знайдено прийнятніше рішення.
 
 =head2 ПОМИЛКИ
 
-Most (but not all) errors are converted into objects (ie. tables)
-containing the following fields:
+Більшість (але не усі) помилок перетворюються на об'єкти (тобто таблиці), що
+містять такі поля:
 
 =over 4
 
 =item msg
 
-The error message (corresponding to L<guestfs(3)/guestfs_last_error>).
+Повідомлення про помилку (відповідно до L<guestfs(3)/guestfs_last_error>).
 
 =item code
 
-The C<errno> (corresponding to L<guestfs(3)/guestfs_last_errno>).
+C<errno> (відповідно до L<guestfs(3)/guestfs_last_errno>).
 
 =back
 
-These objects also have C<__tostring> functions attached to them so you can
-use C<tostring> (or implicit conversion) to convert them into printable
-strings.
+Із цими об'єктами також пов'язано з функціями C<__tostring>, отже ви можете
+скористатися функцією C<tostring> (або неявним перетворенням) для
+перетворення їх на придатні до виведення рядки.
 
-Note that the library also throws some errors as plain strings.  You may
-need to check the type.
+Зауважте, що бібліотека також виводить деякі помилки як прості
+рядки. Можливо, вам слід перевірити тип цих даних.
 
 =head2 ПОДІЇ
 
@@ -102,27 +104,27 @@ need to check the type.
 
  eh = g:set_event_callback (cb, "close")
 
-or to register a single callback for multiple events make the second
-argument a list:
+або можна зареєструвати єдиний зворотний виклик для декількох подій,
+зробивши другим аргументом список:
 
  eh = g:set_event_callback (cb, { "appliance", "library", "trace" })
 
-A list of all valid event types (strings) is in the global variable
+Список усіх чинних типів подій (рядків) зберігається у загальній змінній
 C<G.event_all>.
 
-The callback (C<cb>) is called with the following parameters:
+Зворотний виклик (C<cb>) викликається із такими параметрами:
 
  function cb (g, event, eh, flags, buf, array)
-   -- g is the guestfs handle
-   -- event is a string which is the name of the event that fired
-   -- flags is always zero
-   -- buf is the data buffer (eg. log message etc)
-   -- array is the array of 64 bit ints (eg. progress bar status etc)
+   -- g i— дескриптор guestfs
+   -- event — рядок, який є назвою події, яка сталася
+   -- flags — завжди нуль
+   -- buf — буфер даних (наприклад, повідомлення журналу тощо)
+   -- array — масив з 64-бітових цілих чисел (наприклад, стан смужки поступу тощо)
    ...
  end
 
-You can also remove a callback using the event handle (C<eh>) that was
-returned when you registered the callback:
+Ви також можете вилучити зворотний виклик за допомогою дескриптора події
+(C<eh>), який було повернуто, коли ви реєстрували зворотний виклик:
 
  g:delete_event_callback (eh)
 

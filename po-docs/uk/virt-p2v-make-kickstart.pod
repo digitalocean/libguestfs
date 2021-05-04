@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-virt-p2v-make-kickstart - Build the virt-p2v kickstart
+virt-p2v-make-kickstart — програма для збирання kickstart virt-p2v
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -9,49 +9,52 @@ virt-p2v-make-kickstart - Build the virt-p2v kickstart
 
 =head1 ОПИС
 
-L<virt-p2v(1)> converts a physical machine to run virtualized on KVM,
-managed by libvirt, OpenStack, oVirt, Red Hat Enterprise Virtualisation
-(RHEV), or one of the other targets supported by L<virt-v2v(1)>.
+L<virt-p2v(1)> перетворює фізичну машину для запуску віртуалізованою у KVM,
+під керуванням libvirt, OpenStack, oVirt, Red Hat Enterprise Virtualisation
+(RHEV) або одним із інших призначень, підтримку яких передбачено у
+L<virt-v2v(1)>.
 
-Kickstart is a format used by Red Hat-derived distributions (such as Fedora,
-Red Hat Enterprise Linux, CentOS, Scientific Linux, and others) to describe
-how to make live CDs, install the distro, make "Spins" and so on.  It is
-driven by a kickstart file.
+Kickstart — формат, який використовується у похідних від Red Hat
+дистрибутивах (зокрема Fedora, Red Hat Enterprise Linux, CentOS, Scientific
+Linux тощо) для опису процесу створення компакт-дисків із портативною
+системою, встановлення дистрибутива, створення «варіантів» тощо. Дані у
+цьому форматі зберігаються у файлі kickstart.
 
-virt-p2v-make-kickstart builds a kickstart file which can be used to build a
-bootable P2V ISO, live CD, USB key, or PXE image.  This tool only builds the
-kickstart file, but this manual page describes some of the ways you can use
-the kickstart file.
+virt-p2v-make-kickstart збирає файл kickstart, яким можна скористатися для
+збирання придатного до завантаження ISO P2V, образу портативної системи для
+компакт-диска, флешки USB або образу PXE. Ця програма лише створює файл
+kickstart, але на цій сторінці підручника описано деякі зі способів
+використання файла kickstart.
 
-=head1 BUILDING THE KICKSTART FILE
+=head1 ЗБИРАННЯ ФАЙЛА KICKSTART
 
-Using virt-p2v-make-kickstart is very simple:
+Користуватися virt-p2v-make-kickstart дуже просто:
 
  virt-p2v-make-kickstart fedora
 
-will build a kickstart file for Fedora.  The kickstart file will be called
-F<p2v.ks> and located in the current directory.
+збере файл kickstart для Fedora. Файл kickstart називатиметься F<p2v.ks> і
+зберігатиметься у поточному каталозі.
 
-The parameters are a list of one or more repositories.  Some built-in
-repositories are available: C<fedora>, C<rawhide>, C<koji> or
-C<rhel-VERSION> (eg. C<rhel-7.1>).  You can also use a URL as a parameter to
-point to a repository, for example:
+Параметрі є списком з одного або декількох сховищ. Деякі із наявних
+вбудованих сховищ: C<fedora>, C<rawhide>, C<koji> або C<rhel-ВЕРСІЯ>
+(наприклад C<rhel-7.1>). Ви також можете змінити адресу як параметр для
+вказування на сховище. Приклад:
 
  virt-p2v-make-kickstart https://dl.fedoraproject.org/pub/fedora/linux/releases/21/Everything/x86_64/os/
 
-To control the name of the output file, use the I<-o> parameter.  To tell
-kickstart to use a proxy server or web cache to download files, use the
-I<--proxy> parameter.
+Для керування назвою файла-результату скористайтеся параметром I<-o>. Щоб
+наказати kickstart скористатися проксі-сервером або вебкешем для отримання
+файлів, скористайтеся параметром I<--proxy>.
 
-=head1 BUILDING A LIVE CD / ISO
+=head1 ЗБИРАННЯ ISO АБО ОБРАЗУ ДИСКА ІЗ ПОРТАТИВНОЮ СИСТЕМОЮ
 
 Щойно у вас буде файл kickstart, ви можете скористатися L<livecd-creator(8)>
 для створення образу компакт-диска із портативною системою:
 
  sudo livecd-creator p2v.ks
 
-Before running this note that you should probably run C<livecd-creator> in a
-disposable virtual machine for these reasons:
+Перш ніж віддавати команду, зауважте, що вам слід, ймовірно, запустити
+C<livecd-creator> в одноразовій віртуальній машині з таких причин:
 
 =over 4
 
@@ -66,17 +69,19 @@ disposable virtual machine for these reasons:
 
 =item *
 
-You can only create the exact same Live CD distro as the host distro.
-Cross-builds will fail in strange ways (eg. RHBZ#1092327).
+Ви можете створювати образи компакт-дисків портативної системи лише з тим
+самим дистрибутивом, що і в основній системі. Крос-компіляція
+завершуватиметься дивними повідомленнями про помилки (див., наприклад,
+RHBZ#1092327).
 
 =back
 
 =head1 ЗБИРАННЯ ВАРІАНТА FEDORA ЗА ДОПОМОГОЮ KOJI
 
-This requires C<spin-livecd> permissions on Koji, which are not given out
-usually, even to Fedora packagers.  However assuming you have been given
-these permissions (or have your own Koji instance, I guess), then you can
-do:
+Це потребує прав доступу C<spin-livecd> для Koji, які зазвичай не надаються,
+навіть для пакувальників Fedora. Втім, припускаючи, що у вас є відповідні
+права доступу (або, наприклад, ваш власний екземпляр Koji), ви можете
+зробити так:
 
  koji spin-livecd [--scratch] virt-p2v 1.XX.YY rawhide x86_64 p2v.ks
 
@@ -84,7 +89,8 @@ do:
 
 =item *
 
-Add the C<--scratch> option to do a scratch build (recommended for testing).
+Додайте параметр C<--scratch> для створення тестової збірки (рекомендовано
+для тестування).
 
 =item *
 
@@ -105,13 +111,13 @@ C<1.XX.YY> має збігатися із версією libguestfs
 
 =head1 ЗБИРАННЯ ОБРАЗУ ДЛЯ ЗАВАНТАЖЕННЯ PXE
 
-Use the C<livecd-iso-to-pxeboot> program to convert the ISO created above to
-a PXE boot image.
+Скористайтеся програмою C<livecd-iso-to-pxeboot> для перетворення створеного
+вище образу ISO у образ для завантаження PXE.
 
  sudo livecd-iso-to-pxeboot livecd-p2v.iso
 
-This creates a C<tftpboot> subdirectory under the current directory
-containing the files required to PXE boot virt-p2v:
+Ця команда створює підкаталог C<tftpboot> у поточному каталозі, який
+міститиме файли, потрібні, щоб PXE завантажила virt-p2v:
 
  $ ls -1R tftpboot/
  tftpboot/:
@@ -123,34 +129,40 @@ containing the files required to PXE boot virt-p2v:
  tftpboot/pxelinux.cfg:
  default
 
-=head1 32 OR 64 BIT VIRT-P2V?
+=head1 32- ЧИ 64-БІТОВА VIRT-P2V?
 
-Virt-p2v can convert any 32 or 64 bit guest, regardless of whether virt-p2v
-itself is built as a 32 or 64 bit binary.  The only restriction is that 64
-bit virt-p2v cannot run on 32 bit hardware.
+Virt-p2v може перетворювати будь-які 32- або 64-бітові гостьові системи,
+незалежно від того, чи є сама virt-p2v зібраною як 32- або 64-бітовою
+програмою. Єдиним обмеженням є те, що 64-бітову версію virt-p2v не може бути
+запущено на 32-бітовому обладнанні.
 
-Old virt-p2v 0.9 was always built as a 32 bit (i686) ISO.  This meant that
-the CD could be booted on any 32- or 64-bit i686 or x86-64 hardware, and
-could convert any guest.  The old virt-p2v ISO shipped by Red Hat was based
-on Red Hat Enterprise Linux (RHEL) 6.
+Застаріла версія virt-p2v 0.9 завжди збиралася як 32-бітовий (i686) образ
+ISO. Це означало, що компакт-диск із такою системою могло бути завантажено
+на будь-якому 32- або 64-бітовому обладнанні архітектури i686 або x86-64, і
+вона могла перетворювати будь-які гостьові системи. Застарілий образ ISO
+virt-p2v, що постачався Red Hat, було засновано на Red Hat Enterprise Linux
+(RHEL) 6.
 
-Since RHEL 7 dropped support for 32 bit machines, current virt-p2v on RHEL
-can only be built for 64 bit.  It cannot run on old 32 bit only hardware.
+Оскільки у RHEL 7 було припинено підтримку 32-бітових машин, поточну версію
+virt-p2v на RHEL може бути зібрано лише у 64-бітовій версії. Цю систему не
+може бути запущено на застарілому обладнанні 32-бітової архітектури.
 
-Fedora virt-p2v ISOs are generally built for 32 bit, so like the old RHEL
-6-based virt-p2v 0.9 they can boot on any hardware.
+Образи ISO virt-p2v для Fedora типово збираються для 32-бітової архітектури,
+отже, подібно до застарілої версії на основі RHEL 6, virt-p2v 0.9, їх можна
+завантажувати на будь-якому обладнанні.
 
 =head1 ТЕСТУВАННЯ VIRT-P2V ЗА ДОПОМОГОЮ QEMU
 
 =head2 ТЕСТУВАННЯ ISO P2V ЗА ДОПОМОГОЮ QEMU
 
-You can use qemu to test-boot the P2V ISO:
+Ви можете скористатися qemu для тестового завантаження образу ISO P2V:
 
  qemu-kvm -m 1024 -hda /tmp/guest.img -cdrom /tmp/livecd-p2v.iso -boot d
 
-Note that C<-hda> is the (virtual) system that you want to convert (for test
-purposes).  It could be any guest type supported by L<virt-v2v(1)>,
-including Windows or Red Hat Enterprise Linux.
+Зауважте, що C<-hda> є (віртуальною) системою, яку ви хочете перетворити (з
+тестовою метою). Нею може бути гостьова система будь-якого типу,
+підтримуваного у L<virt-v2v(1)>, зокрема Windows або Red Hat Enterprise
+Linux.
 
 =head2 ТЕСТУВАННЯ ПІДТРИМКИ PXE ЗА ДОПОМОГОЮ QEMU
 
@@ -158,23 +170,23 @@ including Windows or Red Hat Enterprise Linux.
 
 =item *
 
-Unpack the tftpboot directory into F</tmp> (so it appears as
+Розпакуйте каталог tftpboot до F</tmp> (щоб її було показано як
 F</tmp/tftpboot>).
 
 =item *
 
-Copy F<pxelinux.0> and F<ldlinux.c32> from syslinux (usually from
-F</usr/share/syslinux>) into F</tmp/tftpboot>.
+Скопіюйте F<pxelinux.0> і F<ldlinux.c32> з syslinux (зазвичай з
+F</usr/share/syslinux>) до F</tmp/tftpboot>.
 
 =item *
 
-Adjust the C<APPEND> line in F</tmp/tftpboot/pxelinux.cfg/default> if
-required.  See L<virt-p2v(1)/KERNEL COMMAND LINE CONFIGURATION>.
+Скоригувати рядок C<APPEND> у F</tmp/tftpboot/pxelinux.cfg/default>, якщо
+потрібно. Див. L<virt-p2v(1)/НАЛАШТУВАННЯ КОМАНДНОГО РЯДКА ЯДРА>.
 
 =item *
 
-Run qemu like this so that it acts as a TFTP and BOOTP server, emulating a
-netboot:
+Запустіть qemu ось так, щоб програма працювала як сервер TFTP і BOOTP,
+емулюючи завантаження з мережі:
 
  qemu-kvm \
      -m 4096 -hda /tmp/guest.img \
@@ -183,57 +195,59 @@ netboot:
      -device virtio-net-pci,netdev=unet \
      -serial stdio
 
-Note that this requires considerably more memory because the PXE image is
-loaded into memory.  Also that qemu’s TFTP server is very slow and the
-virt-p2v PXE image is very large, so it can appear to "hang" after pxelinux
-starts up.
+Зауважте, що це потребує значно більше пам'яті, оскільки образ PXE
+завантажується до пам'яті. Крім того, через те, що сервер TFTP qemu є дуже
+повільним, а образ PXE virt-p2v є дуже великим, образ може, як здається»
+«зависати» після запуску pxelinux.
 
 =back
 
 =head1 ДОДАВАННЯ ДОДАТКОВИХ ПАКУНКІВ
 
-You can install extra packages using the I<--install> option.  This can be
-useful for making a more fully-featured virt-p2v disk with extra tools for
-debugging and troubleshooting.  Give a list of packages, separated by
-commas.  For example:
+Встановити нові пакунки можна за допомогою параметра
+I<--install>. Встановлення нових пакунків може бути корисним для створення
+повнофункціонального диска virt-p2v із додатковими інструментами для
+діагностики та усування вад. Як аргумент параметра слід вказати список
+пакунків, відокремлених комами. Приклад:
 
  virt-p2v-make-kickstart [...] --install tcpdump,traceroute
 
 =head1 ДОДАВАННЯ ПРОФІЛЮ SSH
 
-You can inject an SSH identity (private key) file to the kickstart and hence
-into the ISO using the I<--inject-ssh-identity> option.  Note that you
-I<cannot> inject a key once the ISO has been built.
+Ви можете вставити файл профілю SSH (закритий ключ) до kickstart, а отже до
+ISO, за допомогою параметр I<--inject-ssh-identity>. Зауважте, що ви I<не
+можете> вставити ключ після збирання образу ISO.
 
-First create a key pair.  It must have an empty passphrase:
+Спочатку створіть пару ключів. Пароль до пари ключів має бути порожнім:
 
  ssh-keygen -t rsa -N '' -f id_rsa
 
-This creates a private key (C<id_rsa>) and a public key (C<id_rsa.pub>)
-pair.  The public key should be appended to the C<authorized_keys> file on
-the virt-v2v conversion server (usually to C</root/.ssh/authorized_keys>).
+Ця команда створить закритий ключ (C<id_rsa>) і відкритий ключ
+(C<id_rsa.pub>). Відкритий ключ слід дописати до файла C<authorized_keys> на
+сервері перетворення virt-v2v (зазвичай, до файла
+C</root/.ssh/authorized_keys>).
 
-The private key should be added to the kickstart file and then discarded:
+Закритий ключ має бути додано до файла kickstart, а потім відкинуто:
 
  virt-p2v-make-kickstart [...] --inject-ssh-identity id_rsa
  rm id_rsa
 
-The ISO can then be built from the kickstart in the usual way (see above),
-and it will contain the embedded SSH identity (F</var/tmp/id_rsa>).
+Образ ISO далі може бути зібрано на основі kickstart у звичний спосіб
+(див. вище), і він міститиме вбудований профіль SSH (F</var/tmp/id_rsa>).
 
-When booting virt-p2v, specify the URL of the injected file like this:
+При завантаженні virt-p2v вкажіть адресу вставленого файла ось так:
 
- │         User name: [root_____________________________] │
+ │         Користувач: [root____________________________] │
  │                                                        │
- │          Password: [    <leave this field blank>     ] │
+ │          Пароль: [      <не заповнюйте>                 ] │
  │                                                        │
- │  SSH Identity URL: [file:///var/tmp/id_rsa___________] │
+ │  Адреса профілю SSH: [file:///var/tmp/id_rsa_______] │
 
-or if using the kernel command line, add:
+або, якщо використовується командний рядок ядра, додайте:
 
  p2v.identity=file:///var/tmp/id_rsa
 
-For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
+Докладніший опис наведено у розділі L<virt-p2v(1)/ПРОФІЛІ SSH>.
 
 =head1 ПАРАМЕТРИ
 
@@ -245,31 +259,32 @@ For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
 
 =item B<--inject-ssh-identity> id_rsa
 
-Add an SSH identity (private key) file into the kickstart.  See L</ADDING AN
-SSH IDENTITY> above.
+Додати файл профілю SSH (закритий ключ) до kickstart. Див. L</ДОДАВАННЯ
+ПРОФІЛЮ SSH> вище.
 
 =item B<--install> пакунок,пакунок,...
 
-Add extra packages to the kickstart C<%packages> section.  See L</ADDING
-EXTRA PACKAGES> above.
+Додати додаткові пакунки до розділу C<%packages>
+kickstart. Див. L</ДОДАВАННЯ ДОДАТКОВИХ ПАКУНКІВ> вище.
 
 =item B<-o> ВИВЕДЕННЯ
 
 =item B<--output> ВИВЕДЕННЯ
 
-Write kickstart to C<OUTPUT>.  If not specified, the default is F<p2v.ks> in
-the current directory.
+Записати kickstart до C<ВИВЕДЕННЯ>. Якщо не вказано, буде типово використано
+F<p2v.ks> у поточному каталозі.
 
 =item B<--proxy> АДРЕСА
 
-Tell the kickstart to use a proxy server or web cache for downloads.
+Наказати kickstart використати для отримання даних проксі-сервер або вебкеш.
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable verbose output.  Use this if you need to debug problems with the
-script or if you are filing a bug.
+Увімкнути режим докладних повідомлень. Скористайтеся цим параметром, якщо
+вам потрібно діагностувати джерело проблеми зі скриптом або створити
+докладний звіт щодо вади у бібліотеці.
 
 =item B<-V>
 
@@ -285,10 +300,10 @@ script or if you are filing a bug.
 
 =item F<$libdir/virt-p2v/virt-p2v.xz>
 
-The L<virt-p2v(1)> binary which is copied into the kickstart file.
+Виконуваний файл L<virt-p2v(1)>, який копіюється до файла kickstart.
 
-The location of the binary can be changed by setting the
-C<VIRT_P2V_DATA_DIR> environment variable.
+Розташування виконуваного файла можна змінити за допомогою встановлення
+відповідного значення змінної середовища C<VIRT_P2V_DATA_DIR>.
 
 =item F<$datadir/virt-p2v/issue>
 
@@ -300,8 +315,8 @@ C<VIRT_P2V_DATA_DIR> environment variable.
 
 Різноманітні файли даних, які використовуються для створення kickstart.
 
-The location of these files can be changed by setting the
-C<VIRT_P2V_DATA_DIR> environment variable.
+Розташування цих файлів можна змінити за допомогою встановлення відповідного
+значення змінної середовища C<VIRT_P2V_DATA_DIR>.
 
 =back
 
@@ -311,9 +326,9 @@ C<VIRT_P2V_DATA_DIR> environment variable.
 
 =item C<VIRT_P2V_DATA_DIR>
 
-The directory where virt-p2v-make-kickstart looks for data files and the
-virt-p2v binary (see L</FILES> above).  If not set, a compiled-in location
-is used.
+Каталог, де virt-p2v-make-kickstart шукатиме файли даних і виконуваний файл
+virt-p2v (див. L</ФАЙЛИ> вище). Якщо не встановлено, буде використано
+вказане під час компіляції місце.
 
 =back
 
@@ -328,5 +343,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

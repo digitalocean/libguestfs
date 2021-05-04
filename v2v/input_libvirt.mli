@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 (** [-i libvirt] source. *)
 
-val input_libvirt : Input_libvirt_vddk.vddk_options -> string option -> string option -> [`VDDK] option -> string -> Types.input
-(** [input_libvirt vddk_options password libvirt_uri input_transport guest]
+val input_libvirt : string option -> string option -> [`VDDK of Input_libvirt_vddk.vddk_options] option -> string -> Types.input
+(** [input_libvirt input_conn input_password input_transport guest]
     creates and returns a new {!Types.input} object specialized for reading
     input from libvirt sources. *)

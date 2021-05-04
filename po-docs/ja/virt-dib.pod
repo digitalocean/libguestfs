@@ -258,6 +258,8 @@ Set to C<package> to use package based installations by default.
 
 =item B<--machine-readable>
 
+=item B<--machine-readable>=format
+
 このオプションは、他のプログラムにより解析されるときに、よりマシンに易しい出力を作成するために使用されます。以下の L</マシン可読な出力> 参照。
 
 =item B<-m> MB
@@ -660,6 +662,9 @@ status 0.
 
 The C<output:> features refer to the output formats (I<--formats> command
 line option) supported by this binary.
+
+It is possible to specify a format string for controlling the output; see
+L<guestfs(3)/ADVANCED MACHINE READABLE OUTPUT>.
 
 =head1 TESTING
 

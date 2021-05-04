@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1753,6 +1753,48 @@ luks_kill_slot_stub (XDR *xdr_in)
   r = do_luks_kill_slot (device, key, keyslot);
   if (r == -1)
     /* do_luks_kill_slot has already called reply_with_error */
+    return;
+
+  reply (NULL, NULL);
+}
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+
+#define CLEANUP_XDR_FREE_LVM_SCAN_ARGS \
+    __attribute__((cleanup(cleanup_xdr_free_lvm_scan_args)))
+
+static void
+cleanup_xdr_free_lvm_scan_args (struct guestfs_lvm_scan_args *argsp)
+{
+  xdr_free ((xdrproc_t) xdr_guestfs_lvm_scan_args, (char *) argsp);
+}
+
+#else /* !HAVE_ATTRIBUTE_CLEANUP */
+#define CLEANUP_XDR_FREE_LVM_SCAN_ARGS
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+void
+lvm_scan_stub (XDR *xdr_in)
+{
+  int r;
+  CLEANUP_XDR_FREE_LVM_SCAN_ARGS struct guestfs_lvm_scan_args args;
+  memset (&args, 0, sizeof args);
+  int activate;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    return;
+  }
+
+  if (!xdr_guestfs_lvm_scan_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    return;
+  }
+  activate = args.activate;
+
+  r = do_lvm_scan (activate);
+  if (r == -1)
+    /* do_lvm_scan has already called reply_with_error */
     return;
 
   reply (NULL, NULL);

@@ -7,7 +7,7 @@ libguestfs generated file
           and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2018 Red Hat Inc.
+ Copyright (C) 2009-2019 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -25,116 +25,122 @@ libguestfs generated file
 
 =end коментар
 
-=head2 B<-N disk> - create a blank disk
+=head2 B<-N disk> — створити порожній диск
 
-C<guestfish -N [I<filename>=]disk[:I<size>]>
+C<guestfish -N [I<назва_файла>=]disk[:I<розмір>]>
 
-Create a blank disk, size 100MB (by default).
+Create a blank disk, size 1G (by default).
 
-The default size can be changed by supplying an optional parameter.
+Типовий розмір можна змінити, надавши необов'язковий параметр.
 
 Додатковими параметрами є:
 
  Name          Default value
- size          100M          the size of the disk image
+ size          1G            the size of the disk image
 
-=head2 B<-N part> - create a partitioned disk
+=head2 B<-N part> — створити диск, поділений на розділи
 
-C<guestfish -N [I<filename>=]part[:I<size>[:I<partition>]]>
+C<guestfish -N [I<назва_файла>=]part[:I<розмір>[:I<розділ>]]>
 
 Create a disk with a single partition.  By default the size of the disk is
-100MB (the available space in the partition will be a tiny bit smaller)  and
+1G (the available space in the partition will be a tiny bit smaller)  and
 the partition table will be MBR (old DOS-style).
 
-These defaults can be changed by supplying optional parameters.
+Ці типові значення можна змінити за допомогою додаткових параметрів.
 
 Додатковими параметрами є:
 
  Name          Default value
- size          100M          the size of the disk image
+ size          1G            the size of the disk image
  partition     mbr           partition table type
 
-=head2 B<-N fs> - create a filesystem
+=head2 B<-N фс> — створити файлову систему
 
-C<guestfish -N [I<filename>=]fs[:I<filesystem>[:I<size>[:I<partition>]]]>
+C<guestfish -N
+[I<назва_файла>=]фс[:I<файлова_система>[:I<розмір>[:I<розділ>]]]>
 
 Create a disk with a single partition, with the partition containing an
-empty filesystem.  This defaults to creating a 100MB disk (the available
-space in the filesystem will be a tiny bit smaller) with an MBR (old
-DOS-style) partition table and an ext2 filesystem.
+empty filesystem.  This defaults to creating a 1G disk (the available space
+in the filesystem will be a tiny bit smaller) with an MBR (old DOS-style)
+partition table and an ext2 filesystem.
 
-These defaults can be changed by supplying optional parameters.
+Ці типові значення можна змінити за допомогою додаткових параметрів.
 
 Додатковими параметрами є:
 
  Name          Default value
  filesystem    ext2          the type of filesystem to use
- size          100M          the size of the disk image
+ size          1G            the size of the disk image
  partition     mbr           partition table type
 
-=head2 B<-N lv> - create a disk with logical volume
+=head2 B<-N lv> — створити диск із логічним томом
 
-C<guestfish -N [I<filename>=]lv[:I<name>[:I<size>[:I<partition>]]]>
+C<guestfish -N [I<назва_файла>=]lv[:I<назва>[:I<розмір>[:I<розділ>]]]>
 
 Create a disk with a single partition, set up the partition as an LVM2
 physical volume, and place a volume group and logical volume on there.  This
-defaults to creating a 100MB disk with the VG and LV called C</dev/VG/LV>.
-You can change the name of the VG and LV by supplying an alternate name as
-the first optional parameter.
+defaults to creating a 1G disk with the VG and LV called C</dev/VG/LV>.  You
+can change the name of the VG and LV by supplying an alternate name as the
+first optional parameter.
 
-Note this does not create a filesystem.  Use 'lvfs' to do that.
+Зауважте, що ця команда не створює файлової системи. Для створення файлової
+системи скористайтеся командою «lvfs».
 
 Додатковими параметрами є:
 
  Name          Default value
  name          /dev/VG/LV    the name of the VG and LV to use
- size          100M          the size of the disk image
+ size          1G            the size of the disk image
  partition     mbr           partition table type
 
-=head2 B<-N lvfs> - create a disk with logical volume and filesystem
+=head2 B<-N lvfs> — створити диск із логічним томом і файловою системою
 
 C<guestfish -N
-[I<filename>=]lvfs[:I<name>[:I<filesystem>[:I<size>[:I<partition>]]]]>
+[I<назва_файла>=]lvfs[:I<назва>[:I<файлова_система>[:I<розмір>[:I<розділ>]]]]>
 
 Create a disk with a single partition, set up the partition as an LVM2
 physical volume, and place a volume group and logical volume on there.  Then
-format the LV with a filesystem.  This defaults to creating a 100MB disk
-with the VG and LV called C</dev/VG/LV>, with an ext2 filesystem.
+format the LV with a filesystem.  This defaults to creating a 1G disk with
+the VG and LV called C</dev/VG/LV>, with an ext2 filesystem.
 
 Додатковими параметрами є:
 
  Name          Default value
  name          /dev/VG/LV    the name of the VG and LV to use
  filesystem    ext2          the type of filesystem to use
- size          100M          the size of the disk image
+ size          1G            the size of the disk image
  partition     mbr           partition table type
 
-=head2 B<-N bootroot> - create a boot and root filesystem
+=head2 B<-N bootroot> — створити файлову систему для завантаження та кореневу
+файлову систему
 
 C<guestfish -N
-[I<filename>=]bootroot[:I<bootfs>[:I<rootfs>[:I<size>[:I<bootsize>[:I<partition>]]]]]>
+[I<назва_файла>=]bootroot[:I<файлова_система_для_завантаження>[:I<коренева_файлова_система>[:I<розмір>[:I<розмір_boot>[:I<розділ>]]]]]>
 
-Create a disk with two partitions, for boot and root filesystem.  Format the
-two filesystems independently.  There are several optional parameters which
-control the exact layout and filesystem types.
+Створює диск із двома розділами для завантаження і з кореневою файловою
+системою. Форматує дві файлові системи незалежно. Існує декілька
+необов'язкових параметрів, які контролюють точне компонування та типи
+файлових систем.
 
 Додатковими параметрами є:
 
  Name          Default value
  bootfs        ext2          the type of filesystem to use for boot
  rootfs        ext2          the type of filesystem to use for root
- size          100M          the size of the disk image
- bootsize      32M           the size of the boot filesystem
+ size          1G            the size of the disk image
+ bootsize      128M          the size of the boot filesystem
  partition     mbr           partition table type
 
-=head2 B<-N bootrootlv> - create a boot and root filesystem using LVM
+=head2 B<-N bootrootv> — створити файлову систему для завантаження та кореневу
+файлову систему за допомогою LVM
 
 C<guestfish -N
-[I<filename>=]bootrootlv[:I<name>[:I<bootfs>[:I<rootfs>[:I<size>[:I<bootsize>[:I<partition>]]]]]]>
+[I<назва_файла>=]bootrootlv[:I<назва>[:I<фс_boot>[:I<коренева_фс>[:I<розмір>[:I<розмір_boot>[:I<розділ>]]]]]]>
 
-This is the same as C<bootroot> but the root filesystem (only) is placed on
-a logical volume, named by default C</dev/VG/LV>.  There are several
-optional parameters which control the exact layout.
+Те саме, що і C<bootroot>, але коренева файлова система (і лише вона)
+розташовується на логічному томі із типовою назвою
+C</dev/VG/LV>. Передбачено декілька необов'язкових параметрів для уточнення
+розташування і розміру розділів.
 
 Додатковими параметрами є:
 
@@ -142,7 +148,7 @@ optional parameters which control the exact layout.
  name          /dev/VG/LV    the name of the VG and LV for root
  bootfs        ext2          the type of filesystem to use for boot
  rootfs        ext2          the type of filesystem to use for root
- size          100M          the size of the disk image
- bootsize      32M           the size of the boot filesystem
+ size          1G            the size of the disk image
+ bootsize      128M          the size of the boot filesystem
  partition     mbr           partition table type
 

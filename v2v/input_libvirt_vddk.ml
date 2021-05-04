@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,22 +33,72 @@ open Xpath_helpers
 
 open Printf
 
-type vddk_options = {
-    vddk_config : string option;
-    vddk_cookie : string option;
-    vddk_libdir : string option;
-    vddk_nfchostport : string option;
-    vddk_port : string option;
-    vddk_snapshot : string option;
-    vddk_thumbprint : string option;
-    vddk_transports : string option;
-    vddk_vimapiver : string option;
-}
+type vddk_options = (string * string) list
+
+(* List of vddk-* input options. *)
+let vddk_option_keys =
+  [ "config";
+    "cookie";
+    "libdir";
+    "nfchostport";
+    "port";
+    "snapshot";
+    "thumbprint";
+    "transports" ]
+
+let print_input_options () =
+  printf (f_"Input options (-io) which can be used with -it vddk:
+
+  -io vddk-thumbprint=xx:xx:xx:...
+                               VDDK server thumbprint (required)
+
+All other settings are optional:
+
+  -io vddk-config=FILE         VDDK configuration file
+  -io vddk-cookie=COOKIE       VDDK cookie
+  -io vddk-libdir=LIBDIR       VDDK library parent directory
+  -io vddk-nfchostport=PORT    VDDK nfchostport
+  -io vddk-port=PORT           VDDK port
+  -io vddk-snapshot=SNAPSHOT-MOREF
+                               VDDK snapshot moref
+  -io vddk-transports=MODE:MODE:..
+                               VDDK transports
+
+Refer to nbdkit-vddk-plugin(1) and the VDDK documentation for further
+information on these settings.
+")
+
+let parse_input_options options =
+  (* Check there are no options we don't understand.  Also removes
+   * the "vddk-" prefix from the internal list.
+   *)
+  let options =
+    List.map (
+      fun (key, value) ->
+        let error_invalid_key () =
+          error (f_"-it vddk: ‘-io %s’ is not a valid input option") key
+        in
+        if not (String.is_prefix key "vddk-") then error_invalid_key ();
+        let key = String.sub key 5 (String.length key-5) in
+        if not (List.mem key vddk_option_keys) then error_invalid_key ();
+
+        (key, value)
+    ) options in
+
+  (* Check no option appears more than once. *)
+  let keys = List.map fst options in
+  if List.length keys <> List.length (List.sort_uniq keys) then
+    error (f_"-it vddk: duplicate -io options on the command line");
+
+  options
 
 (* Subclass specialized for handling VMware via nbdkit vddk plugin. *)
-class input_libvirt_vddk vddk_options password libvirt_uri parsed_uri guest =
+class input_libvirt_vddk input_conn input_password vddk_options parsed_uri
+                         guest =
   (* The VDDK path. *)
-  let libdir = vddk_options.vddk_libdir in
+  let libdir =
+    try Some (List.assoc "libdir" vddk_options)
+    with Not_found -> None in
 
   (* VDDK libraries are located under lib32/ or lib64/ relative to the
    * libdir.  Note this is unrelated to Linux multilib or multiarch.
@@ -68,21 +118,21 @@ class input_libvirt_vddk vddk_options password libvirt_uri parsed_uri guest =
      | None -> ()
      | Some libdir ->
         if not (is_directory libdir) then
-          error (f_"‘--vddk-libdir %s’ does not point to a directory.  See \"INPUT FROM VDDK\" in the virt-v2v(1) manual.") libdir
+          error (f_"‘-io vddk-libdir=%s’ does not point to a directory.  See the virt-v2v-input-vmware(1) manual.") libdir
     );
 
     (match library_path with
      | None -> ()
      | Some library_path ->
         if not (is_directory library_path) then
-          error (f_"VDDK library path %s not found or not a directory.  See \"INPUT FROM VDDK\" in the virt-v2v(1) manual.") library_path
+          error (f_"VDDK library path %s not found or not a directory.  See the virt-v2v-input-vmware(1) manual.") library_path
     )
   in
 
   (* Check that nbdkit is available and new enough. *)
   let error_unless_nbdkit_working () =
     if 0 <> Sys.command "nbdkit --version >/dev/null" then
-      error (f_"nbdkit is not installed or not working.  It is required to use ‘-it vddk’.  See \"INPUT FROM VDDK\" in the virt-v2v(1) manual.");
+      error (f_"nbdkit is not installed or not working.  It is required to use ‘-it vddk’.  See the virt-v2v-input-vmware(1) manual.");
 
     (* Check it's a new enough version.  The latest features we
      * require are ‘--exit-with-parent’ and ‘--selinux-label’, both
@@ -119,19 +169,19 @@ class input_libvirt_vddk vddk_options password libvirt_uri parsed_uri guest =
 
 The VDDK plugin is not enabled by default when you compile nbdkit.  You have to read the instructions in the nbdkit sources under ‘plugins/vddk/README.VDDK’ to find out how to enable the VDDK plugin.
 
-See also \"INPUT FROM VDDK\" in the virt-v2v(1) manual.")
+See also the virt-v2v-input-vmware(1) manual.")
       else
         error (f_"nbdkit VDDK plugin is not installed or not working.  It is required if you want to use VDDK.
 
-It looks like you did not set the right path in the ‘--vddk-libdir’ option, or your copy of the VDDK directory is incomplete.  There should be a library called ’<libdir>/%s/libvixDiskLib.so.?’.
+It looks like you did not set the right path in the ‘-io vddk-libdir’ option, or your copy of the VDDK directory is incomplete.  There should be a library called ’<libdir>/%s/libvixDiskLib.so.?’.
 
-See also \"INPUT FROM VDDK\" in the virt-v2v(1) manual.") libNN
+See also the virt-v2v-input-vmware(1) manual.") libNN
     )
   in
 
   let error_unless_thumbprint () =
-    if vddk_options.vddk_thumbprint = None then
-      error (f_"You must pass the ‘--vddk-thumbprint’ option with the SSL thumbprint of the VMware server.  To find the thumbprint, see the nbdkit-vddk-plugin(1) manual.  See also \"INPUT FROM VDDK\" in the virt-v2v(1) manual.")
+    if not (List.mem_assoc "thumbprint" vddk_options) then
+      error (f_"You must pass the ‘-io vddk-thumbprint’ option with the SSL thumbprint of the VMware server.  To find the thumbprint, see the nbdkit-vddk-plugin(1) manual.  See also the virt-v2v-input-vmware(1) manual.")
   in
 
   (* Check that nbdkit was compiled with SELinux support (for the
@@ -148,20 +198,8 @@ See also \"INPUT FROM VDDK\" in the virt-v2v(1) manual.") libNN
       error (f_"nbdkit was compiled without SELinux support.  You will have to recompile nbdkit with libselinux-devel installed, or else set SELinux to Permissive mode while doing the conversion.")
   in
 
-  (* List of passthrough parameters. *)
-  let vddk_passthrus =
-    [ "config",      (fun { vddk_config }      -> vddk_config);
-      "cookie",      (fun { vddk_cookie }      -> vddk_cookie);
-      "libdir",      (fun { vddk_libdir }      -> vddk_libdir);
-      "nfchostport", (fun { vddk_nfchostport } -> vddk_nfchostport);
-      "port",        (fun { vddk_port }        -> vddk_port);
-      "snapshot",    (fun { vddk_snapshot }    -> vddk_snapshot);
-      "thumbprint",  (fun { vddk_thumbprint }  -> vddk_thumbprint);
-      "transports",  (fun { vddk_transports }  -> vddk_transports);
-      "vimapiver",   (fun { vddk_vimapiver }   -> vddk_vimapiver) ] in
-
 object
-  inherit input_libvirt password libvirt_uri guest as super
+  inherit input_libvirt input_conn input_password guest as super
 
   method precheck () =
     error_unless_vddk_libdir ();
@@ -173,14 +211,9 @@ object
 
   method as_options =
     let pt_options =
-      String.concat "" (
-        List.map (
-          fun (name, get_field) ->
-            match get_field vddk_options with
-            | None -> ""
-            | Some field -> sprintf " --vddk-%s %s" name field
-        ) vddk_passthrus
-      ) in
+      String.concat ""
+                    (List.map (fun (k, v) ->
+                         sprintf " -io vddk-%s=%s" k v) vddk_options) in
     sprintf "%s -it vddk %s"
             super#as_options (* superclass prints "-i libvirt etc" *)
             pt_options
@@ -189,8 +222,9 @@ object
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)
      *)
-    let xml = Libvirt_utils.dumpxml ?password ?conn:libvirt_uri guest in
-    let source, disks = parse_libvirt_xml ?conn:libvirt_uri xml in
+    let xml = Libvirt_utils.dumpxml ?password_file:input_password
+                                    ?conn:input_conn guest in
+    let source, disks = parse_libvirt_xml ?conn:input_conn xml in
 
     (* Find the <vmware:moref> element from the XML.  This was added
      * in libvirt >= 3.7 and is required.
@@ -206,15 +240,12 @@ object
       | None ->
          error (f_"<vmware:moref> was not found in the output of ‘virsh dumpxml \"%s\"’.  The most likely reason is that libvirt is too old, try upgrading libvirt to ≥ 3.7.") guest in
 
-    (* Create a temporary directory where we place the sockets and
-     * password file.
-     *)
+    (* Create a temporary directory where we place the sockets. *)
     let tmpdir =
       let base_dir = (open_guestfs ())#get_cachedir () in
       let t = Mkdtemp.temp_dir ~base_dir "vddk." in
       (* tmpdir must be readable (but not writable) by "other" so that
-       * qemu can open the sockets.  If we place a password file in
-       * this directory then we'll chmod that to 0600 below.
+       * qemu can open the sockets.
        *)
       chmod t 0o755;
       rmdir_on_exit t;
@@ -238,12 +269,12 @@ object
         match parsed_uri.Xml.uri_server with
         | Some server -> server
         | None ->
-           match libvirt_uri with
-           | Some libvirt_uri ->
+           match input_conn with
+           | Some input_conn ->
               error (f_"‘-ic %s’ URL does not contain a host name field")
-                    libvirt_uri
+                    input_conn
            | None ->
-              error (f_"you must use the ‘-ic’ parameter.  See \"INPUT FROM VDDK\" in the virt-v2v(1) manual.") in
+              error (f_"you must use the ‘-ic’ parameter.  See the virt-v2v-input-vmware(1) manual.") in
 
       (* Similar to above, we also need a username to pass. *)
       let user =
@@ -266,17 +297,11 @@ object
       add_arg "vddk";
 
       let password_param =
-        match password with
+        match input_password with
         | None ->
            (* nbdkit asks for the password interactively *)
            "password=-"
-        | Some password ->
-           let password_file = tmpdir // "password" in
-           with_open_out password_file (
-             fun chan ->
-               fchmod (descr_of_out_channel chan) 0o600;
-               output_string chan password
-           );
+        | Some password_file ->
            (* nbdkit reads the password from the file *)
            "password=+" ^ password_file in
       add_arg (sprintf "server=%s" server);
@@ -285,11 +310,7 @@ object
       add_arg (sprintf "vm=moref=%s" moref);
 
       (* The passthrough parameters. *)
-      List.iter (
-        fun (name, get_field) ->
-          Option.may (fun field -> add_arg (sprintf "%s=%s" name field))
-                     (get_field vddk_options)
-      ) vddk_passthrus;
+      List.iter (fun (k, v) -> add_arg (sprintf "%s=%s" k v)) vddk_options;
 
       get_args () in
 

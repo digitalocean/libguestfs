@@ -1,5 +1,5 @@
 /* Test FUSE.
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,12 +41,8 @@
 #include <acl/libacl.h>
 #endif
 
-#ifdef HAVE_ATTR_XATTR_H
-#include <attr/xattr.h>
-#else
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/xattr.h>
-#endif
 #endif
 
 #include <guestfs.h>

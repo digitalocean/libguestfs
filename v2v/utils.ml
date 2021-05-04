@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,6 @@ let find_uefi_firmware guest_arch =
   let files =
     (* The lists of firmware are actually defined in common/utils/uefi.c. *)
     match guest_arch with
-    | "i386" | "i486" | "i586" | "i686" -> Uefi.uefi_i386_firmware
     | "x86_64" -> Uefi.uefi_x86_64_firmware
     | "aarch64" -> Uefi.uefi_aarch64_firmware
     | arch ->
@@ -115,8 +114,8 @@ let qemu_img_supports_offset_and_size () =
   let json = [
       "file", JSON.Dict [
         "driver", JSON.String "raw";
-        "offset", JSON.Int 512;
-        "size", JSON.Int 512;
+        "offset", JSON.Int 512_L;
+        "size", JSON.Int 512_L;
         "file", JSON.Dict [
           "filename", JSON.String tmp
         ]

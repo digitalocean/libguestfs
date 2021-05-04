@@ -12,28 +12,33 @@ virt-sysprep — скидання налаштувань віртуальної 
 
 =head1 ОПИС
 
-Virt-sysprep can reset or unconfigure a virtual machine so that clones can
-be made from it.  Steps in this process include removing SSH host keys,
-removing persistent network MAC configuration, and removing user accounts.
-Virt-sysprep can also customize a virtual machine, for instance by adding
-SSH keys, users or logos.  Each step can be enabled or disabled as required.
+Virt-sysprep може відновити початковий стан або зняти налаштовування з
+віртуальної машини, щоб з неї можна було робити клони. Кроками цієї
+процедури є вилучення ключів вузла SSH, вилучення сталих налаштувань мережі
+щодо MAC та вилучення облікових записів користувачів. Крім того,
+virt-sysprep може налаштовувати віртуальну машину, наприклад, додаванням
+ключів SSH, користувачів чи логотипів. Ви можете вмикати або вимикати кожен
+з цих кроків.
 
-Virt-sysprep modifies the guest or disk image I<in place>.  The guest must
-be shut down.  If you want to preserve the existing contents of the guest,
-I<you must snapshot, copy or clone the disk first>.  See L</COPYING AND
-CLONING> below.
+Virt-sysprep вносить зміни до гостьової системи або образу диска I<на
+місці>. Гостьова система має бути вимкненою. Якщо ви хочете зберегти наявний
+вміст гостьової системи, I<вам слід спочатку зробити її знімок, скопіювати
+або клонувати її диск>. Див. L</КОПІЮВАННЯ І КЛОНУВАННЯ> нижче.
 
-You do I<not> need to run virt-sysprep as root.  In fact we'd generally
-recommend that you don't.  The time you might want to run it as root is when
-you need root in order to access the disk image, but even in this case it
-would be better to change the permissions on the disk image to be writable
-as the non-root user running virt-sysprep.
+Вам I<не потрібно> запускати virt-sysprep від імені користувача
+root. Фактично, запуск у такому режимі є нерекомендованим. Єдиною причиною
+запускати програму від імені root може бути потреба у доступі до образу
+диска, але навіть у цьому випадку, доцільніше змінити права доступу до
+образу диска так, щоб запис до нього став доступним від імені користувача,
+який запускає virt-sysprep.
 
-"Sysprep" stands for "system preparation" tool.  The name comes from the
-Microsoft program F<sysprep.exe> which is used to unconfigure Windows
-machines in preparation for cloning them.  Having said that, virt-sysprep
-does I<not> currently work on Microsoft Windows guests.  We plan to support
-Windows sysprepping in a future version, and we already have code to do it.
+«Sysprep» — скорочення від «system preparation» («приготування
+системи»). Назва походить від програми Microsoft F<sysprep.exe>, яка
+використовується для вилучення налаштувань з Windows у приготуваннях до
+клонування системи. Маємо зауважити, що у поточній версії virt-sysprep I<не>
+може працювати із гостьовими системами Microsoft Windows. Ми плануємо
+впровадити підтримку приготування Windows у майбутніх версіях і вже маємо
+певні напрацювання щодо цього.
 
 =head1 ПАРАМЕТРИ
 
@@ -95,63 +100,63 @@ libvirt не буде використовуватися взагалі.
 
 =item B<--enable> дії
 
-Choose which sysprep operations to perform.  Give a comma-separated list of
-operations, for example:
+Визначає дії з приготування, які слід виконати. Ви можете вказати список
+дій, відокремлених комами, ось так:
 
  --enable ssh-hostkeys,udev-persistent-net
 
-would enable ONLY C<ssh-hostkeys> and C<udev-persistent-net> operations.
+Тут увімкнено лише дії C<ssh-hostkeys> і C<udev-persistent-net>.
 
-If the I<--enable> option is not given, then we default to trying most
-sysprep operations (see I<--list-operations> to show which are enabled).
+Якщо параметр I<--enable> не вказано, типово буде виконано якомога більше
+дій з приготування системи (див. I<--list-operations>, щоб переглянути
+список увімкнених дій).
 
-Regardless of the I<--enable> option, sysprep operations are skipped for
-some guest types.
+Незалежно від вказаного параметра I<--enable>, для певних типів гостьових
+систем деякі дії пропускаються.
 
-Use I<--list-operations> to list operations supported by a particular
-version of virt-sysprep.
+Скористайтеся параметром I<--list-operations>, щоб переглянути список дій,
+підтримку яких передбачено у вашій версії virt-sysprep.
 
-See L</OPERATIONS> below for a list and an explanation of each operation.
+Список дій із поясненнями щодо них наведено у розділі L</ДІЇ> нижче.
 
 =item B<--operation> дії
 
 =item B<--operations> дії
 
-Choose which sysprep operations to perform.  Give a comma-separated list of
-operations, for example:
+Визначає дії з приготування, які слід виконати. Ви можете вказати список
+дій, відокремлених комами, ось так:
 
  --operations ssh-hostkeys,udev-persistent-net
 
-would enable ONLY C<ssh-hostkeys> and C<udev-persistent-net> operations.
+Тут увімкнено лише дії C<ssh-hostkeys> і C<udev-persistent-net>.
 
-I<--operations> allows you to enable and disable any operation, including
-the default ones (which would be tried when specifying neither
-I<--operations> nor I<--enable>) and all the available ones; prepending a
-C<-> in front of an operation name removes it from the list of enabled
-operations, while the meta-names C<defaults> and C<all> represent
-respectively the operations enabled by default and all the available ones.
-For example:
+За допомогою параметра I<--operations> ви зможете увімкнути або вимкнути
+будь-які дї, зокрема типові (ті, які виконуватимуться, якщо не вказано ні
+I<--operations>, ні I<--enable>) та усі доступні; додавання C<-> перед
+назвою дії вилучає її зі списку увімкнених дій, а метаназви C<defaults> і
+C<all> відповідають діям, які типово увімкнено і усім доступним
+діям. Приклад:
 
  --operations firewall-rules,defaults,-tmp-files
 
-would enable the C<firewall-rules> operation (regardless whether it is
-enabled by default), all the default ones, and disable the C<tmp-files>
-operation.
+Ця команда вмикає дію C<firewall-rules> (незалежно від того, чи було її
+типово увімкнено), усі типові дії і вимикає дію C<tmp-files>.
 
-I<--operations> can be specified multiple times; the first time the set of
-enabled operations is empty, while any further I<--operations> affects the
-operations enabled so far.
+Параметр I<--operations> може бути вказано декілька разів; під час першого
+використання набір увімкнених дій вважається порожнім, усі наступні
+використання I<--operations> стосуватимуться уже увімкненого набору дій.
 
-If the I<--operations> option is not given, then we default to trying most
-sysprep operations (see I<--list-operations> to show which are enabled).
+Якщо параметр I<--operations> не вказано, типово буде виконано якомога
+більше дій з приготування системи (див. I<--list-operations>, щоб
+переглянути список увімкнених дій).
 
-Regardless of the I<--operations> option, sysprep operations are skipped for
-some guest types.
+Незалежно від вказаного параметра I<--operations>, для певних типів
+гостьових систем деякі дії пропускаються.
 
-Use I<--list-operations> to list operations supported by a particular
-version of virt-sysprep.
+Скористайтеся параметром I<--list-operations>, щоб переглянути список дій,
+підтримку яких передбачено у вашій версії virt-sysprep.
 
-See L</OPERATIONS> below for a list and an explanation of each operation.
+Список дій із поясненнями щодо них наведено у розділі L</ДІЇ> нижче.
 
 =item B<--echo-keys>
 
@@ -187,6 +192,23 @@ TEMPEST-нападів, або у вашій кімнаті нікого, окр
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
+
 =item B<--keys-from-stdin>
 
 Прочитати параметри ключа або пароля із джерела стандартного
@@ -195,44 +217,47 @@ TEMPEST-нападів, або у вашій кімнаті нікого, окр
 
 =item B<--list-operations>
 
-List the operations supported by the virt-sysprep program.
+Список дій, підтримку яких передбачено у програмі virt-sysprep.
 
-These are listed one per line, with one or more single-space-separated
-fields, eg:
+Дії буде показано по одній на рядок із одним або декількома полями,
+відокремленими комами. Приклад:
 
  $ virt-sysprep --list-operations
- bash-history * Remove the bash history in the guest
- cron-spool * Remove user at-jobs and cron-jobs
- dhcp-client-state * Remove DHCP client leases
- dhcp-server-state * Remove DHCP server leases
- [etc]
+ bash-history * Вилучити журнал команд bash у гостьовій системі
+ cron-spool * Вилучити завдання at та cron користувачів
+ dhcp-client-state * Вилучити надані клієнтські адреси DHCP
+ dhcp-server-state * Вилучити надані серверні адреси DHCP
+ [тощо]
 
-The first field is the operation name, which can be supplied to
-I<--enable>.  The second field is a C<*> character if the operation is
-enabled by default or blank if not.  Subsequent fields on the same line are
-the description of the operation.
+У першому полі міститься назва дії, яку можна додати до параметра
+I<--enable>. У другому полі міститься символ C<*>, якщо дію типово
+увімкнено, і пробіл, якщо дію вимкнено. Наступні поля у тому самому рядку є
+описом дії.
 
-Before libguestfs 1.17.33 only the first (operation name) field was shown
-and all operations were enabled by default.
+До libguestfs 1.17.33 показувалося лише перше поле (назва дії) і усі дії
+було типово увімкнено.
 
-=item B<--mount-options> mp:opts[;mp:opts;...]
+=item B<--mount-options>
+точка_монтування:параметри[;точка_монтування:параметри;...]
 
-Set the mount options used when libguestfs opens the disk image.  Note this
-has no effect on the guest.  It is used when opening certain guests such as
-ones using the UFS (BSD) filesystem.
+Встановлює параметри монтування, які використовуються, коли libguestfs
+відкриває образ диска. Зауважте, що це не впливає на гостьову систему. Ці
+дані використовуються при відкритті певних гостьових систем, зокрема тих, де
+використовується файлова система UFS (BSD).
 
-Use a semicolon-separated list of C<mountpoint:options> pairs.  You may need
-to quote this list to protect it from the shell.
+Слід використовувати список відокремлених крапкою з комою пар
+C<точка_монтування:параметри>. Ймовірно, список слід взяти у лапки, щоб
+захистити його від обробки командною оболонкою.
 
 Приклад:
 
  --mount-options "/:noatime"
 
-will mount the root directory with C<notime>.  This example:
+змонтує кореневий каталог із параметром C<notime>. А ось цей приклад:
 
  --mount-options "/:noatime;/var:rw,nodiratime"
 
-will do the same, plus mount F</var> with C<rw,nodiratime>.
+зробить те саме, але ще і змонтує F</var> з параметрами C<rw,nodiratime>.
 
 =item B<-q>
 
@@ -250,12 +275,12 @@ I<-x>.
 Увімкнути чи вимкнути доступ до мережі для гостьової системи під час
 встановлення.
 
-In virt-sysprep, the network is I<disabled> by default.  You must use
-I<--network> to enable it, in order that options such as I<--install> or
-I<--update> will work.
+У virt-sysprep роботу у мережі типово I<вимкнено>. Вам слід скористатися
+параметром I<--network>, щоб увімкнути її та мати змогу скористатися
+параметрами, подібними до I<--install> або I<--update>.
 
-L<virt-builder(1)> has more information about the security advantages of
-disabling the network.
+На сторінці підручника L<virt-builder(1)> можна знайти додаткові дані щодо
+переваг у захисті від вимикання мережі.
 
 =item B<-v>
 
@@ -279,46 +304,49 @@ __EXTRA_OPTIONS__
 
 =head1 ДІЇ
 
-If the I<--enable>/I<--operations> option is I<not> given, then most sysprep
-operations are enabled.
+Якщо параметр I<--enable>/I<--operations> I<не> вказано, більшу частину дій
+з приготування системи буде увімкнено.
 
-Use C<virt-sysprep --list-operations> to list all operations for your
-virt-sysprep binary.  The ones which are enabled by default are marked with
-a C<*> character.  Regardless of the I<--enable>/I<--operations> options,
-sysprep operations are skipped for some guest types.
+Скористайтеся командою C<virt-sysprep --list-operations>, щоб переглянути
+список усіх дій, які передбачено у вашому виконуваному файлі
+virt-sysprep. Дії, які типово увімкнено, буде позначено у списку символом
+C<*>. Незалежно від вказаних параметрів I<--enable>/I<--operations> для
+певних типів гостьових систем деякі з дій з приготування системи
+пропускатимуться.
 
-Operations can be individually enabled using the I<--enable>/I<--operations>
-options.  Use a comma-separated list, for example:
+Окремі дії можна увімкнути за допомогою параметрів
+I<--enable>/I<--operations>. Записи дій у списку слід відокремлювати
+комами. Приклад:
 
  virt-sysprep --operations ssh-hostkeys,udev-persistent-net [тощо..]
 
-Future versions of virt-sysprep may add more operations.  If you are using
-virt-sysprep and want predictable behaviour, specify only the operations
-that you want to have enabled.
+У майбутніх версіях virt-sysprep може бути додано інші дії. Якщо ви
+використовуєте virt-sysprep, і вам потрібна передбачувана поведінка,
+вказуйте лише ті дії, які ви хочете увімкнути.
 
-C<*> = enabled by default when no I<--enable>/I<--operations> option is
-given.
+C<*> = типово увімкнено, якщо не вказано параметрів
+I<--enable>/I<--operations>.
 
 __OPERATIONS__
 
 =head1 КОПІЮВАННЯ ТА КЛОНУВАННЯ
 
-Virt-sysprep can be used as part of a process of cloning guests, or to
-prepare a template from which guests can be cloned.  There are many
-different ways to achieve this using the virt tools, and this section is
-just an introduction.
+Virt-sysprep можна скористатися як частиною процедури клонування гостьових
+систем або приготування шаблона, з якого можна буде клонувати гостьові
+системи. Існує багато різних способів досягти цього за допомогою засобів
+віртуалізації, — цей розділ є лише вступом.
 
-A virtual machine (when switched off) consists of two parts:
+Віртуальна машина (коли її вимкнено) складається з двох частин:
 
 =over 4
 
 =item I<налаштування>
 
-The configuration or description of the guest.  eg. The libvirt XML (see
-C<virsh dumpxml>), the running configuration of the guest, or another
-external format like OVF.
+Налаштування або опис гостьової системи. Приклади: XML libvirt (див. C<virsh
+dumpxml>), поточні налаштування гостьової системи або інший зовнішній
+формат, наприклад OVF.
 
-Some configuration items that might need to be changed:
+Деякі пункти налаштувань, які варто було б змінити:
 
 =over 4
 
@@ -342,8 +370,8 @@ MAC-адреса мережевої картки
 
 =item I<блокові пристрої>
 
-One or more hard disk images, themselves containing files, directories,
-applications, kernels, configuration, etc.
+Один або декілька образів дисків, які самі містять файли, каталоги,
+програми, ядра, налаштування тощо.
 
 Ось деякі параметри всередині блокових пристроїв, які, можливо, доведеться
 змінити:
@@ -364,7 +392,7 @@ UUID
 
 =item *
 
-Windows unique security ID (SID)
+Унікальний ідентифікатор безпеки Windows (SID)
 
 =item *
 
@@ -376,75 +404,78 @@ Windows unique security ID (SID)
 
 =head2 КОПІЮВАННЯ БЛОКОВОГО ПРИСТРОЮ
 
-Starting with an original guest, you probably wish to copy the guest block
-device and its configuration to make a template.  Then once you are happy
-with the template, you will want to make many clones from it.
+Маючи початкову гостьову систему, ви, ймовірно, хочете скопіювати блоковий
+пристрій гостьової системи і його налаштування, щоб створити шаблон. Далі,
+коли вас задовольнятимуть характеристики шаблона, ви захочете створити на
+його основі клони.
 
                         virt-sysprep
                              |
                              v
- original guest --------> template ---------->
-                                      \------> cloned
-                                       \-----> guests
+ початкова система --------> шаблон ---------->
+                                      \------> клоновані
+                                       \-----> гостьові системи
                                         \---->
 
-You can, of course, just copy the block device on the host using L<cp(1)> or
-L<dd(1)>.
+Ви, звичайно ж, можете просто скопіювати блоковий пристрій на основну
+систему за допомогою L<cp(1)> або L<dd(1)>.
 
                    dd                 dd
- original guest --------> template ---------->
-                                      \------> cloned
-                                       \-----> guests
+ початкова система --------> шаблон ---------->
+                                      \------> клоновані
+                                       \-----> гостьові системи
                                         \---->
 
-There are some smarter (and faster) ways too:
+Існують і кращі (і швидші) способи досягти результату:
 
-                          snapshot
-                template ---------->
-                            \------> cloned
-                             \-----> guests
+                          знімок-
+                шаблон ---------->
+                            \------> клоновані
+                             \-----> гостьові системи
                               \---->
 
-You may want to run virt-sysprep twice, once to reset the guest (to make a
-template) and a second time to customize the guest for a specific user:
+Ймовірно, virt-sysprep доведеться запустити двічі — один раз для відновлення
+початкового стану гостьової системи (для створення шаблона) і другий раз для
+налаштовування гостьової системи для певного користувача:
 
                     virt-sysprep        virt-sysprep
-                      (reset)      (add user, keys, logos)
+                      (скидання)      (додавання користувача, ключів, логотипів)
                          |                   |
                  dd      v          dd       v
- original guest ----> template ---------> copied ------> custom
-                                          template       guest
+ початкова система ----> шаблон ---------> копійований ------> нетипова
+                                          шаблон       гостьова система
 
 =over 4
 
 =item *
 
-Create a snapshot using qemu-img:
+Створити знімок за допомогою qemu-img:
 
  qemu-img create -f qcow2 -o backing_file=original snapshot.qcow
 
-The advantage is that you don’t need to copy the original (very fast)  and
-only changes are stored (less storage required).
+Перевагою є те, що вам не потрібно буде копіювати оригінал (дуже швидко), і
+те, що зберігатимуться лише зміни (менше вживання місця у сховищі даних).
 
-Note that writing to the backing file once you have created guests on top of
-it is not possible: you will corrupt the guests.
-
-=item *
-
-Create a snapshot using C<lvcreate --snapshot>.
+Зауважте, що запис резервного файла після створення на його основі гостьових
+систем неможливий: такий запис призведе до пошкодження гостьових систем.
 
 =item *
 
-Other ways to create snapshots include using filesystems-level tools (for
-filesystems such as btrfs).
-
-Most Network Attached Storage (NAS) devices can also create cheap snapshots
-from files or LUNs.
+Створити знімок за допомогою C<lvcreate --snapshot>.
 
 =item *
 
-Get your NAS to duplicate the LUN.  Most NAS devices can also duplicate LUNs
-very cheaply (they copy them on-demand in the background).
+До інших способів створення знімків належить використання засобів файлової
+системи (для файлових систем, які подібні до btrfs).
+
+На більшості пристроїв Network Attached Storage (NAS) передбачено можливість
+простого створення знімків на основі файлів та LUN.
+
+=item *
+
+Накажіть вашому NAS здублювати LUN. На більшості пристроїв NAS також
+передбачено дуже просте дублювання LUN (копіювання відбувається у фоновому
+режимі за запитом).
 
 =item *
 
@@ -454,93 +485,104 @@ very cheaply (they copy them on-demand in the background).
 
 =head2 VIRT-CLONE
 
-A separate tool, L<virt-clone(1)>, can be used to duplicate the block device
-and/or modify the external libvirt configuration of a guest.  It will reset
-the name, UUID and MAC address of the guest in the libvirt XML.
+Для дублювання блокового пристрою і/або внесення змін до зовнішніх
+налаштувань libvirt гостьової системи можна скористатися окремим
+інструментом, L<virt-clone(1)>. Ця програма відновить початкові значення
+назви, UUID та адреси MAC гостьової системи в XML libvirt.
 
-L<virt-clone(1)> does not use libguestfs and cannot look inside the disk
-image.  This was the original motivation to write virt-sysprep.
+L<virt-clone(1)> не використовує libguestfs і не може «зазирнути» у образ
+диска. Це і було причиною для написання virt-sysprep.
 
-=head2 SPARSIFY
+=head2 РОЗРІДЖЕННЯ
 
               virt-sparsify
- original guest --------> template
+ початкова система --------> шаблон
 
-L<virt-sparsify(1)> can be used to make the cloning template smaller, making
-it easier to compress and/or faster to copy.
+L<virt-sparsify(1)> можна скористатися для зменшення розмірів шаблона для
+клонування, спрощуючи стискання і/або пришвидшуючи копіювання.
 
-Notice that since virt-sparsify also copies the image, you can use it to
-make the initial copy (instead of C<dd>).
+Зауважте, що оскільки virt-sparsify також копіює образ, ви можете
+скористатися цією програмою для створення початкової копії (замість C<dd>).
 
 =head2 ЗМІНА РОЗМІРІВ
 
                          virt-resize
-                template ---------->
-                            \------> cloned
-                             \-----> guests
+                  шаблон ---------->
+                            \------> клоновані
+                             \-----> гостьові системи
                               \---->
 
-If you want to give people cloned guests, but let them pick the size of the
-guest themselves (eg. depending on how much they are prepared to pay for
-disk space), then instead of copying the template, you can run
-L<virt-resize(1)>.  Virt-resize performs a copy and resize, and thus is
-ideal for cloning guests from a template.
+Якщо ви хочете надати комусь клоновані гостьові системи, але хочете надати
+можливість вибирати розмір гостьової системи (наприклад за місцем, яке
+надається гостьовій системі на диску), замість копіювання шаблона вам слід
+запустити L<virt-resize(1)>. Virt-resize виконує копіювання і зміну
+розмірів, тому програма є ідеальною для клонування гостьових систем з
+шаблона.
 
-=head1 FIRSTBOOT VS SCRIPT
+=head1 FIRSTBOOT ЧИ SCRIPT
 
-The two options I<--firstboot> and I<--script> both supply shell scripts
-that are run against the guest.  However these two options are significantly
-different.
+Обидва параметри, I<--firstboot> і I<--script>, запускають скрипти оболонки,
+яка виконують дії із гостьовою системою. Втім, ці параметри суттєво
+різняться.
 
-I<--firstboot script> uploads the file C<script> into the guest and arranges
-that it will run, in the guest, when the guest is next booted.  (The script
-will only run once, at the "first boot").
+I<--firstboot скрипт> вивантажує файл C<скрипт> до гостьової системи і
+робить так, щоб він запускався у гостьовій системі під час наступного її
+завантаження. (Скрипт буде запущено лише один раз, при «першому
+завантаження».)
 
-I<--script script> runs the shell C<script> I<on the host>, with its current
-directory inside the guest filesystem.
+I<--script скрипт> запускає скрипт командної оболонки C<скрипт> I<у основній
+системі>, у поточному каталозі у файловій системі гостьової операційної
+системи.
 
-If you needed, for example, to C<yum install> new packages, then you I<must
-not> use I<--script> for this, since that would (a) run the C<yum> command
-on the host and (b) wouldn't have access to the same resources
-(repositories, keys, etc.) as the guest.  Any command that needs to run on
-the guest I<must> be run via I<--firstboot>.
+Якщо вам, наприклад, потрібно виконати C<yum install> для встановлення нових
+пакунків, вам I<не слід> використовувати для цього I<--script>, оскільки це
+(а) запустить програму C<yum> у основній системі і (б) не надасть програмі
+доступ до тих самих ресурсів (сховищ, ключів тощо), доступ до яких має
+гостьова система. Усі команди, які мають працювати у гостьовій системі
+I<слід> запускати за допомогою I<--firstboot>.
 
-On the other hand if you need to make adjustments to the guest filesystem
-(eg. copying in files), then I<--script> is ideal since (a)  it has access
-to the host filesystem and (b) you will get immediate feedback on errors.
+З іншого боку, якщо вам потрібно щось скоригувати у файловій системі
+гостьової операційної системи (наприклад, копіюванням даних до файлів), тоді
+ідеально буде використатися I<--script>, оскільки (a) так скрипт матиме
+доступ до файлової системи основної операційної системи і (b) ви одразу
+отримаєте повідомлення про помилки.
 
 Кожен з параметрів або обидва параметри можна використовувати у рядку
 команди довільну кількість разів.
 
 =head1 БЕЗПЕКА
 
-Although virt-sysprep removes some sensitive information from the guest, it
-does not pretend to remove all of it.  You should examine the L</OPERATIONS>
-above and the guest afterwards.
+Хоча virt-sysprep вилучає певні конфіденційні дані з гостьової системи,
+програма не претендує на вилучення усіх цих даних. Вам слід ознайомитися із
+розділом L</ДІЇ> вище і вивчити саму гостьову систему після виконання дій.
 
-Sensitive files are simply removed.  The data they contained may still exist
-on the disk, easily recovered with a hex editor or undelete tool.  The
-I<--scrub> option can be used to scrub files instead of just deleting them.
-L<virt-sparsify(1)> is another way to remove this content.  See also the
-L<scrub(1)> command to get rid of deleted content in directory entries and
-inodes.
+Файли з конфіденційними даними просто вилучаються. Дані, які у них
+містяться, можуть залишатися на диску. Такі дані доволі просто відновити за
+допомогою шістнадцяткового редактора або засобів для відновлення файлів. Ви
+можете скористатися параметром I<--scrub> для витирання вмісту файлів
+замість простого їх вилучення. Ще одним способом вилучити конфіденційні дані
+є використання L<virt-sparsify(1)>. Крім того, витерти вміст вилучених
+каталогів та inode можна за допомогою команди L<scrub(1)>.
 
 =head2 БАЗА ВИПАДКОВОСТІ
 
 I<(Цей розділ стосується лише гостьових систем Linux)>
 
-For supported guests, virt-sysprep writes a few bytes of randomness from the
-host into the guest’s random seed file.
+У підтримуваних гостьових системах virt-sysprep записує декілька випадкових
+байтів з основної системи до файла породжувача псевдовипадкової
+послідовності гостьової системи.
 
-If this is just done once and the guest is cloned from the same template,
-then each guest will start with the same entropy, and things like SSH host
-keys and TCP sequence numbers may be predictable.
+Якщо ця процедура виконується один раз, а гостьова система клонується з того
+самого шаблона, кожна гостьова система починатиме з того самого значення
+ентропії, отже дані, подібні до ключів SSH вузла і послідовностей чисел TCP,
+можуть бути передбачуваними.
 
-Therefore you should arrange to add more randomness I<after> cloning from a
-template too, which can be done by enabling just the customize module:
+Тому вам слід забезпечити додавання певного рівня випадковості I<після>
+клонування з шаблона. Зробити це можна за допомогою простого вмикання модуля
+customize:
 
- cp template.img newguest.img
- virt-sysprep --enable customize -a newguest.img
+ cp шаблон.img нова_гостьова_система.img
+ virt-sysprep --enable customize -a нова_гостьова_система.img
 
 =head1 SELINUX
 
@@ -552,8 +594,9 @@ template too, which can be done by enabling just the customize module:
 
 =head1 WINDOWS 8
 
-Windows 8 "fast startup" can prevent virt-sysprep from working.  See
-L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
+«Швидкий запуск» Windows 8 може заважати роботі
+virt-sysprep. Див. L<guestfs(3)/ПРИСИПЛЯННЯ WINDOWS  ТА ШВИДКИЙ ЗАПУСК
+WINDOWS 8>.
 
 =head1 СТАН ВИХОДУ
 
@@ -616,7 +659,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2018 Red Hat Inc.
+Copyright (C) 2011-2019 Red Hat Inc.
 
 Авторські права належать Fujitsu Ltd., 2012
 

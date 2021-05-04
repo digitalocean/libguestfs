@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs OCaml tools common code
-# Copyright (C) 2011-2018 Red Hat Inc.
+# Copyright (C) 2011-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -130,6 +130,7 @@ am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
+pkglibexecdir = $(libexecdir)/@PACKAGE@
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -146,11 +147,13 @@ build_triplet = @build@
 host_triplet = @host@
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = -package oUnit
-@HAVE_OCAML_TRUE@TESTS = test-getopt.sh $(am__EXEEXT_1)
-@HAVE_OCAML_TRUE@check_PROGRAMS = getopt_tests$(EXEEXT) \
+@HAVE_OCAML_TRUE@TESTS = test-getopt.sh test-machine-readable.sh \
 @HAVE_OCAML_TRUE@	$(am__EXEEXT_1)
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = JSON_tests tools_utils_tests
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_4 = JSON_tests tools_utils_tests
+@HAVE_OCAML_TRUE@check_PROGRAMS = getopt_tests$(EXEEXT) \
+@HAVE_OCAML_TRUE@	machine_readable_tests$(EXEEXT) \
+@HAVE_OCAML_TRUE@	$(am__EXEEXT_1)
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = JSON_tests JSON_parser_tests tools_utils_tests
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_4 = JSON_tests JSON_parser_tests tools_utils_tests
 subdir = common/mltools
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -164,11 +167,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/clock_time.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
-	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
-	$(top_srcdir)/m4/ctype.m4 $(top_srcdir)/m4/cycle-check.m4 \
-	$(top_srcdir)/m4/d-ino.m4 $(top_srcdir)/m4/d-type.m4 \
-	$(top_srcdir)/m4/dirent_h.m4 $(top_srcdir)/m4/dirfd.m4 \
-	$(top_srcdir)/m4/dirname.m4 \
+	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/ctype.m4 \
+	$(top_srcdir)/m4/cycle-check.m4 $(top_srcdir)/m4/d-ino.m4 \
+	$(top_srcdir)/m4/d-type.m4 $(top_srcdir)/m4/dirent_h.m4 \
+	$(top_srcdir)/m4/dirfd.m4 $(top_srcdir)/m4/dirname.m4 \
 	$(top_srcdir)/m4/double-slash-root.m4 $(top_srcdir)/m4/dup.m4 \
 	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/dup3.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
@@ -181,12 +183,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fdopen.m4 $(top_srcdir)/m4/fdopendir.m4 \
 	$(top_srcdir)/m4/filenamecat.m4 $(top_srcdir)/m4/flexmember.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
-	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
-	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fnmatch_h.m4 $(top_srcdir)/m4/fpending.m4 \
+	$(top_srcdir)/m4/fpieee.m4 $(top_srcdir)/m4/fseeko.m4 \
+	$(top_srcdir)/m4/fstat.m4 $(top_srcdir)/m4/fstatat.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -194,17 +196,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
 	$(top_srcdir)/m4/getpagesize.m4 \
 	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/glob_h.m4 $(top_srcdir)/m4/gnu-make.m4 \
 	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
-	$(top_srcdir)/m4/hard-locale.m4 \
 	$(top_srcdir)/m4/host-cpu-c-abi.m4 $(top_srcdir)/m4/hostent.m4 \
 	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/intl-thread-locale.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
 	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
 	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
@@ -229,20 +231,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
 	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
 	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/minmax.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/mkdir.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
 	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
 	$(top_srcdir)/m4/nonblocking.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open-cloexec.m4 $(top_srcdir)/m4/open.m4 \
-	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
-	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
-	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
-	$(top_srcdir)/m4/posix_spawn.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
+	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/open-cloexec.m4 \
+	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
+	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
+	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/posix_spawn.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/priv-set.m4 \
 	$(top_srcdir)/m4/pthread_rwlock_rdlock.m4 \
 	$(top_srcdir)/m4/pthread_sigmask.m4 \
 	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
@@ -256,6 +258,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/sched_h.m4 \
 	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
 	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sh-filename.m4 \
 	$(top_srcdir)/m4/sig_atomic_t.m4 $(top_srcdir)/m4/sigaction.m4 \
 	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
@@ -289,18 +292,19 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
 	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
 	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
-	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
-	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
-	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
-	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
-	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
-	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
-	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
-	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimensat.m4 \
+	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
+	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
+	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
+	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
+	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
+	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
+	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
+	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
+	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/m4/guestfs-progs.m4 \
 	$(top_srcdir)/m4/guestfs-c.m4 \
 	$(top_srcdir)/m4/guestfs-libraries.m4 \
 	$(top_srcdir)/m4/guestfs-fuse.m4 \
@@ -319,6 +323,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/guestfs-lua.m4 \
 	$(top_srcdir)/m4/guestfs-golang.m4 \
 	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-v2v.m4 \
 	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
 	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -329,6 +334,7 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = JSON_tests$(EXEEXT) \
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@	JSON_parser_tests$(EXEEXT) \
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@	tools_utils_tests$(EXEEXT)
 LIBRARIES = $(noinst_LIBRARIES)
 AM_V_AR = $(am__v_AR_@AM_V@)
@@ -338,16 +344,23 @@ am__v_AR_1 =
 libmltools_a_AR = $(AR) $(ARFLAGS)
 libmltools_a_LIBADD =
 am__libmltools_a_SOURCES_DIST = ../options/decrypt.c ../options/keys.c \
-	../options/uri.c getopt-c.c tools_utils-c.c uri-c.c
+	../options/uri.c getopt-c.c JSON_parser-c.c tools_utils-c.c \
+	uri-c.c
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = ../options/libmltools_a-decrypt.$(OBJEXT) \
 	../options/libmltools_a-keys.$(OBJEXT) \
 	../options/libmltools_a-uri.$(OBJEXT) \
 	libmltools_a-getopt-c.$(OBJEXT) \
+	libmltools_a-JSON_parser-c.$(OBJEXT) \
 	libmltools_a-tools_utils-c.$(OBJEXT) \
 	libmltools_a-uri-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_libmltools_a_OBJECTS = $(am__objects_1)
 libmltools_a_OBJECTS = $(am_libmltools_a_OBJECTS)
+am__JSON_parser_tests_SOURCES_DIST = dummy.c
+@HAVE_OCAML_TRUE@am_JSON_parser_tests_OBJECTS =  \
+@HAVE_OCAML_TRUE@	JSON_parser_tests-dummy.$(OBJEXT)
+JSON_parser_tests_OBJECTS = $(am_JSON_parser_tests_OBJECTS)
+JSON_parser_tests_LDADD = $(LDADD)
 am__JSON_tests_SOURCES_DIST = dummy.c
 @HAVE_OCAML_TRUE@am_JSON_tests_OBJECTS = dummy.$(OBJEXT)
 JSON_tests_OBJECTS = $(am_JSON_tests_OBJECTS)
@@ -357,6 +370,11 @@ am__getopt_tests_SOURCES_DIST = dummy.c
 @HAVE_OCAML_TRUE@	getopt_tests-dummy.$(OBJEXT)
 getopt_tests_OBJECTS = $(am_getopt_tests_OBJECTS)
 getopt_tests_LDADD = $(LDADD)
+am__machine_readable_tests_SOURCES_DIST = dummy.c
+@HAVE_OCAML_TRUE@am_machine_readable_tests_OBJECTS =  \
+@HAVE_OCAML_TRUE@	machine_readable_tests-dummy.$(OBJEXT)
+machine_readable_tests_OBJECTS = $(am_machine_readable_tests_OBJECTS)
+machine_readable_tests_LDADD = $(LDADD)
 am__tools_utils_tests_SOURCES_DIST = dummy.c
 @HAVE_OCAML_TRUE@am_tools_utils_tests_OBJECTS =  \
 @HAVE_OCAML_TRUE@	tools_utils_tests-dummy.$(OBJEXT)
@@ -379,11 +397,14 @@ depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../options/$(DEPDIR)/libmltools_a-decrypt.Po \
 	../options/$(DEPDIR)/libmltools_a-keys.Po \
-	../options/$(DEPDIR)/libmltools_a-uri.Po ./$(DEPDIR)/dummy.Po \
+	../options/$(DEPDIR)/libmltools_a-uri.Po \
+	./$(DEPDIR)/JSON_parser_tests-dummy.Po ./$(DEPDIR)/dummy.Po \
 	./$(DEPDIR)/getopt_tests-dummy.Po \
+	./$(DEPDIR)/libmltools_a-JSON_parser-c.Po \
 	./$(DEPDIR)/libmltools_a-getopt-c.Po \
 	./$(DEPDIR)/libmltools_a-tools_utils-c.Po \
 	./$(DEPDIR)/libmltools_a-uri-c.Po \
+	./$(DEPDIR)/machine_readable_tests-dummy.Po \
 	./$(DEPDIR)/tools_utils_tests-dummy.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -408,11 +429,14 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libmltools_a_SOURCES) $(JSON_tests_SOURCES) \
-	$(getopt_tests_SOURCES) $(tools_utils_tests_SOURCES)
+SOURCES = $(libmltools_a_SOURCES) $(JSON_parser_tests_SOURCES) \
+	$(JSON_tests_SOURCES) $(getopt_tests_SOURCES) \
+	$(machine_readable_tests_SOURCES) $(tools_utils_tests_SOURCES)
 DIST_SOURCES = $(am__libmltools_a_SOURCES_DIST) \
+	$(am__JSON_parser_tests_SOURCES_DIST) \
 	$(am__JSON_tests_SOURCES_DIST) \
 	$(am__getopt_tests_SOURCES_DIST) \
+	$(am__machine_readable_tests_SOURCES_DIST) \
 	$(am__tools_utils_tests_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -647,7 +671,6 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/test-driver \
 	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
 ACL_LIBS = @ACL_LIBS@
 ALLOCA = @ALLOCA@
@@ -738,7 +761,6 @@ GHC = @GHC@
 GIO_CFLAGS = @GIO_CFLAGS@
 GIO_LIBS = @GIO_LIBS@
 GJS = @GJS@
-GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
@@ -779,6 +801,7 @@ GNULIB_FFSL = @GNULIB_FFSL@
 GNULIB_FFSLL = @GNULIB_FFSLL@
 GNULIB_FGETC = @GNULIB_FGETC@
 GNULIB_FGETS = @GNULIB_FGETS@
+GNULIB_FNMATCH = @GNULIB_FNMATCH@
 GNULIB_FOPEN = @GNULIB_FOPEN@
 GNULIB_FPRINTF = @GNULIB_FPRINTF@
 GNULIB_FPRINTF_POSIX = @GNULIB_FPRINTF_POSIX@
@@ -812,12 +835,14 @@ GNULIB_GETLOADAVG = @GNULIB_GETLOADAVG@
 GNULIB_GETLOGIN = @GNULIB_GETLOGIN@
 GNULIB_GETLOGIN_R = @GNULIB_GETLOGIN_R@
 GNULIB_GETPAGESIZE = @GNULIB_GETPAGESIZE@
+GNULIB_GETPASS = @GNULIB_GETPASS@
 GNULIB_GETPEERNAME = @GNULIB_GETPEERNAME@
 GNULIB_GETSOCKNAME = @GNULIB_GETSOCKNAME@
 GNULIB_GETSOCKOPT = @GNULIB_GETSOCKOPT@
 GNULIB_GETSUBOPT = @GNULIB_GETSUBOPT@
 GNULIB_GETTIMEOFDAY = @GNULIB_GETTIMEOFDAY@
 GNULIB_GETUSERSHELL = @GNULIB_GETUSERSHELL@
+GNULIB_GLOB = @GNULIB_GLOB@
 GNULIB_GL_UNISTD_H_GETOPT = @GNULIB_GL_UNISTD_H_GETOPT@
 GNULIB_GRANTPT = @GNULIB_GRANTPT@
 GNULIB_GROUP_MEMBER = @GNULIB_GROUP_MEMBER@
@@ -836,6 +861,7 @@ GNULIB_LINK = @GNULIB_LINK@
 GNULIB_LINKAT = @GNULIB_LINKAT@
 GNULIB_LISTEN = @GNULIB_LISTEN@
 GNULIB_LOCALECONV = @GNULIB_LOCALECONV@
+GNULIB_LOCALENAME = @GNULIB_LOCALENAME@
 GNULIB_LOCALTIME = @GNULIB_LOCALTIME@
 GNULIB_LSEEK = @GNULIB_LSEEK@
 GNULIB_LSTAT = @GNULIB_LSTAT@
@@ -907,6 +933,7 @@ GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY = @GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY@
 GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT = @GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT@
 GNULIB_POSIX_SPAWNATTR_SETSIGMASK = @GNULIB_POSIX_SPAWNATTR_SETSIGMASK@
 GNULIB_POSIX_SPAWNP = @GNULIB_POSIX_SPAWNP@
+GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
@@ -1121,6 +1148,7 @@ HAVE_DECL_STRSIGNAL = @HAVE_DECL_STRSIGNAL@
 HAVE_DECL_STRTOIMAX = @HAVE_DECL_STRTOIMAX@
 HAVE_DECL_STRTOK_R = @HAVE_DECL_STRTOK_R@
 HAVE_DECL_STRTOUMAX = @HAVE_DECL_STRTOUMAX@
+HAVE_DECL_TRUNCATE = @HAVE_DECL_TRUNCATE@
 HAVE_DECL_TTYNAME_R = @HAVE_DECL_TTYNAME_R@
 HAVE_DECL_UNSETENV = @HAVE_DECL_UNSETENV@
 HAVE_DECL_VSNPRINTF = @HAVE_DECL_VSNPRINTF@
@@ -1143,6 +1171,9 @@ HAVE_FDOPENDIR = @HAVE_FDOPENDIR@
 HAVE_FEATURES_H = @HAVE_FEATURES_H@
 HAVE_FFSL = @HAVE_FFSL@
 HAVE_FFSLL = @HAVE_FFSLL@
+HAVE_FNMATCH = @HAVE_FNMATCH@
+HAVE_FNMATCH_H = @HAVE_FNMATCH_H@
+HAVE_FREELOCALE = @HAVE_FREELOCALE@
 HAVE_FSEEKO = @HAVE_FSEEKO@
 HAVE_FSTATAT = @HAVE_FSTATAT@
 HAVE_FSYNC = @HAVE_FSYNC@
@@ -1155,10 +1186,15 @@ HAVE_GETHOSTNAME = @HAVE_GETHOSTNAME@
 HAVE_GETLOGIN = @HAVE_GETLOGIN@
 HAVE_GETOPT_H = @HAVE_GETOPT_H@
 HAVE_GETPAGESIZE = @HAVE_GETPAGESIZE@
+HAVE_GETPASS = @HAVE_GETPASS@
 HAVE_GETSUBOPT = @HAVE_GETSUBOPT@
 HAVE_GETTIMEOFDAY = @HAVE_GETTIMEOFDAY@
+HAVE_GLOB = @HAVE_GLOB@
+HAVE_GLOB_H = @HAVE_GLOB_H@
+HAVE_GLOB_PATTERN_P = @HAVE_GLOB_PATTERN_P@
 HAVE_GRANTPT = @HAVE_GRANTPT@
 HAVE_GROUP_MEMBER = @HAVE_GROUP_MEMBER@
+HAVE_IMAXDIV_T = @HAVE_IMAXDIV_T@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
@@ -1198,6 +1234,7 @@ HAVE_MSVC_INVALID_PARAMETER_HANDLER = @HAVE_MSVC_INVALID_PARAMETER_HANDLER@
 HAVE_NANOSLEEP = @HAVE_NANOSLEEP@
 HAVE_NETDB_H = @HAVE_NETDB_H@
 HAVE_NETINET_IN_H = @HAVE_NETINET_IN_H@
+HAVE_NEWLOCALE = @HAVE_NEWLOCALE@
 HAVE_NL_LANGINFO = @HAVE_NL_LANGINFO@
 HAVE_OPENAT = @HAVE_OPENAT@
 HAVE_OPENDIR = @HAVE_OPENDIR@
@@ -1210,6 +1247,7 @@ HAVE_POSIX_OPENPT = @HAVE_POSIX_OPENPT@
 HAVE_POSIX_SIGNALBLOCKING = @HAVE_POSIX_SIGNALBLOCKING@
 HAVE_POSIX_SPAWN = @HAVE_POSIX_SPAWN@
 HAVE_POSIX_SPAWNATTR_T = @HAVE_POSIX_SPAWNATTR_T@
+HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 HAVE_POSIX_SPAWN_FILE_ACTIONS_T = @HAVE_POSIX_SPAWN_FILE_ACTIONS_T@
 HAVE_PREAD = @HAVE_PREAD@
 HAVE_PSELECT = @HAVE_PSELECT@
@@ -1280,7 +1318,6 @@ HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
 HAVE_SYS_UIO_H = @HAVE_SYS_UIO_H@
 HAVE_TIMEGM = @HAVE_TIMEGM@
 HAVE_TIMEZONE_T = @HAVE_TIMEZONE_T@
-HAVE_TRUNCATE = @HAVE_TRUNCATE@
 HAVE_TYPE_VOLATILE_SIG_ATOMIC_T = @HAVE_TYPE_VOLATILE_SIG_ATOMIC_T@
 HAVE_TZSET = @HAVE_TZSET@
 HAVE_UNISTD_H = @HAVE_UNISTD_H@
@@ -1363,6 +1400,8 @@ INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
 INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
 INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
 INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
+JANSSON_CFLAGS = @JANSSON_CFLAGS@
+JANSSON_LIBS = @JANSSON_LIBS@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -1447,7 +1486,9 @@ NEXT_AS_FIRST_DIRECTIVE_DIRENT_H = @NEXT_AS_FIRST_DIRECTIVE_DIRENT_H@
 NEXT_AS_FIRST_DIRECTIVE_ERRNO_H = @NEXT_AS_FIRST_DIRECTIVE_ERRNO_H@
 NEXT_AS_FIRST_DIRECTIVE_FCNTL_H = @NEXT_AS_FIRST_DIRECTIVE_FCNTL_H@
 NEXT_AS_FIRST_DIRECTIVE_FLOAT_H = @NEXT_AS_FIRST_DIRECTIVE_FLOAT_H@
+NEXT_AS_FIRST_DIRECTIVE_FNMATCH_H = @NEXT_AS_FIRST_DIRECTIVE_FNMATCH_H@
 NEXT_AS_FIRST_DIRECTIVE_GETOPT_H = @NEXT_AS_FIRST_DIRECTIVE_GETOPT_H@
+NEXT_AS_FIRST_DIRECTIVE_GLOB_H = @NEXT_AS_FIRST_DIRECTIVE_GLOB_H@
 NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H = @NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H@
 NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H = @NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H@
 NEXT_AS_FIRST_DIRECTIVE_LIMITS_H = @NEXT_AS_FIRST_DIRECTIVE_LIMITS_H@
@@ -1481,7 +1522,9 @@ NEXT_DIRENT_H = @NEXT_DIRENT_H@
 NEXT_ERRNO_H = @NEXT_ERRNO_H@
 NEXT_FCNTL_H = @NEXT_FCNTL_H@
 NEXT_FLOAT_H = @NEXT_FLOAT_H@
+NEXT_FNMATCH_H = @NEXT_FNMATCH_H@
 NEXT_GETOPT_H = @NEXT_GETOPT_H@
+NEXT_GLOB_H = @NEXT_GLOB_H@
 NEXT_INTTYPES_H = @NEXT_INTTYPES_H@
 NEXT_LANGINFO_H = @NEXT_LANGINFO_H@
 NEXT_LIMITS_H = @NEXT_LIMITS_H@
@@ -1603,9 +1646,11 @@ REPLACE_FCNTL = @REPLACE_FCNTL@
 REPLACE_FDOPEN = @REPLACE_FDOPEN@
 REPLACE_FDOPENDIR = @REPLACE_FDOPENDIR@
 REPLACE_FFLUSH = @REPLACE_FFLUSH@
+REPLACE_FNMATCH = @REPLACE_FNMATCH@
 REPLACE_FOPEN = @REPLACE_FOPEN@
 REPLACE_FPRINTF = @REPLACE_FPRINTF@
 REPLACE_FPURGE = @REPLACE_FPURGE@
+REPLACE_FREELOCALE = @REPLACE_FREELOCALE@
 REPLACE_FREOPEN = @REPLACE_FREOPEN@
 REPLACE_FSEEK = @REPLACE_FSEEK@
 REPLACE_FSEEKO = @REPLACE_FSEEKO@
@@ -1624,7 +1669,10 @@ REPLACE_GETGROUPS = @REPLACE_GETGROUPS@
 REPLACE_GETLINE = @REPLACE_GETLINE@
 REPLACE_GETLOGIN_R = @REPLACE_GETLOGIN_R@
 REPLACE_GETPAGESIZE = @REPLACE_GETPAGESIZE@
+REPLACE_GETPASS = @REPLACE_GETPASS@
 REPLACE_GETTIMEOFDAY = @REPLACE_GETTIMEOFDAY@
+REPLACE_GLOB = @REPLACE_GLOB@
+REPLACE_GLOB_PATTERN_P = @REPLACE_GLOB_PATTERN_P@
 REPLACE_GMTIME = @REPLACE_GMTIME@
 REPLACE_INET_NTOP = @REPLACE_INET_NTOP@
 REPLACE_INET_PTON = @REPLACE_INET_PTON@
@@ -1657,6 +1705,7 @@ REPLACE_MKNOD = @REPLACE_MKNOD@
 REPLACE_MKSTEMP = @REPLACE_MKSTEMP@
 REPLACE_MKTIME = @REPLACE_MKTIME@
 REPLACE_NANOSLEEP = @REPLACE_NANOSLEEP@
+REPLACE_NEWLOCALE = @REPLACE_NEWLOCALE@
 REPLACE_NL_LANGINFO = @REPLACE_NL_LANGINFO@
 REPLACE_NULL = @REPLACE_NULL@
 REPLACE_OBSTACK_PRINTF = @REPLACE_OBSTACK_PRINTF@
@@ -1666,6 +1715,7 @@ REPLACE_OPENDIR = @REPLACE_OPENDIR@
 REPLACE_PERROR = @REPLACE_PERROR@
 REPLACE_POPEN = @REPLACE_POPEN@
 REPLACE_POSIX_SPAWN = @REPLACE_POSIX_SPAWN@
+REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
@@ -1787,6 +1837,7 @@ UTIME_H = @UTIME_H@
 VALGRIND = @VALGRIND@
 VERSION = @VERSION@
 VERSION_SCRIPT_FLAGS = @VERSION_SCRIPT_FLAGS@
+VIRT_V2V_NBDKIT_PYTHON_PLUGIN = @VIRT_V2V_NBDKIT_PYTHON_PLUGIN@
 WARN_CFLAGS = @WARN_CFLAGS@
 WCHAR_T_SUFFIX = @WCHAR_T_SUFFIX@
 WERROR_CFLAGS = @WERROR_CFLAGS@
@@ -1802,8 +1853,6 @@ XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMLLINT = @XMLLINT@
 XZCAT = @XZCAT@
 YACC = @YACC@
-YAJL_CFLAGS = @YAJL_CFLAGS@
-YAJL_LIBS = @YAJL_LIBS@
 YARA_CFLAGS = @YARA_CFLAGS@
 YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
@@ -1852,7 +1901,6 @@ install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
 libvirt_ro_uri = @libvirt_ro_uri@
-lispdir = @lispdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
@@ -1863,7 +1911,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -1943,7 +1990,10 @@ EXTRA_DIST = \
 	$(SOURCES_C) \
 	getopt_tests.ml \
 	JSON_tests.ml \
+	JSON_parser_tests.ml \
+	machine_readable_tests.ml \
 	test-getopt.sh \
+	test-machine-readable.sh \
 	tools_utils_tests.ml
 
 SOURCES_MLI = \
@@ -1951,6 +2001,7 @@ SOURCES_MLI = \
 	curl.mli \
 	getopt.mli \
 	JSON.mli \
+	JSON_parser.mli \
 	planner.mli \
 	regedit.mli \
 	registry.mli \
@@ -1967,6 +2018,7 @@ SOURCES_ML = \
 	registry.ml \
 	regedit.ml \
 	JSON.ml \
+	JSON_parser.ml \
 	curl.ml \
 	checksums.ml \
 	xpath_helpers.ml \
@@ -1977,6 +2029,7 @@ SOURCES_C = \
 	../options/keys.c \
 	../options/uri.c \
 	getopt-c.c \
+	JSON_parser-c.c \
 	tools_utils-c.c \
 	uri-c.c
 
@@ -2007,6 +2060,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@libmltools_a_CFLAGS = \
 @HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) \
+@HAVE_OCAML_TRUE@	$(JANSSON_CFLAGS) \
 @HAVE_OCAML_TRUE@	-fPIC
 
 @HAVE_OCAML_TRUE@BOBJECTS = $(SOURCES_ML:.ml=.cmo)
@@ -2033,6 +2087,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(LIBCRYPT_LIBS) \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_OCAML_TRUE@	$(JANSSON_LIBS) \
 @HAVE_OCAML_TRUE@	$(LIBINTL) \
 @HAVE_OCAML_TRUE@	-lgnu
 
@@ -2063,6 +2118,26 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@JSON_tests_SOURCES = dummy.c
 @HAVE_OCAML_TRUE@JSON_tests_BOBJECTS = JSON_tests.cmo
 @HAVE_OCAML_TRUE@JSON_tests_XOBJECTS = $(JSON_tests_BOBJECTS:.cmo=.cmx)
+@HAVE_OCAML_TRUE@JSON_parser_tests_SOURCES = dummy.c
+@HAVE_OCAML_TRUE@JSON_parser_tests_CPPFLAGS = \
+@HAVE_OCAML_TRUE@	-I . \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib
+
+@HAVE_OCAML_TRUE@JSON_parser_tests_BOBJECTS = \
+@HAVE_OCAML_TRUE@	JSON_parser_tests.cmo
+
+@HAVE_OCAML_TRUE@JSON_parser_tests_XOBJECTS = $(JSON_parser_tests_BOBJECTS:.cmo=.cmx)
+@HAVE_OCAML_TRUE@machine_readable_tests_SOURCES = dummy.c
+@HAVE_OCAML_TRUE@machine_readable_tests_CPPFLAGS = \
+@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib
+
+@HAVE_OCAML_TRUE@machine_readable_tests_BOBJECTS = machine_readable_tests.cmo
+@HAVE_OCAML_TRUE@machine_readable_tests_XOBJECTS = $(machine_readable_tests_BOBJECTS:.cmo=.cmx)
 
 # Can't call the following as <test>_OBJECTS because automake gets confused.
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@tools_utils_tests_THEOBJECTS = $(tools_utils_tests_BOBJECTS)
@@ -2071,6 +2146,10 @@ SOURCES_C = \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@getopt_tests_THEOBJECTS = $(getopt_tests_XOBJECTS)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_tests_THEOBJECTS = $(JSON_tests_BOBJECTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests_THEOBJECTS = $(JSON_tests_XOBJECTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_parser_tests_THEOBJECTS = $(JSON_parser_tests_BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_parser_tests_THEOBJECTS = $(JSON_parser_tests_XOBJECTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@machine_readable_tests_THEOBJECTS = $(machine_readable_tests_BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@machine_readable_tests_THEOBJECTS = $(machine_readable_tests_XOBJECTS)
 @HAVE_OCAML_TRUE@OCAMLLINKFLAGS = \
 @HAVE_OCAML_TRUE@	mlstdutils.$(MLARCHIVE) \
 @HAVE_OCAML_TRUE@	mlcutils.$(MLARCHIVE) \
@@ -2120,6 +2199,34 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLLINKFLAGS) \
 @HAVE_OCAML_TRUE@	  $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
 @HAVE_OCAML_TRUE@	  $(JSON_tests_THEOBJECTS) -o $@
+
+@HAVE_OCAML_TRUE@JSON_parser_tests_DEPENDENCIES = \
+@HAVE_OCAML_TRUE@	$(JSON_parser_tests_THEOBJECTS) \
+@HAVE_OCAML_TRUE@	../mlstdutils/mlstdutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../mlgettext/mlgettext.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../mlpcre/mlpcre.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	$(MLTOOLS_CMA) \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
+
+@HAVE_OCAML_TRUE@JSON_parser_tests_LINK = \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
+@HAVE_OCAML_TRUE@	  $(JSON_parser_tests_THEOBJECTS) -o $@
+
+@HAVE_OCAML_TRUE@machine_readable_tests_DEPENDENCIES = \
+@HAVE_OCAML_TRUE@	$(machine_readable_tests_THEOBJECTS) \
+@HAVE_OCAML_TRUE@	../mlstdutils/mlstdutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../mlgettext/mlgettext.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../mlpcre/mlpcre.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	$(MLTOOLS_CMA) \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
+
+@HAVE_OCAML_TRUE@machine_readable_tests_LINK = \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '-lutils -lgnu' -- \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
+@HAVE_OCAML_TRUE@	  $(machine_readable_tests_THEOBJECTS) -o $@
 
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 all: all-am
@@ -2186,6 +2293,10 @@ libmltools.a: $(libmltools_a_OBJECTS) $(libmltools_a_DEPENDENCIES) $(EXTRA_libml
 	$(AM_V_AR)$(libmltools_a_AR) libmltools.a $(libmltools_a_OBJECTS) $(libmltools_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libmltools.a
 
+JSON_parser_tests$(EXEEXT): $(JSON_parser_tests_OBJECTS) $(JSON_parser_tests_DEPENDENCIES) $(EXTRA_JSON_parser_tests_DEPENDENCIES) 
+	@rm -f JSON_parser_tests$(EXEEXT)
+	$(AM_V_GEN)$(JSON_parser_tests_LINK) $(JSON_parser_tests_OBJECTS) $(JSON_parser_tests_LDADD) $(LIBS)
+
 JSON_tests$(EXEEXT): $(JSON_tests_OBJECTS) $(JSON_tests_DEPENDENCIES) $(EXTRA_JSON_tests_DEPENDENCIES) 
 	@rm -f JSON_tests$(EXEEXT)
 	$(AM_V_GEN)$(JSON_tests_LINK) $(JSON_tests_OBJECTS) $(JSON_tests_LDADD) $(LIBS)
@@ -2193,6 +2304,10 @@ JSON_tests$(EXEEXT): $(JSON_tests_OBJECTS) $(JSON_tests_DEPENDENCIES) $(EXTRA_JS
 getopt_tests$(EXEEXT): $(getopt_tests_OBJECTS) $(getopt_tests_DEPENDENCIES) $(EXTRA_getopt_tests_DEPENDENCIES) 
 	@rm -f getopt_tests$(EXEEXT)
 	$(AM_V_GEN)$(getopt_tests_LINK) $(getopt_tests_OBJECTS) $(getopt_tests_LDADD) $(LIBS)
+
+machine_readable_tests$(EXEEXT): $(machine_readable_tests_OBJECTS) $(machine_readable_tests_DEPENDENCIES) $(EXTRA_machine_readable_tests_DEPENDENCIES) 
+	@rm -f machine_readable_tests$(EXEEXT)
+	$(AM_V_GEN)$(machine_readable_tests_LINK) $(machine_readable_tests_OBJECTS) $(machine_readable_tests_LDADD) $(LIBS)
 
 tools_utils_tests$(EXEEXT): $(tools_utils_tests_OBJECTS) $(tools_utils_tests_DEPENDENCIES) $(EXTRA_tools_utils_tests_DEPENDENCIES) 
 	@rm -f tools_utils_tests$(EXEEXT)
@@ -2208,11 +2323,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../options/$(DEPDIR)/libmltools_a-decrypt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../options/$(DEPDIR)/libmltools_a-keys.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../options/$(DEPDIR)/libmltools_a-uri.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/JSON_parser_tests-dummy.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt_tests-dummy.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmltools_a-JSON_parser-c.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmltools_a-getopt-c.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmltools_a-tools_utils-c.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmltools_a-uri-c.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/machine_readable_tests-dummy.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tools_utils_tests-dummy.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -2301,6 +2419,20 @@ libmltools_a-getopt-c.obj: getopt-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmltools_a_CPPFLAGS) $(CPPFLAGS) $(libmltools_a_CFLAGS) $(CFLAGS) -c -o libmltools_a-getopt-c.obj `if test -f 'getopt-c.c'; then $(CYGPATH_W) 'getopt-c.c'; else $(CYGPATH_W) '$(srcdir)/getopt-c.c'; fi`
 
+libmltools_a-JSON_parser-c.o: JSON_parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmltools_a_CPPFLAGS) $(CPPFLAGS) $(libmltools_a_CFLAGS) $(CFLAGS) -MT libmltools_a-JSON_parser-c.o -MD -MP -MF $(DEPDIR)/libmltools_a-JSON_parser-c.Tpo -c -o libmltools_a-JSON_parser-c.o `test -f 'JSON_parser-c.c' || echo '$(srcdir)/'`JSON_parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmltools_a-JSON_parser-c.Tpo $(DEPDIR)/libmltools_a-JSON_parser-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='JSON_parser-c.c' object='libmltools_a-JSON_parser-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmltools_a_CPPFLAGS) $(CPPFLAGS) $(libmltools_a_CFLAGS) $(CFLAGS) -c -o libmltools_a-JSON_parser-c.o `test -f 'JSON_parser-c.c' || echo '$(srcdir)/'`JSON_parser-c.c
+
+libmltools_a-JSON_parser-c.obj: JSON_parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmltools_a_CPPFLAGS) $(CPPFLAGS) $(libmltools_a_CFLAGS) $(CFLAGS) -MT libmltools_a-JSON_parser-c.obj -MD -MP -MF $(DEPDIR)/libmltools_a-JSON_parser-c.Tpo -c -o libmltools_a-JSON_parser-c.obj `if test -f 'JSON_parser-c.c'; then $(CYGPATH_W) 'JSON_parser-c.c'; else $(CYGPATH_W) '$(srcdir)/JSON_parser-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmltools_a-JSON_parser-c.Tpo $(DEPDIR)/libmltools_a-JSON_parser-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='JSON_parser-c.c' object='libmltools_a-JSON_parser-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmltools_a_CPPFLAGS) $(CPPFLAGS) $(libmltools_a_CFLAGS) $(CFLAGS) -c -o libmltools_a-JSON_parser-c.obj `if test -f 'JSON_parser-c.c'; then $(CYGPATH_W) 'JSON_parser-c.c'; else $(CYGPATH_W) '$(srcdir)/JSON_parser-c.c'; fi`
+
 libmltools_a-tools_utils-c.o: tools_utils-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmltools_a_CPPFLAGS) $(CPPFLAGS) $(libmltools_a_CFLAGS) $(CFLAGS) -MT libmltools_a-tools_utils-c.o -MD -MP -MF $(DEPDIR)/libmltools_a-tools_utils-c.Tpo -c -o libmltools_a-tools_utils-c.o `test -f 'tools_utils-c.c' || echo '$(srcdir)/'`tools_utils-c.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmltools_a-tools_utils-c.Tpo $(DEPDIR)/libmltools_a-tools_utils-c.Po
@@ -2329,6 +2461,20 @@ libmltools_a-uri-c.obj: uri-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmltools_a_CPPFLAGS) $(CPPFLAGS) $(libmltools_a_CFLAGS) $(CFLAGS) -c -o libmltools_a-uri-c.obj `if test -f 'uri-c.c'; then $(CYGPATH_W) 'uri-c.c'; else $(CYGPATH_W) '$(srcdir)/uri-c.c'; fi`
 
+JSON_parser_tests-dummy.o: dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(JSON_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT JSON_parser_tests-dummy.o -MD -MP -MF $(DEPDIR)/JSON_parser_tests-dummy.Tpo -c -o JSON_parser_tests-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/JSON_parser_tests-dummy.Tpo $(DEPDIR)/JSON_parser_tests-dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='JSON_parser_tests-dummy.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(JSON_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o JSON_parser_tests-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
+
+JSON_parser_tests-dummy.obj: dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(JSON_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT JSON_parser_tests-dummy.obj -MD -MP -MF $(DEPDIR)/JSON_parser_tests-dummy.Tpo -c -o JSON_parser_tests-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/JSON_parser_tests-dummy.Tpo $(DEPDIR)/JSON_parser_tests-dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='JSON_parser_tests-dummy.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(JSON_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o JSON_parser_tests-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
+
 getopt_tests-dummy.o: dummy.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(getopt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT getopt_tests-dummy.o -MD -MP -MF $(DEPDIR)/getopt_tests-dummy.Tpo -c -o getopt_tests-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/getopt_tests-dummy.Tpo $(DEPDIR)/getopt_tests-dummy.Po
@@ -2342,6 +2488,20 @@ getopt_tests-dummy.obj: dummy.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='getopt_tests-dummy.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(getopt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o getopt_tests-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
+
+machine_readable_tests-dummy.o: dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(machine_readable_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT machine_readable_tests-dummy.o -MD -MP -MF $(DEPDIR)/machine_readable_tests-dummy.Tpo -c -o machine_readable_tests-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/machine_readable_tests-dummy.Tpo $(DEPDIR)/machine_readable_tests-dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='machine_readable_tests-dummy.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(machine_readable_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o machine_readable_tests-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
+
+machine_readable_tests-dummy.obj: dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(machine_readable_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT machine_readable_tests-dummy.obj -MD -MP -MF $(DEPDIR)/machine_readable_tests-dummy.Tpo -c -o machine_readable_tests-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/machine_readable_tests-dummy.Tpo $(DEPDIR)/machine_readable_tests-dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='machine_readable_tests-dummy.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(machine_readable_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o machine_readable_tests-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
 
 tools_utils_tests-dummy.o: dummy.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tools_utils_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tools_utils_tests-dummy.o -MD -MP -MF $(DEPDIR)/tools_utils_tests-dummy.Tpo -c -o tools_utils_tests-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
@@ -2563,9 +2723,23 @@ test-getopt.sh.log: test-getopt.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-machine-readable.sh.log: test-machine-readable.sh
+	@p='test-machine-readable.sh'; \
+	b='test-machine-readable.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 JSON_tests.log: JSON_tests$(EXEEXT)
 	@p='JSON_tests$(EXEEXT)'; \
 	b='JSON_tests'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+JSON_parser_tests.log: JSON_parser_tests$(EXEEXT)
+	@p='JSON_parser_tests$(EXEEXT)'; \
+	b='JSON_parser_tests'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2677,11 +2851,14 @@ distclean: distclean-am
 		-rm -f ../options/$(DEPDIR)/libmltools_a-decrypt.Po
 	-rm -f ../options/$(DEPDIR)/libmltools_a-keys.Po
 	-rm -f ../options/$(DEPDIR)/libmltools_a-uri.Po
+	-rm -f ./$(DEPDIR)/JSON_parser_tests-dummy.Po
 	-rm -f ./$(DEPDIR)/dummy.Po
 	-rm -f ./$(DEPDIR)/getopt_tests-dummy.Po
+	-rm -f ./$(DEPDIR)/libmltools_a-JSON_parser-c.Po
 	-rm -f ./$(DEPDIR)/libmltools_a-getopt-c.Po
 	-rm -f ./$(DEPDIR)/libmltools_a-tools_utils-c.Po
 	-rm -f ./$(DEPDIR)/libmltools_a-uri-c.Po
+	-rm -f ./$(DEPDIR)/machine_readable_tests-dummy.Po
 	-rm -f ./$(DEPDIR)/tools_utils_tests-dummy.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -2731,11 +2908,14 @@ maintainer-clean: maintainer-clean-am
 		-rm -f ../options/$(DEPDIR)/libmltools_a-decrypt.Po
 	-rm -f ../options/$(DEPDIR)/libmltools_a-keys.Po
 	-rm -f ../options/$(DEPDIR)/libmltools_a-uri.Po
+	-rm -f ./$(DEPDIR)/JSON_parser_tests-dummy.Po
 	-rm -f ./$(DEPDIR)/dummy.Po
 	-rm -f ./$(DEPDIR)/getopt_tests-dummy.Po
+	-rm -f ./$(DEPDIR)/libmltools_a-JSON_parser-c.Po
 	-rm -f ./$(DEPDIR)/libmltools_a-getopt-c.Po
 	-rm -f ./$(DEPDIR)/libmltools_a-tools_utils-c.Po
 	-rm -f ./$(DEPDIR)/libmltools_a-uri-c.Po
+	-rm -f ./$(DEPDIR)/machine_readable_tests-dummy.Po
 	-rm -f ./$(DEPDIR)/tools_utils_tests-dummy.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
@@ -2833,9 +3013,13 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@tools_utils_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@getopt_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@JSON_parser_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@machine_readable_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@tools_utils_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@getopt_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_parser_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@machine_readable_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="@VG@" check

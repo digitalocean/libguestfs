@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,6 +143,7 @@ extern void egrepi_stub (XDR *xdr_in);
 extern void equal_stub (XDR *xdr_in);
 extern void exists_stub (XDR *xdr_in);
 extern void extlinux_stub (XDR *xdr_in);
+extern void f2fs_expand_stub (XDR *xdr_in);
 extern void fallocate_stub (XDR *xdr_in);
 extern void fallocate64_stub (XDR *xdr_in);
 extern void fgrep_stub (XDR *xdr_in);
@@ -305,6 +306,7 @@ extern void lvcreate_free_stub (XDR *xdr_in);
 extern void lvm_canonical_lv_name_stub (XDR *xdr_in);
 extern void lvm_clear_filter_stub (XDR *xdr_in);
 extern void lvm_remove_all_stub (XDR *xdr_in);
+extern void lvm_scan_stub (XDR *xdr_in);
 extern void lvm_set_filter_stub (XDR *xdr_in);
 extern void lvremove_stub (XDR *xdr_in);
 extern void lvrename_stub (XDR *xdr_in);

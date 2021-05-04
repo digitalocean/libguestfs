@@ -5,7 +5,7 @@
 #          and from the code in the generator/ subdirectory.
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -2704,6 +2704,17 @@ class GuestFS(object):
         r = libguestfsmod.extlinux(self._o, directory)
         return r
 
+    def f2fs_expand(self, device):
+        """This expands a f2fs filesystem to match the size of the
+        underlying device.
+
+        This function depends on the feature "f2fs". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.f2fs_expand(self._o, device)
+        return r
+
     def fallocate(self, path, len):
         """This command preallocates a file (containing zero bytes)
         named "path" of size "len" bytes. If the file exists
@@ -4444,6 +4455,9 @@ class GuestFS(object):
         "gentoo"
         Gentoo.
 
+        "kalilinux"
+        Kali Linux.
+
         "linuxmint"
         Linux Mint.
 
@@ -4762,6 +4776,21 @@ class GuestFS(object):
         self._check_not_closed()
         r = libguestfsmod.inspect_get_mountpoints(self._o, root)
         r = self._maybe_convert_to_dict(r)
+        return r
+
+    def inspect_get_osinfo(self, root):
+        """This function returns a possible short ID for libosinfo
+        corresponding to the guest.
+
+        *Note:* The returned ID is only a guess by libguestfs,
+        and nothing ensures that it actually exists in
+        osinfo-db.
+
+        If no ID could not be determined, then the string
+        "unknown" is returned.
+        """
+        self._check_not_closed()
+        r = libguestfsmod.inspect_get_osinfo(self._o, root)
         return r
 
     def inspect_get_package_format(self, root):
@@ -6510,8 +6539,8 @@ class GuestFS(object):
         underlying "device" respectively.
 
         If this block device contains LVM volume groups, then
-        calling "g.vgscan" followed by "g.vg_activate_all" will
-        make them visible.
+        calling "g.lvm_scan" with the "activate" parameter
+        "true" will make them visible.
 
         Use "g.list_dm_devices" to list all device mapper
         devices.
@@ -6593,6 +6622,24 @@ class GuestFS(object):
         """
         self._check_not_closed()
         r = libguestfsmod.lvm_remove_all(self._o)
+        return r
+
+    def lvm_scan(self, activate):
+        """This scans all block devices and rebuilds the list of
+        LVM physical volumes, volume groups and logical volumes.
+
+        If the "activate" parameter is "true" then newly found
+        volume groups and logical volumes are activated, meaning
+        the LV /dev/VG/LV devices become visible.
+
+        When a libguestfs handle is launched it scans for
+        existing devices, so you do not normally need to use
+        this API. However it is useful when you have added a new
+        device or deleted an existing device (such as when the
+        "g.luks_open" API is used).
+        """
+        self._check_not_closed()
+        r = libguestfsmod.lvm_scan(self._o, activate)
         return r
 
     def lvm_set_filter(self, devices):
@@ -10643,6 +10690,13 @@ class GuestFS(object):
     def vgscan(self):
         """This rescans all block devices and rebuilds the list of
         LVM physical volumes, volume groups and logical volumes.
+
+        *This function is deprecated.* In new code, use the
+        "lvm_scan" call instead.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed()
         r = libguestfsmod.vgscan(self._o)

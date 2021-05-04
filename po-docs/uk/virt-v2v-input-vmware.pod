@@ -1,0 +1,665 @@
+
+=head1 НАЗВА
+
+virt-v2v-input-vmware - Using virt-v2v to convert guests from VMware
+
+=head1 КОРОТКИЙ ОПИС
+
+ virt-v2v -i vmx GUEST.vmx [-o* options]
+
+ virt-v2v -i vmx
+    -it ssh
+    'ssh://root@esxi.example.com/vmfs/volumes/datastore1/guest/guest.vmx'
+    [-o* options]
+
+ virt-v2v
+    -ic 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1'
+    -it vddk
+    -io vddk-libdir=/path/to/vmware-vix-disklib-distrib
+    -io vddk-thumbprint=xx:xx:xx:...
+    "GUEST NAME"
+    [-o* options]
+
+ virt-v2v -i ova DISK.ova [-o* options]
+
+ virt-v2v
+    -ic 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1'
+    "GUEST NAME" [-o* options]
+
+=head1 ОПИС
+
+This page documents how to use L<virt-v2v(1)> to convert guests from
+VMware.  There are currently five different methods to access VMware:
+
+=over 4
+
+=item B<-i vmx> GUESTB<.vmx>
+
+Full documentation: L</INPUT FROM VMWARE VMX>
+
+If you either have a F<GUEST.vmx> file and one or more F<GUEST.vmdk> disk
+image files, or if you are able to NFS-mount the VMware storage, then you
+can use the I<-i vmx> method to read the source guest.
+
+=item B<-i vmx> B<-it ssh> ssh://...
+
+Full documentation: L</INPUT FROM VMWARE VMX>
+
+This is similar to the method above, except it uses an SSH connection to
+ESXi to read the F<GUEST.vmx> file and associated disks.  This requires that
+you have enabled SSH access to the VMware ESXi hypervisor - in the default
+ESXi configuration this is turned off.
+
+=item B<-ic vpx://...> B<-it vddk>
+
+=item B<-ic esx://...> B<-it vddk>
+
+Full documentation: L</INPUT FROM VDDK>
+
+This method uses the proprietary VDDK library (a.k.a. VixDiskLib) to access
+the VMware vCenter server or VMware ESXi hypervisor.
+
+If you have the proprietary library then this method is usually the fastest
+and most flexible.  If you don't have or don't want to use non-free software
+then the VMX or SSH methods above will be best.
+
+=item B<-i ova> DISKB<.ova>
+
+Full documentation: L</INPUT FROM VMWARE OVA>
+
+With this method you must first export the guest (eg. from vSphere) as an
+F<.ova> file, which virt-v2v can then read directly.  Note this method only
+works with files exported from VMware, not OVA files that come from other
+hypervisors or management systems, since OVA is only a pretend standard and
+is not compatible or interoperable between vendors.
+
+=item B<-ic vpx://...> "GUEST NAME"
+
+Full documentation: L</INPUT FROM VMWARE VCENTER SERVER>
+
+If none of the above methods is available, then use this method to import a
+guest from VMware vCenter.  This is the slowest method.
+
+=back
+
+=head1 ВХІДНІ ДАНІ З VMX VMWARE
+
+Virt-v2v також може імпортувати гостьові системи з файлів vmx VMware.
+
+Це корисно у двох випадках:
+
+=over 4
+
+=item 1.
+
+Віртуальні машини VMware зберігаються на окремому сервері NFS і ви можете
+монтувати сховище NFS безпосередньо.
+
+=item 2.
+
+Вами уможливлено доступ SSH до гіпервізору ESXi VMware ESXi і у вас є тека
+C</vmfs/volumes>, яка містить віртуальні машини.
+
+=back
+
+Якщо вами виявлено теку або файли із назвами F<I<гостьова_система>.vmx>,
+F<I<гостьова_система>.vmxf>, F<I<гостьова_система>.nvram> і один або
+декілька образів дисків F<.vmdk>, ви можете скористатися цим методом.
+
+=head2 VMX: Remove VMware tools from Windows guests
+
+Для гостьових систем Windows вам слід вилучити засоби VMware до
+перетворення. Хоча ця вимога і не є обов'язковою, і гостьову систему із ними
+можна буде запустити, якщо ви цього не зробите, перетворена гостьова система
+скаржитиметься на помилку під час кожного завантаження. Засоби не можна
+вилучити після перетворення, оскільки засіб вилучення перевіряє, чи запущено
+його у VMware і відмовляється запускатися (це також є причиною того, що
+virt-v2v не може самостійно вилучити ці засоби).
+
+Для гостьових систем Linux можна не вилучати засоби VMware, оскільки це може
+зробити сама програма virt-v2v.
+
+=head2 VMX: Guest must be shut down
+
+B<Перш ніж буде розпочато перетворення, роботу гостьової системи слід
+зупинити>. Якщо ви не вимкнете гостьову систему, результатом буде
+пошкоджений диск віртуальної машини у гіпервізорі призначення. За допомогою
+інших методів virt-v2v намагається запобігти конкурентному доступу до даних,
+але оскільки метод I<-i vmx> працює безпосередньо зі сховищем даних,
+перевірка конкурентного доступу неможлива.
+
+=head2 VMX: Access to the storage containing the VMX and VMDK files
+
+Якщо файли vmx і vmdk не доступні локально, вам слід I<або> змонтувати
+сховище даних NFS на сервері перетворення I<або> уможливити безпарольний
+доступ SSH на гіпервізорі ESXi.
+
+=head3 VMX: SSH без пароля з використанням ssh-agent
+
+Вам слід також скористатися ssh-agent і додати ваш відкритий ключ ssh до
+F</etc/ssh/keys-root/authorized_keys> (на гіпервізорі ESXi).
+
+Після налаштовування вам слід перевірити працездатність безпарольного
+доступу з боку сервера virt-v2v на гіпервізорі ESXi. Приклад:
+
+ $ ssh root@esxi.example.com
+ [ журналювання безпосередньо до оболонки, пароль не потрібен ]
+
+Зауважте, що підтримки інтерактивного режиму введення пароля та доступу за
+допомогою Kerberos B<не> передбачено. Вам B<доведеться> налаштувати доступ
+ssh за допомогою ssh-agent і authorized_keys.
+
+=head3 VMX: побудова адреси SSH
+
+При використанні вхідного каналу передавання даних SSH вам слід вказати
+віддалену адресу C<ssh://...>, яка вказуватиме на файл VMX. Типова адреса
+виглядає так:
+
+ ssh://root@esxi.example.com/vmfs/volumes/datastore1/my%20guest/my%20guest.vmx
+
+Усі пробіли слід замінити на комбінації C<%20>. Інші символи, які не є
+частиною ASCII, також можуть потребувати заміни на відповідні шістнадцяткові
+комбінації.
+
+Ім'я користувача можна не вказувати, якщо воно збігається із назвою вашого
+локального облікового запису користувача.
+
+Крім того, ви можете вказати номер порту після назви вузла, якщо сервер SSH
+працює на нетиповому порту (не на порту 22).
+
+=head2 VMX: Importing a guest
+
+Щоб імпортувати файл vmx з локального файла або NFS, віддайте таку команду:
+
+ $ virt-v2v -i vmx guest.vmx -o local -os /var/tmp
+
+Щоб імпортувати файл vmx за допомогою SSH, додайте I<-it ssh>, щоб вибрати
+канал передавання даних SSH і вказати віддалену адресу SSH:
+
+ $ virt-v2v \
+     -i vmx -it ssh \
+     "ssh://root@esxi.example.com/vmfs/volumes/datastore1/guest/guest.vmx" \
+     -o local -os /var/tmp
+
+Virt-v2v обробляє файл vmx і використовує отримані дані для встановлення
+розташування усіх дисків vmdk.
+
+=head1 ВХІДНІ ДАНІ З VDDK
+
+Virt-v2v може імпортувати гостьові системи за допомогою пропрієтарної
+бібліотеки VDDK (або VixDiskLib) VMware.
+
+=head2 VDDK: Prerequisites
+
+=over 4
+
+=item 1.
+
+Оскільки бібліотека VDDK не є вільним програмним забезпеченням, а умови
+ліцензування на бібліотеку не дозволяють її повторного розповсюдження або
+комерційного використання, вам доведеться отримати VDDK самостійно і
+переконатися, що її використання не порушує умов ліцензування.
+
+=item 2.
+
+Вам також слід зібрати nbdkit із увімкненою підтримкою додатка
+VDDK. Рекомендуємо скористатися nbdkit E<ge> 1.1.25. Втім, зазвичай,
+найкращим варіантом є збирання найсвіжішого коду зі сховища git.
+
+=over 4
+
+=item *
+
+L<https://github.com/libguestfs/nbdkit>
+
+=item *
+
+L<https://github.com/libguestfs/nbdkit/tree/master/plugins/vddk>
+
+=back
+
+Зберіть nbdkit, як це описано у початкових кодах програми (див. посилання
+вище).
+
+Віддавати команду C<make install> B<не> потрібно, оскільки ви можете
+запустити nbdkit з каталогу з початковим кодом програми. У каталозі із
+початковим кодом є скрипт командної оболонки із назвою F<nbdkit>, який
+запускає локально зібрану копію nbdkit та додатків. Отже, встановіть для
+змінної C<$PATH> значення, у якому буде посилання на верхній рівень каталогу
+збирання nbdkit (тобто на каталог, у якому зберігається скрипт командної
+оболонки із назвою F<nbdkit>). Приклад:
+
+ export PATH=/шлях/до/nbdkit-1.1.x:$PATH
+
+=item 3.
+
+Вам слід знайти «відбиток» SSL вашого сервера VMware. Опис того, як це
+зробити, наведено на сторінці підручника L<nbdkit-vddk-plugin(1)>, його
+також наведено за вказаним вище посиланням.
+
+=item 4.
+
+Імпортування VDDK потребує можливості, яку було додано у libvirt E<ge> 3.7.
+
+=back
+
+=head2 VDDK: ESXi NFC service memory limits
+
+In the verbose log you may see errors like:
+
+ nbdkit: vddk[3]: error: [NFC ERROR] NfcFssrvrProcessErrorMsg:
+ received NFC error 5 from server: Failed to allocate the
+ requested 2097176 bytes
+
+This seems especially common when there are multiple parallel connections
+open to the VMware server.
+
+These can be caused by resource limits set on the VMware server.  You can
+increase the limit for the NFC service by editing
+F</etc/vmware/hostd/config.xml> and adjusting the C<E<lt>maxMemoryE<gt>>
+setting:
+
+ <nfcsvc>
+   <path>libnfcsvc.so</path>
+   <enabled>true</enabled>
+   <maxMemory>50331648</maxMemory>
+   <maxStreamMemory>10485760</maxStreamMemory>
+ </nfcsvc>
+
+and restarting the C<hostd> service:
+
+ # /etc/init.d/hostd restart
+
+For more information see L<https://bugzilla.redhat.com/1614276>.
+
+=head2 VDDK: АДРЕСА
+
+Побудуйте правильну адресу C<vpx://> (для vCenter) або C<esx://> (для
+ESXi). Вона виглядає якось так:
+
+ vpx://root@vcenter.example.com/Datacenter/esxi
+
+ esx://root@esxi.example.com
+
+Щоб перевірити, що у вас правильна адреса, скористайтеся командою
+L<virsh(1)> для отримання списку гостьових систем на сервері vCenter, ось
+так:
+
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi' list --all
+ Введіть пароль root до vcenter.example.com: ***
+ 
+  Id    Name                           State
+ ----------------------------------------------------
+  -     Fedora 20                      shut off
+  -     Windows 2003                   shut off
+
+Якщо ви отримуєте повідомлення про помилку «Сертифікат вузла не може бути
+уповноважено за допомогою вказаних сертифікатів CA» або подібне, ви можете
+або імпортувати сертифікат вузла vCenter, або обійти перевірку підписів
+додаванням прапорця C<?no_verify=1>:
+
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1' list --all
+
+Крім того, вам слід спробувати створити дамп метаданих з будь-якої гостьової
+системи на вашому сервері, ось так:
+
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi' dumpxml "Windows 2003"
+ <domain type='vmware'>
+   <name>Windows 2003</name>
+   [...]
+   <vmware:moref>vm-123</vmware:moref>
+ </domain>
+
+Якщо у метаданих немає C<E<lt>vmware:morefE<gt>>, вам слід оновити libvirt.
+
+B<Якщо наведені вище команди не дають бажаного результату, virt-v2v також не
+працюватиме>.  Перш ніж продовжувати, виправте вашу адресу і/або сервера
+vCenter VMware.
+
+=head2 VDDK: Importing a guest
+
+Параметр I<-it vddk> визначає VDDK як вхідний канал передавання даних для
+дисків.
+
+Щоб імпортувати певну гостьову систему з сервера vCenter або гіпервізору
+ESXi, скористайтеся командою, подібною до наведеної нижче, замінивши адресу,
+назву гостьової системи та відбиток SSL:
+
+ $ export PATH=/path/to/nbdkit-1.1.x:$PATH
+ $ virt-v2v \
+     -ic 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1' \
+     -it vddk \
+     -io vddk-libdir=/path/to/vmware-vix-disklib-distrib \
+     -io vddk-thumbprint=xx:xx:xx:... \
+     "Windows 2003" \
+     -o local -os /var/tmp
+
+Other options that you might need to add in rare circumstances include I<-io
+vddk-config>, I<-io vddk-cookie>, I<-io vddk-nfchostport>, I<-io vddk-port>,
+I<-io vddk-snapshot>, and I<-io vddk-transports>, which are all explained in
+the L<nbdkit-vddk-plugin(1)> documentation.  Do not use these options unless
+you know what you are doing.
+
+=head2 VDDK: Debugging VDDK failures
+
+З бібліотекою VDDK можна працювати у режимі докладних повідомлень, у якому
+бібліотека (дуже) докладно повідомляє про свої дії. Скористайтеся командою
+«virt-v2v -v -x» у звичний спосіб, щоб увімкнути режим докладних
+повідомлень.
+
+=head1 ВХІДНІ ДАНІ З OVA VMWARE
+
+Virt-v2v може імпортувати гостьові системи з файлів OVA (Open Virtualization
+Appliance) VMware. Програма може працювати лише з файлами OVA, які
+експортовано з vSphere VMware.
+
+=head2 OVA: Remove VMware tools from Windows guests
+
+Для гостьових систем Windows вам слід вилучити засоби VMware до
+перетворення. Хоча ця вимога і не є обов'язковою, і гостьову систему із ними
+можна буде запустити, якщо ви цього не зробите, перетворена гостьова система
+скаржитиметься на помилку під час кожного завантаження. Засоби не можна
+вилучити після перетворення, оскільки засіб вилучення перевіряє, чи запущено
+його у VMware і відмовляється запускатися (це також є причиною того, що
+virt-v2v не може самостійно вилучити ці засоби).
+
+Для гостьових систем Linux можна не вилучати засоби VMware, оскільки це може
+зробити сама програма virt-v2v.
+
+=head2 OVA: Create OVA
+
+Щоб створити OVA у vSphere, скористайтеся параметром «Export OVF Template»
+(з контекстного меню віртуальної машини або з меню «File»). Можна вибрати
+варіант «Folder of files» (OVF) або «Single file» (OVA), втім, працювати з
+OVA, ймовірно простіше. Файли OVA є просто стиснутими файлами tar, тому ви
+можете користуватися командами, подібними до C<tar tf VM.ova>, для перегляду
+їхнього вмісту.
+
+=head3 Створення OVA за допомогою ovftool
+
+Ви також можете скористатися пропрієтарною програмою C<ovftool> з VMware:
+
+ ovftool --noSSLVerify \
+   vi://КОРИСТУВАЧ:ПАРОЛЬ@esxi.example.com/VM \
+   VM.ova
+
+Для встановлення з'єднання із vCenter:
+
+ ovftool  --noSSLVerify \
+   vi://КОРИСТУВАЧ:ПАРОЛЬ@vcenter.example.com/НАЗВА-ДАТАЦЕНТРУ/vm/VM \
+   VM.ova
+
+Для проходження розпізнавання Active Directory вам слід замінити символ C<@>
+його шістнадцятковим кодом у ascii — (C<%5c>):
+
+ vi://ДОМЕН%5cКОРИСТУВАЧ:ПАРОЛЬ@...
+
+=head2 OVA: Importing a guest
+
+To import an OVA file called F<VM.ova>, do:
+
+ $ virt-v2v -i ova VM.ova -o local -os /var/tmp
+
+Якщо ви експортували гостьову систему як «Folder of files» (теку з файлами),
+I<або> якщо ви розпакували власноруч архів tar OVA, ви можете вказати
+virt-v2v каталог, у якому містяться файли:
+
+ $ virt-v2v -i ova /шлях/до/файлів -o local -os /var/tmp
+
+=head1 ВХІДНІ ДАНІ З СЕРВЕРА VCENTER VMWARE
+
+Virt-v2v може імпортувати гостьові системи з сервера vCenter VMware.
+
+vCenter E<ge> 5.0 is required.  If you don’t have vCenter, using OVA or VMX
+is recommended instead (see L</INPUT FROM VMWARE OVA> and/or L</INPUT FROM
+VMWARE VMX>).
+
+Virt-v2v використовує для доступу до  vCenter libvirt, тому режимом вхідних
+даних має бути I<-i libvirt>. Оскільки цей режим є типовим, немає потреби
+вказувати його у рядку команди.
+
+=head2 vCenter: Remove VMware tools from Windows guests
+
+Для гостьових систем Windows вам слід вилучити засоби VMware до
+перетворення. Хоча ця вимога і не є обов'язковою, і гостьову систему із ними
+можна буде запустити, якщо ви цього не зробите, перетворена гостьова система
+скаржитиметься на помилку під час кожного завантаження. Засоби не можна
+вилучити після перетворення, оскільки засіб вилучення перевіряє, чи запущено
+його у VMware і відмовляється запускатися (це також є причиною того, що
+virt-v2v не може самостійно вилучити ці засоби).
+
+Для гостьових систем Linux можна не вилучати засоби VMware, оскільки це може
+зробити сама програма virt-v2v.
+
+=head2 vCenter: URI
+
+Адреса libvirt сервера vCenter виглядає десь так:
+
+ vpx://користувач@сервер/Datacenter/esxi
+
+де
+
+=over 4
+
+=item C<користувач@>
+
+є необов'язковим, але рекомендованим записом користувача, для якого слід
+встановити з'єднання.
+
+Якщо ім'я користувача містить символ зворотної похилої риски (наприклад
+C<DOMAIN\USER>), вам доведеться скористатися маскуванням символу у адресі за
+допомогою послідовності C<%5c>: C<DOMAIN%5cUSER> (5c — шістнадцятковий код
+ASCII символу зворотної похилої риски). Ймовірно, інші символи пунктуації
+також доведеться маскувати.
+
+=item C<server>
+
+це сервер vCenter (I<не> гіпервізор).
+
+=item C<Datacenter>
+
+це назва датацентру.
+
+Якщо у назві міститься пробіл, замініть його екранованим кодом адрес,
+C<%20>.
+
+=item C<esxi>
+
+назва гіпервізору ESXi, на якому запущено гостьову систему.
+
+=back
+
+Якщо при розгортанні VMware використано підтеки, може виникнути потреба у
+додаванні їх до адреси. Приклад:
+
+ vpx://користувач@сервер/Тека/Датацентр/esxi
+
+Повний опис адрес libvirt наведено тут: L<http://libvirt.org/drvesx.html>
+
+Типовими помилками, про які повідомляє libvirt / virsh, якщо адреса є
+помилковою, є такі:
+
+=over 4
+
+=item *
+
+Не вдалося знайти датацентр, вказаний у «...»
+
+=item *
+
+Не вдалося знайти обчислювальний ресурс, вказаний у «...»
+
+=item *
+
+Шлях «...» не визначає обчислювального ресурсу
+
+=item *
+
+Шлях «...» не визначає основну систему
+
+=item *
+
+Не вдалося знайти основну систему, вказану у «...»
+
+=back
+
+=head2 vCenter: Test libvirt connection to vCenter
+
+Скористайтеся командою L<virsh(1)> для отримання списку гостьових систем на
+сервері vCenter, ось так:
+
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi' list --all
+ Введіть пароль root до vcenter.example.com: ***
+ 
+  Id    Name                           State
+ ----------------------------------------------------
+  -     Fedora 20                      shut off
+  -     Windows 2003                   shut off
+
+Якщо ви отримуєте повідомлення про помилку «Сертифікат вузла не може бути
+уповноважено за допомогою вказаних сертифікатів CA» або подібне, ви можете
+або імпортувати сертифікат вузла vCenter, або обійти перевірку підписів
+додаванням прапорця C<?no_verify=1>:
+
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1' list --all
+
+Крім того, вам слід спробувати створити дамп метаданих з будь-якої гостьової
+системи на вашому сервері, ось так:
+
+ $ virsh -c 'vpx://root@vcenter.example.com/Datacenter/esxi' dumpxml "Windows 2003"
+ <domain type='vmware'>
+   <name>Windows 2003</name>
+   [...]
+ </domain>
+
+B<Якщо наведені вище команди не дають бажаного результату, virt-v2v також не
+працюватиме>.  Перш ніж продовжувати, виправте ваші налаштування libvirt
+і/або сервера vCenter VMware.
+
+=head2 vCenter: Importing a guest
+
+Щоб імпортувати певну гостьову систему з сервера vCenter, віддайте таку
+команду:
+
+ $ virt-v2v -ic 'vpx://root@vcenter.example.com/Datacenter/esxi?no_verify=1' \
+   "Windows 2003" \
+   -o local -os /var/tmp
+
+де C<Windows 2003> — назва гостьової системи (яку має бути вимкнено).
+
+Note that you may be asked for the vCenter password I<twice>.  This happens
+once because libvirt needs it, and a second time because virt-v2v itself
+connects directly to the server.  Use I<-ip> F<filename> to supply a
+password via a file.
+
+У цьому випадку прапорці виведення встановлено так, щоб перетворена гостьова
+система записувалася до тимчасового каталогу, оскільки це лише приклад, але
+ви також можете записати перетворену систему до libvirt або будь-якого
+іншого підтримуваного призначення.
+
+=head2 vCenter: Non-administrator role
+
+Instead of using the vCenter Administrator role, you can create a custom
+non-administrator role to perform the conversion.  You will however need to
+give it a minimum set of permissions as follows (using VMware vCenter 6.5):
+
+=over 4
+
+=item 1.
+
+Створіть нетипову роль у vCenter.
+
+=item 2.
+
+Увімкніть (позначте) такі об'єкти:
+
+ Datastore:
+  - Browse datastore
+  - Low level file operations
+ 
+ Sessions:
+  - Validate session
+ 
+ Virtual Machine:
+   Interaction:
+     - Guest operating system management by VIX API
+   Provisioning:
+     - Allow disk access
+     - Allow read-only disk access
+
+=back
+
+=head2 vCenter: Firewall and proxy settings
+
+=head3 vCenter: Порти
+
+Якщо між сервером перетворення virt-v2v і сервером vCenter працює
+брандмауер, вам потрібно відкрити у ньому порт 443 (https) і порт 5480.
+
+Порт 443 використовується для копіювання образів дисків гостьової
+системи. Порт 5480 використовується для опитування vCenter щодо метаданих
+гостьової системи.
+
+These port numbers are only the defaults.  It is possible to reconfigure
+vCenter to use other port numbers.  In that case you would need to specify
+those ports in the C<vpx://> URI.  See L</vCenter: URI> above.
+
+Ці порти стосуються лише перетворень virt-v2v. Ви можете відкрити інші порти
+для користування іншими можливостями vCenter, наприклад для
+інтернет-інтерфейсу користувача. Відповідні номери для vCenter наведено у
+інтернет-документації до VMware.
+
+ ┌────────────┐   порт 443 ┌────────────┐        ┌────────────┐
+ │   сервер   │────────────▶ сервер     │────────▶ гіпервізор │
+ │перетворення│────────────▶ vCenter    │        │ ESXi       │
+ │ virt-v2v   │  порт 5480 │            │        │   ┌─────┐  │
+ └────────────┘            └────────────┘        │   │гість│  │
+                                                 └───┴─────┴──┘
+
+(На наведеній вище діаграмі стрілки показують напрям, у якому ініціюється
+з'єднання TCP, I<не> обов'язково напрям передавання даних.)
+
+Сама програма virt-v2v не з'єднується безпосередньо із гіпервізором ESXi, де
+міститься гостьова система. Втім, з гіпервізором з'єднується vCenter і
+переспрямовує дані, тому, якщо між vCenter і його гіпервізорами працює
+брандмауер (мережевий екран), ймовірно, вам слід відкрити у ньому додаткові
+порти (визначити їхні номери вам допоможе документація щодо VMware).
+
+Під час перетворень з vCenter пов'язані із проксі-сервером змінні середовища
+(C<https_proxy>, C<all_proxy>, C<no_proxy>, C<HTTPS_PROXY>, C<ALL_PROXY> і
+C<NO_PROXY>) буде B<проігноровано>.
+
+=head2 vCenter: SSL/TLS certificate problems
+
+Ви можете побачити таке повідомлення про помилку:
+
+  CURL: Error opening file: SSL: no alternative certificate subject
+  name matches target host name
+
+(Щоб побачити це повідомлення, вам слід увімкнути діагностичні повідомлення
+за допомогою команди «virt-v2v -v -x».)
+
+Причиною може бути використання IP-адреси замість повноцінної назви у домені
+DNS для сервера vCenter, тобто використання C<vpx://vcenter.example.com/...>
+замість, скажімо, C<vpx://11.22.33.44/...>
+
+Ще однією причиною проблем із сертифікатами може бути те, що FQDN сервера
+vCenter не відповідає IP-адресі, наприклад, якщо сервер отримав нову
+IP-адресу з DHCP. Щоб усунути цю проблему, вам слід змінити налаштування
+вашого сервера DHCP або мережі так, щоб сервер vCenter завжди отримував
+незмінну IP-адресу. Після цього, увійдіть до консолі адміністрування сервера
+vCenter за адресою C<https://vcenter:5480/>. На вкладці C<Admin> позначте
+пункт C<Certificate regeneration enabled> і перезавантажте сервер.
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<virt-v2v(1)>.
+
+=head1 АВТОР
+
+Richard W.M. Jones
+
+=head1 АВТОРСЬКІ ПРАВА
+
+Copyright (C) 2009-2019 Red Hat Inc.
+

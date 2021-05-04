@@ -6,7 +6,6 @@ builder/index-struct.c
 builder/index-validate.c
 builder/pxzcat-c.c
 builder/setlocale-c.c
-builder/yajl-c.c
 cat/cat.c
 cat/filesystems.c
 cat/log.c
@@ -22,6 +21,7 @@ common/mlpcre/dummy.c
 common/mlpcre/pcre-c.c
 common/mlprogress/progress-c.c
 common/mlstdutils/dummy.c
+common/mltools/JSON_parser-c.c
 common/mltools/dummy.c
 common/mltools/getopt-c.c
 common/mltools/tools_utils-c.c
@@ -92,6 +92,7 @@ daemon/dropcaches.c
 daemon/du.c
 daemon/echo-daemon.c
 daemon/ext2.c
+daemon/f2fs.c
 daemon/fallocate.c
 daemon/file.c
 daemon/fill.c
@@ -380,6 +381,7 @@ lib/handle.c
 lib/info.c
 lib/inspect-apps.c
 lib/inspect-icon.c
+lib/inspect-osinfo.c
 lib/journal.c
 lib/launch-direct.c
 lib/launch-libvirt.c
@@ -421,6 +423,7 @@ p2v/cpuid.c
 p2v/gui.c
 p2v/inhibit.c
 p2v/kernel-cmdline.c
+p2v/kernel-config.c
 p2v/kernel.c
 p2v/main.c
 p2v/nbd.c
@@ -465,6 +468,7 @@ utils/boot-analysis/boot-analysis-utils.c
 utils/boot-analysis/boot-analysis.c
 utils/boot-benchmark/boot-benchmark-range.pl
 utils/boot-benchmark/boot-benchmark.c
+utils/max-disks/max-disks.pl
 utils/qemu-boot/qemu-boot.c
 utils/qemu-speed-test/qemu-speed-test.c
 v2v/libvirt_utils-c.c

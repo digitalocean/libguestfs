@@ -7,7 +7,7 @@ libguestfs generated file
           and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2018 Red Hat Inc.
+ Copyright (C) 2009-2019 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -69,18 +69,21 @@ L</guestfs_btrfstune_seeding> L</guestfs_mkfs_btrfs>
 
 Такі функції: L</guestfs_extlinux>
 
+=item B<f2fs>
+
+The following functions: L</guestfs_f2fs_expand>
+
 =item B<fstrim>
 
 Такі функції: L</guestfs_fstrim>
 
 =item B<gdisk>
 
-The following functions: L</guestfs_part_expand_gpt>
-L</guestfs_part_get_disk_guid> L</guestfs_part_get_gpt_attributes>
-L</guestfs_part_get_gpt_guid> L</guestfs_part_get_gpt_type>
-L</guestfs_part_set_disk_guid> L</guestfs_part_set_disk_guid_random>
-L</guestfs_part_set_gpt_attributes> L</guestfs_part_set_gpt_guid>
-L</guestfs_part_set_gpt_type>
+Такі функції: L</guestfs_part_expand_gpt> L</guestfs_part_get_disk_guid>
+L</guestfs_part_get_gpt_attributes> L</guestfs_part_get_gpt_guid>
+L</guestfs_part_get_gpt_type> L</guestfs_part_set_disk_guid>
+L</guestfs_part_set_disk_guid_random> L</guestfs_part_set_gpt_attributes>
+L</guestfs_part_set_gpt_guid> L</guestfs_part_set_gpt_type>
 
 =item B<grub>
 

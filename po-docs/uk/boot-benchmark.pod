@@ -16,21 +16,22 @@ libguestfs
 
  time guestfish -a /dev/null run
 
-except that it warms up the caches and repeats the test many times, printing
-out the mean time and standard deviation.
+але «розігріває» кеші і повторює тестування багато разів, виводячи середній
+час і стандартне відхилення.
 
-This needs to be run on a quiet machine, so that other processes disturb the
-timing as little as possible.  The program is completely safe to run at any
-time.  It doesn't read or write any external files, and it doesn't require
-root.
+Слід запускати на бездіяльній машині, щоб інші процеси якомога менше
+впливали на час виконання. Програма є повністю безпечною до виконання у
+будь-який момент часу. Вона не читає і не записує зовнішні файли і не
+потребує прав доступу користувача root.
 
-You can run it from the build directory on the built copy of libguestfs like
-this:
+Ви можете запускати програму з каталогу збирання у зібраній копії
+libguestfs, ось так:
 
  make
  ./run utils/boot-benchmark/boot-benchmark
 
-If you omit C<./run> then it is run on the installed copy of libguestfs.
+Якщо ви пропустите C<./run>, програму буде запущено для встановленої копії
+libguestfs.
 
 =head1 ПАРАМЕТРИ
 
@@ -48,11 +49,11 @@ If you omit C<./run> then it is run on the installed copy of libguestfs.
 
 =item B<--memsize> МБ
 
-Set the appliance memory size in MB.
+Встановити розмір базової системи у МБ.
 
 =item B<--smp> N
 
-Enable C<N> virtual CPUs.
+Увімкнути C<N> віртуальних процесорів.
 
 =back
 

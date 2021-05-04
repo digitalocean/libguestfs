@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@ val augeas_reload : Guestfs.guestfs -> unit
 (** Wrapper around [g#aug_load], which (if verbose) provides
     additional debugging information about parsing problems
     that augeas found. *)
+
+val install_local: Guestfs.guestfs -> Types.inspect -> string list -> unit
+(** Install package(s). *)
 
 val remove : Guestfs.guestfs -> Types.inspect -> string list -> unit
 (** Uninstall package(s). *)

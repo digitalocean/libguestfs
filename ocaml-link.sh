@@ -1,7 +1,7 @@
 #!/bin/bash -
 # Script used to link OCaml programs.
 # ocaml-link.sh.  Generated from ocaml-link.sh.in by configure.
-# (C) Copyright 2015-2018 Red Hat Inc.
+# (C) Copyright 2015-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,6 +43,14 @@ while true ; do
   esac
 done
 
+# Integration with silent rules of automake: print the full command
+# line option in verbose mode.
+if [ x"${V:-0}" = x1 ]; then
+  echo "$@" \
+     -runtime-variant _pic \
+     -linkpkg \
+     -cclib "' $cclib'"
+fi
 # NB -cclib must come last.
 exec "$@" \
      -runtime-variant _pic \

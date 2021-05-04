@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -4056,6 +4056,27 @@ guestfs_int_lua_extlinux (lua_State *L)
 }
 
 static int
+guestfs_int_lua_f2fs_expand (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "f2fs_expand");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_f2fs_expand (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_int_lua_fallocate (lua_State *L)
 {
   int r;
@@ -6363,6 +6384,29 @@ guestfs_int_lua_inspect_get_mountpoints (lua_State *L)
 
   push_table (L, r);
   guestfs_int_free_string_list (r);
+  return 1;
+}
+
+static int
+guestfs_int_lua_inspect_get_osinfo (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *root;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_osinfo");
+
+  root = luaL_checkstring (L, 2);
+
+  r = guestfs_inspect_get_osinfo (g, root);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
   return 1;
 }
 
@@ -9360,6 +9404,27 @@ guestfs_int_lua_lvm_remove_all (lua_State *L)
 
 
   r = guestfs_lvm_remove_all (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_lvm_scan (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int activate;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "lvm_scan");
+
+  activate = lua_toboolean (L, 2);
+
+  r = guestfs_lvm_scan (g, activate);
   if (r == -1)
     return last_error (L, g);
 
@@ -17255,6 +17320,7 @@ static luaL_Reg methods[] = {
   { "equal", guestfs_int_lua_equal },
   { "exists", guestfs_int_lua_exists },
   { "extlinux", guestfs_int_lua_extlinux },
+  { "f2fs_expand", guestfs_int_lua_f2fs_expand },
   { "fallocate", guestfs_int_lua_fallocate },
   { "fallocate64", guestfs_int_lua_fallocate64 },
   { "feature_available", guestfs_int_lua_feature_available },
@@ -17355,6 +17421,7 @@ static luaL_Reg methods[] = {
   { "inspect_get_major_version", guestfs_int_lua_inspect_get_major_version },
   { "inspect_get_minor_version", guestfs_int_lua_inspect_get_minor_version },
   { "inspect_get_mountpoints", guestfs_int_lua_inspect_get_mountpoints },
+  { "inspect_get_osinfo", guestfs_int_lua_inspect_get_osinfo },
   { "inspect_get_package_format", guestfs_int_lua_inspect_get_package_format },
   { "inspect_get_package_management", guestfs_int_lua_inspect_get_package_management },
   { "inspect_get_product_name", guestfs_int_lua_inspect_get_product_name },
@@ -17474,6 +17541,7 @@ static luaL_Reg methods[] = {
   { "lvm_canonical_lv_name", guestfs_int_lua_lvm_canonical_lv_name },
   { "lvm_clear_filter", guestfs_int_lua_lvm_clear_filter },
   { "lvm_remove_all", guestfs_int_lua_lvm_remove_all },
+  { "lvm_scan", guestfs_int_lua_lvm_scan },
   { "lvm_set_filter", guestfs_int_lua_lvm_set_filter },
   { "lvremove", guestfs_int_lua_lvremove },
   { "lvrename", guestfs_int_lua_lvrename },
@@ -17791,7 +17859,7 @@ luaopen_guestfs (lua_State *L)
 
   /* Add _COPYRIGHT, etc. fields to the module namespace. */
   lua_pushliteral (L, "_COPYRIGHT");
-  lua_pushliteral (L, "Copyright (C) 2009-2018 Red Hat Inc.");
+  lua_pushliteral (L, "Copyright (C) 2009-2019 Red Hat Inc.");
   lua_settable (L, -3);
 
   lua_pushliteral (L, "_DESCRIPTION");

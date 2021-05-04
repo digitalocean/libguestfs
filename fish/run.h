@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,6 +165,7 @@ extern int run_egrepi (const char *cmd, size_t argc, char *argv[]);
 extern int run_equal (const char *cmd, size_t argc, char *argv[]);
 extern int run_exists (const char *cmd, size_t argc, char *argv[]);
 extern int run_extlinux (const char *cmd, size_t argc, char *argv[]);
+extern int run_f2fs_expand (const char *cmd, size_t argc, char *argv[]);
 extern int run_fallocate (const char *cmd, size_t argc, char *argv[]);
 extern int run_fallocate64 (const char *cmd, size_t argc, char *argv[]);
 extern int run_feature_available (const char *cmd, size_t argc, char *argv[]);
@@ -264,6 +265,7 @@ extern int run_inspect_get_icon (const char *cmd, size_t argc, char *argv[]);
 extern int run_inspect_get_major_version (const char *cmd, size_t argc, char *argv[]);
 extern int run_inspect_get_minor_version (const char *cmd, size_t argc, char *argv[]);
 extern int run_inspect_get_mountpoints (const char *cmd, size_t argc, char *argv[]);
+extern int run_inspect_get_osinfo (const char *cmd, size_t argc, char *argv[]);
 extern int run_inspect_get_package_format (const char *cmd, size_t argc, char *argv[]);
 extern int run_inspect_get_package_management (const char *cmd, size_t argc, char *argv[]);
 extern int run_inspect_get_product_name (const char *cmd, size_t argc, char *argv[]);
@@ -353,6 +355,7 @@ extern int run_lvcreate_free (const char *cmd, size_t argc, char *argv[]);
 extern int run_lvm_canonical_lv_name (const char *cmd, size_t argc, char *argv[]);
 extern int run_lvm_clear_filter (const char *cmd, size_t argc, char *argv[]);
 extern int run_lvm_remove_all (const char *cmd, size_t argc, char *argv[]);
+extern int run_lvm_scan (const char *cmd, size_t argc, char *argv[]);
 extern int run_lvm_set_filter (const char *cmd, size_t argc, char *argv[]);
 extern int run_lvremove (const char *cmd, size_t argc, char *argv[]);
 extern int run_lvrename (const char *cmd, size_t argc, char *argv[]);

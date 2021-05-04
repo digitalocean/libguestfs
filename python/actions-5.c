@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1262,7 +1262,11 @@ guestfs_int_py_initrd_cat (PyObject *self, PyObject *args)
     goto out;
   }
 
+#if PY_MAJOR_VERSION >= 3
+  py_r = PyBytes_FromStringAndSize (r, size);
+#else
   py_r = guestfs_int_py_fromstringsize (r, size);
+#endif
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1339,6 +1343,45 @@ guestfs_int_py_inspect_get_major_version (PyObject *self, PyObject *args)
   }
 
   py_r = PyLong_FromLong ((long) r);
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
+#ifdef GUESTFS_HAVE_INSPECT_GET_OSINFO
+PyObject *
+guestfs_int_py_inspect_get_osinfo (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *root;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_inspect_get_osinfo",
+                         &py_g, &root))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_inspect_get_osinfo (g, root);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = guestfs_int_py_fromstring (r);
+  free (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:

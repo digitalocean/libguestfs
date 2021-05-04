@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-p2v test script
-# Copyright (C) 2014-2018 Red Hat Inc.
+# Copyright (C) 2014-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ cmdline="root=/dev/sda4 ro console=ttyS0 printk.time=1 p2v.server=10.0.2.2 p2v.p
 
 # Run virt-p2v inside qemu.
 $qemu \
-    -nodefconfig \
+    -no-user-config \
     -display none \
     -machine accel=kvm:tcg \
     -m 2048 \

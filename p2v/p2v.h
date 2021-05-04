@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #define DEBUG_STDERR 1
 
 #include "miniexpect.h"
+#include "p2v-config.h"
 
 /* We don't use libguestfs directly here, and we don't link to it
  * either (in fact, we don't want libguestfs on the ISO).  However
@@ -59,61 +60,6 @@ extern int feature_colours_option;
 /* virt-p2v --colours option (used by ansi_* macros). */
 extern int force_colour;
 
-/* config.c */
-struct cpu_config {
-  char *vendor;                 /* eg. "Intel" */
-  char *model;                  /* eg. "Broadwell" */
-  unsigned sockets;             /* number of sockets */
-  unsigned cores;               /* number of cores per socket */
-  unsigned threads;             /* number of hyperthreads per core */
-  bool acpi;
-  bool apic;
-  bool pae;
-};
-
-struct rtc_config {
-  enum {
-    BASIS_UNKNOWN,              /* RTC could not be read. */
-    BASIS_UTC,                  /* RTC is either UTC or an offset from UTC. */
-    BASIS_LOCALTIME,            /* RTC is localtime. */
-  } basis;
-  int offset;                   /* RTC seconds offset from basis. */
-};
-
-struct config {
-  char *server;
-  int port;
-  char *username;
-  char *password;
-  char *identity_url;
-  char *identity_file; /* Used to cache the downloaded identity_url. */
-  int identity_file_needs_update;
-  int sudo;
-  char *guestname;
-  int vcpus;
-  uint64_t memory;
-  struct cpu_config cpu;
-  struct rtc_config rtc;
-  char **disks;
-  char **removable;
-  char **interfaces;
-  char **network_map;
-  char *output;
-  int output_allocation;
-  char *output_connection;
-  char *output_format;
-  char *output_storage;
-};
-
-#define OUTPUT_ALLOCATION_NONE         0
-#define OUTPUT_ALLOCATION_SPARSE       1
-#define OUTPUT_ALLOCATION_PREALLOCATED 2
-
-extern struct config *new_config (void);
-extern struct config *copy_config (struct config *);
-extern void free_config (struct config *);
-extern void print_config (struct config *, FILE *);
-
 /* cpuid.c */
 extern void get_cpu_config (struct cpu_config *);
 
@@ -128,8 +74,10 @@ extern const char *get_cmdline_key (char **cmdline, const char *key);
 #define CMDLINE_SOURCE_COMMAND_LINE 1 /* --cmdline */
 #define CMDLINE_SOURCE_PROC_CMDLINE 2 /* /proc/cmdline */
 
-/* kernel.c */
+/* kernel-config.c */
 extern void update_config_from_kernel_cmdline (struct config *config, char **cmdline);
+
+/* kernel.c */
 extern void kernel_conversion (struct config *, char **cmdline, int cmdline_source);
 
 /* gui.c */

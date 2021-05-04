@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -580,6 +580,21 @@ run_inspect_get_major_version (ETERM *args_tuple)
     return make_error ("inspect_get_major_version");
 
   return erl_mk_int (r);
+}
+
+ETERM *
+run_inspect_get_osinfo (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_inspect_get_osinfo (g, root);
+  if (r == NULL)
+    return make_error ("inspect_get_osinfo");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
 }
 
 ETERM *

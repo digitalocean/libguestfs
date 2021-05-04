@@ -1,5 +1,5 @@
 (* Common utilities for OCaml tools in libguestfs.
- * Copyright (C) 2010-2018 Red Hat Inc.
+ * Copyright (C) 2010-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -359,7 +359,10 @@ exception Executable_not_found of string (* executable *)
     in [$PATH]. *)
 
 val which : string -> string
-(** Return the full path of the specified executable from [$PATH].
+(** Return the full path of the specified executable from [$PATH],
+    in case it is only a name.  In case of a relative or absolute path
+    (i.e. more than just a name), return the same path specified if
+    exists.
 
     Throw [Executable_not_found] if not available. *)
 
@@ -374,11 +377,8 @@ val set_trace : unit -> unit
 val trace : unit -> bool
 val set_verbose : unit -> unit
 val verbose : unit -> bool
-val set_machine_readable : unit -> unit
-val machine_readable : unit -> bool
-(** Stores the colours ([--colours]), quiet ([--quiet]), trace ([-x]),
-    verbose ([-v]), and machine readable ([--machine-readable]) flags
-    in global variables. *)
+(** Stores the colours ([--colours]), quiet ([--quiet]), trace ([-x]) and
+    verbose ([-v]) flags in global variables. *)
 
 val with_open_in : string -> (in_channel -> 'a) -> 'a
 (** [with_open_in filename f] calls function [f] with [filename]

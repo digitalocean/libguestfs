@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -177,6 +177,7 @@ PHP_FUNCTION (guestfs_egrepi);
 PHP_FUNCTION (guestfs_equal);
 PHP_FUNCTION (guestfs_exists);
 PHP_FUNCTION (guestfs_extlinux);
+PHP_FUNCTION (guestfs_f2fs_expand);
 PHP_FUNCTION (guestfs_fallocate);
 PHP_FUNCTION (guestfs_fallocate64);
 PHP_FUNCTION (guestfs_feature_available);
@@ -277,6 +278,7 @@ PHP_FUNCTION (guestfs_inspect_get_icon);
 PHP_FUNCTION (guestfs_inspect_get_major_version);
 PHP_FUNCTION (guestfs_inspect_get_minor_version);
 PHP_FUNCTION (guestfs_inspect_get_mountpoints);
+PHP_FUNCTION (guestfs_inspect_get_osinfo);
 PHP_FUNCTION (guestfs_inspect_get_package_format);
 PHP_FUNCTION (guestfs_inspect_get_package_management);
 PHP_FUNCTION (guestfs_inspect_get_product_name);
@@ -396,6 +398,7 @@ PHP_FUNCTION (guestfs_lvcreate_free);
 PHP_FUNCTION (guestfs_lvm_canonical_lv_name);
 PHP_FUNCTION (guestfs_lvm_clear_filter);
 PHP_FUNCTION (guestfs_lvm_remove_all);
+PHP_FUNCTION (guestfs_lvm_scan);
 PHP_FUNCTION (guestfs_lvm_set_filter);
 PHP_FUNCTION (guestfs_lvremove);
 PHP_FUNCTION (guestfs_lvrename);

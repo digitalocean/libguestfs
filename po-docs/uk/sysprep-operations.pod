@@ -58,7 +58,7 @@
 Вилучити журнал команд bash користувача «root» та всіх інших користувачів, у
 домашніх каталогах яких містяться файли C<.bash_history>.
 
-=head3 Notes on bash-history
+=head3 Нотатки щодо журналу команд bash
 
 У поточній версії пошук домашніх каталогів користувачів виконується лише у
 C</root> і C</home/*>. Отже, журнал bash користувачів, дані яких
@@ -540,28 +540,29 @@ UUID, наприклад C</etc/fstab> або завантажувач. Вмик
 
 Запустити довільні скрипти дій над гостьовою системою.
 
-The C<script> module lets you run arbitrary shell scripts or programs
-against the guest.
+Модуль C<script> надає вам змогу запускати довільні скрипти оболонки або
+програми для обробки гостьових систем.
 
 Зауважте, що використання цієї можливості потребує підтримки FUSE. Вам варто
 увімкнути цю підтримку у вашій основній системі, наприклад, додаванням
 поточного користувача до групи C<fuse> або завантаженням модуля ядра.
 
-Use one or more I<--script> parameters to specify scripts or programs that
-will be run against the guest.
+Скористайтеся одним або декількома параметрами I<--script> для визначення
+скриптів або програм, які слід запустити для обробки гостьової системи.
 
-The script or program is run with its current directory being the guest’s
-root directory, so relative paths should be used.  For example: C<rm
-etc/resolv.conf> in the script would remove a Linux guest’s DNS
-configuration file, but C<rm /etc/resolv.conf> would (try to) remove the
-host’s file.
+Скрипт або програма виконується з поточним каталогом, який є кореневим
+каталогом гостьової системи, отже слід використовувати відносні
+шляхи. Приклад: C<rm etc/resolv.conf> у скрипті призведе до вилучення файла
+налаштувань DNS у гостьовій системі Linux, а C<rm /etc/resolv.conf>
+(спробує) вилучити відповідний файл у основній системі.
 
-Normally a temporary mount point for the guest is used, but you can choose a
-specific one by using the I<--scriptdir> parameter.
+Зазвичай, використовується тимчасова точка монтування гостьової системи, але
+ви можете вибрати якусь іншу за допомогою параметра I<--scriptdir>.
 
-B<Note:> This is different from I<--firstboot> scripts (which run in the
-context of the guest when it is booting first time).  I<--script> scripts
-run on the host, not in the guest.
+B<Зауваження:> описані тут скрипти відрізняються від скриптів I<--firstboot>
+(скриптів, які виконуються у контексті гостьової системи під час першого
+завантаження цієї системи). Скрипти I<--script> запускаються у основній
+системі, а не у гостьовій.
 
 =head2 B<smolt-uuid> *
 

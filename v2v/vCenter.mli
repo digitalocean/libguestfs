@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,8 @@ type remote_resource = {
 (** The "remote resource" is the structure returned by the {!map_source}
     function. *)
 
-val map_source : ?readahead:int -> ?password:string -> string -> Xml.uri -> string -> string -> remote_resource
-(** [map_source ?readahead ?password dcPath uri server path]
+val map_source : ?readahead:int -> ?password_file:string -> string -> Xml.uri -> string -> string -> remote_resource
+(** [map_source ?readahead ?password_file dcPath uri server path]
     maps the [<source path=...>] string to a {!remote_resource}
     structure containing both an [https://] URL and a qemu URI,
     both pointing the guest disk.

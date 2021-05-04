@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -631,6 +631,9 @@ extern PyObject *guestfs_int_py_exists (PyObject *self, PyObject *args);
 #ifdef GUESTFS_HAVE_EXTLINUX
 extern PyObject *guestfs_int_py_extlinux (PyObject *self, PyObject *args);
 #endif
+#ifdef GUESTFS_HAVE_F2FS_EXPAND
+extern PyObject *guestfs_int_py_f2fs_expand (PyObject *self, PyObject *args);
+#endif
 #ifdef GUESTFS_HAVE_FALLOCATE
 extern PyObject *guestfs_int_py_fallocate (PyObject *self, PyObject *args);
 #endif
@@ -930,6 +933,9 @@ extern PyObject *guestfs_int_py_inspect_get_minor_version (PyObject *self, PyObj
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS
 extern PyObject *guestfs_int_py_inspect_get_mountpoints (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_OSINFO
+extern PyObject *guestfs_int_py_inspect_get_osinfo (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT
 extern PyObject *guestfs_int_py_inspect_get_package_format (PyObject *self, PyObject *args);
@@ -1287,6 +1293,9 @@ extern PyObject *guestfs_int_py_lvm_clear_filter (PyObject *self, PyObject *args
 #endif
 #ifdef GUESTFS_HAVE_LVM_REMOVE_ALL
 extern PyObject *guestfs_int_py_lvm_remove_all (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_LVM_SCAN
+extern PyObject *guestfs_int_py_lvm_scan (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_LVM_SET_FILTER
 extern PyObject *guestfs_int_py_lvm_set_filter (PyObject *self, PyObject *args);

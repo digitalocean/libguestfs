@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-libguestfs-tools.conf - configuration file for guestfish, guestmount,
+libguestfs-tools.conf — файл налаштувань для guestfish, guestmount,
 virt-rescue
 
 =head1 КОРОТКИЙ ОПИС
@@ -16,8 +16,8 @@ virt-rescue
 
 =head1 ОПИС
 
-F<libguestfs-tools.conf> (or F<$HOME/.libguestfs-tools.rc>) changes the
-defaults for the following programs only:
+F<libguestfs-tools.conf> (або F<$HOME/.libguestfs-tools.rc>) змінює типові
+параметри роботи лише таких програм:
 
 =over 4
 
@@ -35,22 +35,23 @@ L<virt-rescue(1)>
 
 =back
 
-There is currently only one setting which is controlled by this file.
-Adding (or uncommenting):
+Цим файлом у поточній версії керується лише один параметр. Додавання або
+зняття коментаря з:
 
  read_only = true;
 
-changes these programs so they act as if the I<--ro> flag was given on the
-command line.  You can use this to make the programs safe against accidental
-modification of a live guest (users would have to explicitly add the I<--rw>
-flag to modify guests).  This is not the default because it is not backwards
-compatible.  See also L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+змінює поведінку цих програм так, що вони працюють так, неначе у рядку
+команди було вказано параметр I<--ro>. Ви можете скористатися цим, щоб
+убезпечити запущену гостьову систему від випадкових змін, внесених
+програмами (для внесення змін користувачам доведеться явним чином вказати
+параметр I<--rw>). Така поведінка програм не є типовою з міркувань зворотної
+сумісності. Див. також L<guestfish(1)/ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ І
+ЗАПИСУ>.
 
-Note that B<the semicolon is required>.
+Зауважте, що B<крапка з комою є обов'язковою>.
 
-This file is parsed by the libconfig library.  For more information about
-the format, see:
-L<http://www.hyperrealm.com/libconfig/libconfig_manual.html>
+Цей файл обробляється бібліотекою libconfig. Щоб дізнатися більше про
+формат, див. L<http://www.hyperrealm.com/libconfig/libconfig_manual.html>
 
 =head1 АДРЕСА ФАЙЛА
 
@@ -69,9 +70,9 @@ $HOME/.libguestfs-tools.rc
 
 =item *
 
-$XDG_CONFIG_DIRS/libguestfs/libguestfs-tools.conf (where C<$XDG_CONFIG_DIRS>
-means any of the directories in that environment variable, or just
-F</etc/xdg> if not set)
+$XDG_CONFIG_DIRS/libguestfs/libguestfs-tools.conf (де C<$XDG_CONFIG_DIRS>
+означає будь-які каталоги у відповідній змінній середовища або просто
+F</etc/xdg>, якщо значення змінної середовища не визначено)
 
 =item *
 
@@ -79,12 +80,13 @@ F</etc/xdg> if not set)
 
 =back
 
-This means local users can override the system configuration by copying the
-configuration file (or creating it anew) into
-F<$XDG_CONFIG_HOME/libguestfs/libguestfs-tools.conf>.
+Це означає, що локальні користувачі можуть перевизначати налаштування
+системи копіюванням файла налаштувань до
+F<$XDG_CONFIG_HOME/libguestfs/libguestfs-tools.conf> (або створенням його).
 
-F</etc/libguestfs-tools.conf> and F<$HOME/.libguestfs-tools.rc> are the old
-non-XDG paths which are read for compatibility.
+F</etc/libguestfs-tools.conf> і F<$HOME/.libguestfs-tools.rc> є застарілими
+шляхами, які не відповідають XDG і які програма читає лише з міркувань
+сумісності.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -98,5 +100,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2018 Red Hat Inc.
+Copyright (C) 2011-2019 Red Hat Inc.
 

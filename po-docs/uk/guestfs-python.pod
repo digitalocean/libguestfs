@@ -12,10 +12,11 @@ guestfs-python — як використовувати libguestfs з Python
 
 =head1 ОПИС
 
-This manual page documents how to call libguestfs from the Python
-programming language.  This page just documents the differences from the C
-API and gives some examples.  If you are not familiar with using libguestfs,
-you also need to read L<guestfs(3)>.
+На цій сторінці підручника наведено документацію щодо викликів libguestfs з
+коду мовою програмування Python. На сторінці задокументовано відмінності від
+програмного інтерфейсу C та подано декілька прикладів. Якщо ви не дуже
+знайомі із користуванням libguestfs, вам також слід прочитати підручник з
+L<guestfs(3)>.
 
 =head2 python_return_dict=True
 
@@ -23,15 +24,15 @@ you also need to read L<guestfs(3)>.
 
  g = guestfs.GuestFS(python_return_dict=True)
 
-This indicates that your program wants to receive Python dicts for methods
-in the API that return hashtables.
+Це вказує на те, що ваша програма потребує отримання словників Python для
+методів у програмному інтерфейсі, які повертають таблиці хешів.
 
-In a future version of libguestfs, this will become the default.
+У майбутніх версіях libguestfs цей спосіб має стати типовим.
 
 =head2 ВИНЯТКИ
 
-Errors from libguestfs functions are mapped into C<RuntimeException> with a
-single string argument which is the error message.
+Помилки від функцій libguestfs пов'язуються із C<RuntimeException> з єдиним
+рядковим аргументом, яким є текст повідомлення про помилку.
 
 =head2 ДОДАТКОВА ДОКУМЕНТАЦІЯ
 
@@ -41,15 +42,15 @@ single string argument which is the error message.
  >>> import guestfs
  >>> help(guestfs)
 
-=head2 USING PYTHON BINDINGS IN A VIRTUALENV
+=head2 КОРИСТУВАННЯ ПРИВ'ЯЗКАМИ ДО PYTHON У ВІРТУАЛЬНОМУ СЕРЕДОВИЩІ
 
 Ці прив'язки недоступні у pypi через проблеми із ліцензуванням. За станом
 розв'язання проблем можна слідкувати тут:
 L<https://bugzilla.redhat.com/1075594>.
 
-However we do publish a Python distribution for selected stable versions of
-libguestfs in L<http://libguestfs.org/download/python>.  You can use it like
-this:
+Втім, ми оприлюднюємо дистрибутив Python для вибраних стабільних версій
+libguestfs на L<http://libguestfs.org/download/python>. Ви можете
+скористатися ним за допомогою такої команди:
 
  pip install http://libguestfs.org/download/python/guestfs-1.XX.YY.tar.gz
 

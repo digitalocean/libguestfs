@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,17 +49,6 @@
 #include "guestfs_protocol.h"
 #include "qemuopts.h"
 
-/* Differences in qemu device names on ARMv7 (virtio-mmio), s/390x
- * (CCW) vs normal hardware with PCI.
- */
-#if defined(__arm__)
-#define VIRTIO_DEVICE_NAME(type) type "-device"
-#elif defined(__s390x__)
-#define VIRTIO_DEVICE_NAME(type) type "-ccw"
-#else
-#define VIRTIO_DEVICE_NAME(type) type "-pci"
-#endif
-
 /* Per-handle data. */
 struct backend_direct_data {
   pid_t pid;                    /* Qemu PID. */
@@ -72,7 +61,6 @@ struct backend_direct_data {
   char guestfsd_sock[UNIX_PATH_MAX]; /* Path to daemon socket. */
 };
 
-static int is_openable (guestfs_h *g, const char *path, int flags);
 static char *make_appliance_dev (guestfs_h *g);
 
 static char *
@@ -227,8 +215,6 @@ add_drive_standard_params (guestfs_h *g, struct backend_direct_data *data,
                         drv->cachemode ? drv->cachemode : "writeback");
     if (drv->src.format)
       append_list_format ("format=%s", drv->src.format);
-    if (drv->disk_label)
-      append_list_format ("serial=%s", drv->disk_label);
     if (drv->copyonread)
       append_list ("copy-on-read=on");
 
@@ -275,8 +261,6 @@ add_drive_standard_params (guestfs_h *g, struct backend_direct_data *data,
       append_list ("format=qcow2");
     }
     append_list ("cache=unsafe");
-    if (drv->disk_label)
-      append_list_format ("serial=%s", drv->disk_label);
   }
 
   append_list_format ("id=hd%zu", i);
@@ -305,6 +289,8 @@ add_drive (guestfs_h *g, struct backend_direct_data *data,
     start_list ("-device") {
       append_list (VIRTIO_DEVICE_NAME ("virtio-blk"));
       append_list_format ("drive=hd%zu", i);
+      if (drv->disk_label)
+        append_list_format ("serial=%s", drv->disk_label);
     } end_list ();
   }
 #if defined(__arm__) || defined(__aarch64__) || defined(__powerpc__)
@@ -329,6 +315,8 @@ add_drive (guestfs_h *g, struct backend_direct_data *data,
     start_list ("-device") {
       append_list ("scsi-hd");
       append_list_format ("drive=hd%zu", i);
+      if (drv->disk_label)
+        append_list_format ("serial=%s", drv->disk_label);
     } end_list ();
   }
 
@@ -387,21 +375,6 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     return -1;
   }
 
-  /* Try to guess if KVM is available.  We are just checking that
-   * /dev/kvm is openable.  That's not reliable, since /dev/kvm
-   * might be openable by qemu but not by us (think: SELinux) in
-   * which case the user would not get hardware virtualization,
-   * although at least shouldn't fail.
-   */
-  has_kvm = is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC);
-
-  force_tcg = guestfs_int_get_backend_setting_bool (g, "force_tcg");
-  if (force_tcg == -1)
-    return -1;
-
-  if (!has_kvm && !force_tcg)
-    debian_kvm_warning (g);
-
   guestfs_int_launch_send_progress (g, 0);
 
   TRACE0 (launch_build_appliance_start);
@@ -430,6 +403,17 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     debug (g, "qemu mandatory locking: %s",
            data->qemu_mandatory_locking ? "yes" : "no");
   }
+
+  /* Work out if KVM is supported or if the user wants to force TCG. */
+  has_kvm = guestfs_int_platform_has_kvm (g, data->qemu_data);
+  debug (g, "qemu KVM: %s", has_kvm ? "enabled" : "disabled");
+
+  force_tcg = guestfs_int_get_backend_setting_bool (g, "force_tcg");
+  if (force_tcg == -1)
+    return -1;
+
+  if (!has_kvm && !force_tcg)
+    debian_kvm_warning (g);
 
   /* Using virtio-serial, we need to create a local Unix domain socket
    * for qemu to connect to.
@@ -485,8 +469,8 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    */
   arg ("-global", VIRTIO_DEVICE_NAME ("virtio-blk") ".scsi=off");
 
-  if (guestfs_int_qemu_supports (g, data->qemu_data, "-nodefconfig"))
-    flag ("-nodefconfig");
+  if (guestfs_int_qemu_supports (g, data->qemu_data, "-no-user-config"))
+    flag ("-no-user-config");
 
   /* This oddly named option doesn't actually enable FIPS.  It just
    * causes qemu to do the right thing if FIPS is enabled in the
@@ -976,19 +960,6 @@ make_appliance_dev (guestfs_h *g)
   guestfs_int_drive_name (index, &dev[7]);
 
   return safe_strdup (g, dev);  /* Caller frees. */
-}
-
-/* Check if a file can be opened. */
-static int
-is_openable (guestfs_h *g, const char *path, int flags)
-{
-  int fd = open (path, flags);
-  if (fd == -1) {
-    debug (g, "is_openable: %s: %m", path);
-    return 0;
-  }
-  close (fd);
-  return 1;
 }
 
 static int

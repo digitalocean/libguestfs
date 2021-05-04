@@ -5,96 +5,123 @@ guestfs-internals — архітектура і внутрішня будова 
 
 =head1 ОПИС
 
-This manual page is for hackers who want to understand how libguestfs works
-internally.  This is just a description of how libguestfs works now, and it
-may change at any time in the future.
+Цю сторінку підручника призначено для тих, хто хоче зрозуміти, як працює
+libguestfs на внутрішньому рівні. Це опис лише того, як libguestfs працює у
+поточній версії. Принципи роботи може бути змінено у майбутніх версіях.
 
 =head1 АРХІТЕКТУРА
 
-Internally, libguestfs is implemented by running an appliance (a special
-type of small virtual machine) using L<qemu(1)>.  Qemu runs as a child
-process of the main program.
+На внутрішньому рівні libguestfs реалізовано шляхом запуску базової системи
+(спеціального типу малої віртуальної машини) за допомогою L<qemu(1)>. Qemu
+запускається як дочірній процес основної програми.
 
  ┌───────────────────┐
  │ main program      │
  │                   │
- │                   │           child process / appliance
+ │                   │           дочірній процес / базова система
  │                   │          ┌──────────────────────────┐
  │                   │          │ qemu                     │
  ├───────────────────┤   RPC    │      ┌─────────────────┐ │
  │ libguestfs  ◀╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍▶ guestfsd        │ │
  │                   │          │      ├─────────────────┤ │
- └───────────────────┘          │      │ Linux kernel    │ │
+ └───────────────────┘          │      │   ядро Linux    │ │
                                 │      └────────┬────────┘ │
                                 └───────────────│──────────┘
                                                 │
                                                 │ virtio-scsi
                                          ┌──────┴──────┐
-                                         │  Device or  │
-                                         │  disk image │
+                                         │  Пристрій або │
+                                         │  образ диска│
                                          └─────────────┘
 
-The library, linked to the main program, creates the child process and hence
-the appliance in the L<guestfs(3)/guestfs_launch> function.
+Бібліотека, пов'язана із основною програмою, створює дочірній процес і,
+отже, базову систему у функції L<guestfs(3)/guestfs_launch>.
 
-Inside the appliance is a Linux kernel and a complete stack of userspace
-tools (such as LVM and ext2 programs) and a small controlling daemon called
-L</guestfsd>.  The library talks to L</guestfsd> using remote procedure
-calls (RPC).  There is a mostly one-to-one correspondence between libguestfs
-API calls and RPC calls to the daemon.  Lastly the disk image(s) are
-attached to the qemu process which translates device access by the
-appliance’s Linux kernel into accesses to the image.
+Всередині базової системи знаходиться ядро Linux і повний комплект засобів
+керування простором користувача (зокрема програми для керування LVM та
+ext2), а також невеличка фонова служба, яка називається
+L</guestfsd>. Бібліотека обмінюється даними із L</guestfsd> за допомогою
+віддаленого виклику процедур (RPC). Між викликами програмного інтерфейсу
+libguestfs та викликами RPC фонової служби існує майже дзеркальна
+подібність. Нарешті, образи дисків долучено до процесу qemu, який транслює
+доступ до пристроїв за допомогою ядра Linux базової системи у доступ до
+образів для основної системи.
 
-A common misunderstanding is that the appliance "is" the virtual machine.
-Although the disk image you are attached to might also be used by some
-virtual machine, libguestfs doesn't know or care about this.  (But you will
-care if both libguestfs’s qemu process and your virtual machine are trying
-to update the disk image at the same time, since these usually results in
-massive disk corruption).
+Поширеною помилкою є вважати, що базова система «є» віртуальна машина. Хоча
+образ диска, з яким з'єднується ваша система, може використовуватися якоюсь
+із систем керування віртуальними машинами, libguestfs не використовує і не
+бере до уваги цю можливість. (Але вам слід брати це до уваги, якщо оновлення
+даних на образі диска одночасно виконується процесом qemu libguestfs та
+вашою віртуальною машиною, оскільки це, зазвичай, призводить до значних
+ушкоджень даних на диску).
 
 =head1 СКІНЧЕННИЙ АВТОМАТ
 
-libguestfs uses a state machine to model the child process:
+libguestfs використовує скінченний автомат для моделювання дочірнього
+процесу:
 
-               
+                         |
+          guestfs_create / guestfs_create_flags
+                         |
+                         |
+                     ____V___________
+                    /          \
+                    |  НАЛАШТУВАННЯ  |
+                    \_________________/
+                       ^   ^  \
+                       |    \  \ guestfs_launch
+                       |    _\__V___
+                       |   /           \
+                       |   | ЗАПУСК |
+                       |   \________/
+                       |       /
+                       |  guestfs_launch
+                       |     /
+                     __|____V_____
+                    /        \
+                    | ГОТОВНІСТЬ  |
+                    \_____________/
 
-The normal transitions are (1) CONFIG (when the handle is created, but there
-is no child process), (2) LAUNCHING (when the child process is booting up),
-(3) READY meaning the appliance is up, actions can be issued to, and carried
-out by, the child process.
+Нормальними станами є (1) CONFIG (коли створено дескриптор, але немає
+дочірнього процесу), (2) LAUNCHING (коли завантажується дочірній процес),
+(3) READY — означає, що базова система завантажилася, можна виконувати за її
+допомогою дії, працездатністю системи опікується дочірній процес.
 
-The guest may be killed by L<guestfs(3)/guestfs_kill_subprocess>, or may die
-asynchronously at any time (eg. due to some internal error), and that causes
-the state to transition back to CONFIG.
+Роботу гостьової системи можна завершити за допомогою
+L<guestfs(3)/guestfs_kill_subprocess>, гостьова система також може будь-коли
+асинхронно припинити роботу (наприклад, через якусь внутрішню помилку). Це
+спричиняє повернення до стану CONFIG.
 
-Configuration commands for qemu such as L<guestfs(3)/guestfs_set_path> can
-only be issued when in the CONFIG state.
+Команди налаштовування для qemu, зокрема L<guestfs(3)/guestfs_set_path>,
+можна віддавати лише у стані CONFIG.
 
-The API offers one call that goes from CONFIG through LAUNCHING to READY.
-L<guestfs(3)/guestfs_launch> blocks until the child process is READY to
-accept commands (or until some failure or timeout).
-L<guestfs(3)/guestfs_launch> internally moves the state from CONFIG to
-LAUNCHING while it is running.
+Програмний інтерфейс пропонує один виклик, який проходить від CONFIG крізь
+LAUNCHING до READY.  L<guestfs(3)/guestfs_launch> блокує систему, аж доки
+дочірній процес не повідомить про стан READY для отримання команд (або не
+надійде повідомлення про помилку чи перевищення часу
+очікування). L<guestfs(3)/guestfs_launch> на внутрішньому рівні переводить
+стан з CONFIG у LAUNCHING протягом часу своєї роботи.
 
-API actions such as L<guestfs(3)/guestfs_mount> can only be issued when in
-the READY state.  These API calls block waiting for the command to be
-carried out.  There are no non-blocking versions, and no way to issue more
-than one command per handle at the same time.
+Команди програмного інтерфейсу, зокрема L<guestfs(3)/guestfs_mount>, можуть
+надсилатися, лише у стані READY. Ці виклики програмного інтерфейсу
+блокуються до завершення виконання попередньої команди. Версій без
+блокування не передбачено. Крім того, не передбачено способів надсилання
+декількох команд одному дескриптору одночасно.
 
-Finally, the child process sends asynchronous messages back to the main
-program, such as kernel log messages.  You can register a callback to
-receive these messages.
+Нарешті, дочірній процес надсилає асинхронні повідомлення, зокрема
+повідомлення журналу ядра, до основної програми. Ви можете зареєструвати
+зворотний виклик для отримання цих повідомлень.
 
 =head1 ВНУТРІШНІ ПРИНЦИПИ РОБОТИ
 
 =head2 ПРОЦЕДУРА ЗАВАНТАЖЕННЯ БАЗОВОЇ СИСТЕМИ
 
-This process has evolved and continues to evolve.  The description here
-corresponds only to the current version of libguestfs and is provided for
-information only.
+Цей процес змінювався із розвитком бібліотеки і продовжує
+змінюватися. Наведений тут опис відповідає поточній версії libguestfs. Його
+надано із інформаційною метою.
 
-In order to follow the stages involved below, enable libguestfs debugging
-(set the environment variable C<LIBGUESTFS_DEBUG=1>).
+Для виконання описаних нижче кроків увімкніть діагностику у libguestfs
+(встановіть значення змінної середовища C<LIBGUESTFS_DEBUG=1>).
 
 =over 4
 
@@ -103,49 +130,52 @@ In order to follow the stages involved below, enable libguestfs debugging
 C<supermin --build> викликається для створення ядра, невеличкого initrd та
 базової системи.
 
-The appliance is cached in F</var/tmp/.guestfs-E<lt>UIDE<gt>> (or in another
-directory if C<LIBGUESTFS_CACHEDIR> or C<TMPDIR> are set).
+Кеш базової системи зберігається у F</var/tmp/.guestfs-E<lt>UIDE<gt>> (або
+іншому каталозі, якщо встановлено значення змінної середовища
+C<LIBGUESTFS_CACHEDIR> або C<TMPDIR>).
 
 Щоб ознайомитися із повним описом створення базової системи та особливостями
 кешування, прочитайте сторінку підручника щодо L<supermin(1)>.
 
-=item Start qemu and boot the kernel
+=item Запуск qemu і завантаження ядра
 
-qemu is invoked to boot the kernel.
+qemu викликається для завантаження ядра.
 
-=item Run the initrd
+=item Запуск initrd
 
-C<supermin --build> builds a small initrd.  The initrd is not the
-appliance.  The purpose of the initrd is to load enough kernel modules in
-order that the appliance itself can be mounted and started.
+C<supermin --build> збирає невеличкий initrd. initrd не є базовою
+системою. Метою роботи initrd є завантаження достатньої кількості модулів
+ядра для того, щоб можна було змонтувати і запустити саму базову систему.
 
-The initrd is a cpio archive called
+initrd є архівом cpio із назвою
 F</var/tmp/.guestfs-E<lt>UIDE<gt>/appliance.d/initrd>.
 
-When the initrd has started you will see messages showing that kernel
-modules are being loaded, similar to this:
+Після запуску initrd ви побачите повідомлення щодо завантаження модулів
+ядра, подібні до таких:
 
  supermin: ext2 mini initrd starting up
  supermin: mounting /sys
  supermin: internal insmod libcrc32c.ko
  supermin: internal insmod crc32c-intel.ko
 
-=item Find and mount the appliance device
+=item Пошук і монтування пристрою базової системи
 
-The appliance is a sparse file containing an ext2 filesystem which contains
-a familiar (although reduced in size) Linux operating system.  It would
-normally be called F</var/tmp/.guestfs-E<lt>UIDE<gt>/appliance.d/root>.
+Базовою системою є розріджений файл, що містить файлову систему ext2 зі
+звичайною (але зменшеною у розмірах) операційною системою Linux. За
+звичайних умов, цей файл називається
+F</var/tmp/.guestfs-E<lt>UIDE<gt>/appliance.d/root>.
 
-The regular disks being inspected by libguestfs are the first devices
-exposed by qemu (eg. as F</dev/vda>).
+Звичайні диски, які досліджуються за допомогою libguestfs, є першими
+пристроями, які «бачить» qemu (eg. as F</dev/vda>).
 
-The last disk added to qemu is the appliance itself (eg. F</dev/vdb> if
-there was only one regular disk).
+Останнім диском, який додано до qemu, є сама базова система (наприклад,
+F</dev/vdb>, якщо був лише один звичайний диск).
 
-Thus the final job of the initrd is to locate the appliance disk, mount it,
-and switch root into the appliance, and run F</init> from the appliance.
+Таким чином, останнім завданням initrd є визначення розташування диска
+базової системи, його монтування та перемикання кореневої файлової системи
+на базову систему і запуск F</init> з базової системи.
 
-If this works successfully you will see messages such as:
+Якщо усе працюватиме як слід, ви побачите такі повідомлення:
 
  supermin: picked /sys/block/vdb/dev as root device
  supermin: creating /dev/root as block special 252:16
@@ -153,24 +183,24 @@ If this works successfully you will see messages such as:
  supermin: chroot
  Starting /init script ...
 
-Note that C<Starting /init script ...> indicates that the appliance's init
-script is now running.
+Зауважте, що повідомлення C<Starting /init script ...> означає, що запущено
+скрипт ініціалізації (init) базової системи.
 
 =item Ініціалізація базової системи
 
-The appliance itself now initializes itself.  This involves starting certain
-processes like C<udev>, possibly printing some debug information, and
-finally running the daemon (C<guestfsd>).
+Далі, базова система ініціалізується. Ця процедура включає запуск певних
+процесів, зокрема C<udev>, можливе виведення певної діагностичної інформації
+і, нарешті, запуск фонової служби (C<guestfsd>).
 
 =item Фонова служба
 
-Finally the daemon (C<guestfsd>) runs inside the appliance.  If it runs you
-should see:
+На останньому етапі фонова служба (C<guestfsd>) працює у базовій
+системі. Якщо запуск служби виконано вдало, ви побачите таке повідомлення:
 
  verbose daemon enabled
 
-The daemon expects to see a named virtio-serial port exposed by qemu and
-connected on the other end to the library.
+Фонова служба очікує виявити іменований послідовний порт virtio, відкритий
+qemu і з'єднаний іншим боком із бібліотекою.
 
 Фонова служба встановлює з'єднання з цим портом (а отже і з бібліотекою) і
 надсилає чотирибайтове повідомлення C<GUESTFS_LAUNCH_FLAG>, яке ініціює
@@ -180,172 +210,181 @@ connected on the other end to the library.
 
 =head2 ПРОТОКОЛ ОБМІНУ ДАНИМИ
 
-Don’t rely on using this protocol directly.  This section documents how it
-currently works, but it may change at any time.
+Не покладайтеся на викладені у цьому розділі подробиці протоколу
+безпосередньо. Документація цього розділу стосується поточних принципів його
+роботи, але вони можуть змінитися у майбутніх версіях.
 
-The protocol used to talk between the library and the daemon running inside
-the qemu virtual machine is a simple RPC mechanism built on top of XDR (RFC
-1014, RFC 1832, RFC 4506).
+Протокол, який використовується для обміну даними між бібліотекою та фоновою
+службою, запущеною всередині віртуальної машини qemu, простим механізмом
+RPC, побудованим на основі XDR (RFC 1014, RFC 1832, RFC 4506).
 
-The detailed format of structures is in
-F<common/protocol/guestfs_protocol.x> (note: this file is automatically
-generated).
+Докладний формат структур описано у файлі
+F<common/protocol/guestfs_protocol.x> (зауваження: цей файл створюється
+автоматично під час збирання бібліотеки).
 
-There are two broad cases, ordinary functions that don’t have any C<FileIn>
-and C<FileOut> parameters, which are handled with very simple request/reply
-messages.  Then there are functions that have any C<FileIn> or C<FileOut>
-parameters, which use the same request and reply messages, but they may also
-be followed by files sent using a chunked encoding.
+Існує два широких класи: звичайні функції, які не мають параметрів C<FileIn>
+і C<FileOut> і які керуються дуже простим повідомленнями запитів і
+відповідей, і функції, які мають параметри C<FileIn> або C<FileOut> і які
+використовують такі самі повідомлення запитів і відповідей, але за
+повідомленням може слідувати файл, який надсилається у певному фрагментному
+кодуванні.
 
-=head3 ORDINARY FUNCTIONS (NO FILEIN/FILEOUT PARAMS)
+=head3 ЗВИЧАЙНІ ФУНКЦІЇ (БЕЗ ПАРАМЕТРІВ FILEIN/FILEOUT)
 
-For ordinary functions, the request message is:
+Повідомлення запиту для звичайних функцій:
 
- total length (header + arguments,
-      but not including the length word itself)
- struct guestfs_message_header (encoded as XDR)
- struct guestfs_<foo>_args (encoded as XDR)
+ загальна довжина (заголовок + аргументи,
+      але без включення самого слова length)
+ struct guestfs_message_header (у кодуванні XDR)
+ struct guestfs_<щось>_args (у кодуванні XDR)
 
-The total length field allows the daemon to allocate a fixed size buffer
-into which it slurps the rest of the message.  As a result, the total length
-is limited to C<GUESTFS_MESSAGE_MAX> bytes (currently 4MB), which means the
-effective size of any request is limited to somewhere under this size.
+Поле загальної довжини надає змогу фоновій службі отримувати фіксований
+буфер у пам'яті, до якого вона записуватиме решту повідомлення. Отже,
+загальну довжину обмежено до C<GUESTFS_MESSAGE_MAX> байтів (у поточній
+версії, 4 МБ), що означає, що ефективний розмір будь-якого запису обмежено
+цим обсягом пам'яті.
 
-Note also that many functions don’t take any arguments, in which case the
-C<guestfs_I<foo>_args> is completely omitted.
+Зауважте, що багато функцій не приймають жодних аргументів. Для таких
+функцій C<guestfs_I<щось>_args> взагалі не вказують.
 
-The header contains the procedure number (C<guestfs_proc>) which is how the
-receiver knows what type of args structure to expect, or none at all.
+У заголовку міститься номер процедури (C<guestfs_proc>), за допомогою якого
+функція-отримувач визначає тип структури аргументів, який слід очікувати,
+або дізнається про те, що аргументів не буде.
 
-For functions that take optional arguments, the optional arguments are
-encoded in the C<guestfs_I<foo>_args> structure in the same way as ordinary
-arguments.  A bitmask in the header indicates which optional arguments are
-meaningful.  The bitmask is also checked to see if it contains bits set
-which the daemon does not know about (eg. if more optional arguments were
-added in a later version of the library), and this causes the call to be
-rejected.
+Для функцій, які приймають необов'язкові аргументи, додаткові аргументи
+кодуються у структуру C<guestfs_I<foo>_args> у той самий спосіб, що і
+звичайні аргументи. Бітова маска у заголовку позначає, які додаткові
+аргументи мають значення. Виконується також перевірка бітової маски на вміст
+бітів, про які не знає фонова служба (наприклад, якщо у новішій версії
+бібліотеки додано додаткові аргументи). Виклики із такими бітами
+відкидаються.
 
-The reply message for ordinary functions is:
+Повідомлення відповіді для звичайних функцій:
 
- total length (header + ret,
-      but not including the length word itself)
- struct guestfs_message_header (encoded as XDR)
- struct guestfs_<foo>_ret (encoded as XDR)
+ загальна довжина (заголовок + повернуте значення,
+      але без включення самого слова length)
+ struct guestfs_message_header (у кодуванні XDR)
+ struct guestfs_<щось>_ret (у кодуванні XDR)
 
-As above the C<guestfs_I<foo>_ret> structure may be completely omitted for
-functions that return no formal return values.
+Як і вище, структуру C<guestfs_I<щось>_ret> може бути повністю пропущено,
+якщо функція формально не повертає значень.
 
-As above the total length of the reply is limited to C<GUESTFS_MESSAGE_MAX>.
+Як і вище, значення загальної довжини відповіді обмежується значенням
+C<GUESTFS_MESSAGE_MAX>.
 
-In the case of an error, a flag is set in the header, and the reply message
-is slightly changed:
+Якщо станеться помилка, у заголовку буде встановлено прапорець, а саме
+повідомлення відповіді буде дещо змінено:
 
- total length (header + error,
-      but not including the length word itself)
- struct guestfs_message_header (encoded as XDR)
- struct guestfs_message_error (encoded as XDR)
+ загальна довжина (заголовок + помилка,
+      але без включення самого слова length)
+ struct guestfs_message_header (у кодуванні XDR)
+ struct guestfs_<щось>_message_error (у кодуванні XDR)
 
-The C<guestfs_message_error> structure contains the error message as a
-string.
+Структура C<guestfs_message_error> містить повідомлення про помилку у
+форматі рядка.
 
-=head3 FUNCTIONS THAT HAVE FILEIN PARAMETERS
+=head3 ФУНКЦІЇ З ПАРАМЕТРАМИ FILEIN
 
-A C<FileIn> parameter indicates that we transfer a file I<into> the guest.
-The normal request message is sent (see above).  However this is followed by
-a sequence of file chunks.
+Параметр C<FileIn> позначає, що ми передаємо файл I<до> гостьової
+системи. Надсилається звичайне повідомлення запиту (див. вище). Втім, за ним
+слідує послідовність фрагментів файла.
 
- total length (header + arguments,
-      but not including the length word itself,
-      and not including the chunks)
- struct guestfs_message_header (encoded as XDR)
- struct guestfs_<foo>_args (encoded as XDR)
- sequence of chunks for FileIn param #0
- sequence of chunks for FileIn param #1 etc.
+ загальна довжина (заголовок + аргументи,
+      але без включення самого слова length,
+      і без включення фрагментів)
+ struct guestfs_message_header (у кодуванні XDR)
+ struct guestfs_<щось>_args (у кодуванні XDR)
+ послідовність фрагментів для параметра 0 FileIn
+ послідовність фрагментів для параметра 1 FileIn тощо
+«Послідовність фрагментів» це:
 
-The "sequence of chunks" is:
-
- length of chunk (not including length word itself)
- struct guestfs_chunk (encoded as XDR)
- length of chunk
- struct guestfs_chunk (encoded as XDR)
+ довжина фрагмента (без самого слова length)
+ struct guestfs_chunk (у кодуванні XDR)
+довжина фрагмента
+ struct guestfs_chunk (у кодуванні XDR)
    ...
- length of chunk
- struct guestfs_chunk (with data.data_len == 0)
+довжина фрагмента
+ struct guestfs_chunk (із data.data_len == 0)
 
-The final chunk has the C<data_len> field set to zero.  Additionally a flag
-is set in the final chunk to indicate either successful completion or early
-cancellation.
+Значення C<data_len> останнього фрагмента дорівнює нулю. Крім того, у
+останньому фрагментів встановлено прапорець, який позначає успішне
+завершення або передчасне переривання.
 
-At time of writing there are no functions that have more than one FileIn
-parameter.  However this is (theoretically) supported, by sending the
-sequence of chunks for each FileIn parameter one after another (from left to
-right).
+На момент написання цього підручника не існувало жодної функції, яка б
+приймала більше одного параметра FileIn. Втім, теоретично, підтримку
+багатьох таких параметрів передбачено. Адже передбачено можливість надсилати
+послідовність фрагментів для кожного параметра FileIn один фрагмент за одним
+(зліва праворуч).
 
-Both the library (sender) I<and> the daemon (receiver) may cancel the
-transfer.  The library does this by sending a chunk with a special flag set
-to indicate cancellation.  When the daemon sees this, it cancels the whole
-RPC, does I<not> send any reply, and goes back to reading the next request.
+Передавання даних може бути скасовано як бібліотекою (відправником), I<так
+і> фоновою службою (отримувачем). Бібліотека скасовує передавання
+надсиланням фрагмента із спеціальним прапорцем, який позначає
+скасовування. Коли фонова служба отримує такий фрагмент, вона скасовує увесь
+RPC, I<не> надсилає жодної відповіді і повертається до читання наступного
+запиту.
 
-The daemon may also cancel.  It does this by writing a special word
-C<GUESTFS_CANCEL_FLAG> to the socket.  The library listens for this during
-the transfer, and if it gets it, it will cancel the transfer (it sends a
-cancel chunk).  The special word is chosen so that even if cancellation
-happens right at the end of the transfer (after the library has finished
-writing and has started listening for the reply), the "spurious" cancel flag
-will not be confused with the reply message.
+Фонова служба також може скасувати передавання даних. Зробити це вона можна
+записуванням до сокета спеціального слова C<GUESTFS_CANCEL_FLAG>. Бібліотека
+очікує на цьому сокеті на дані під час передавання. Якщо буде отримано
+спеціальне слово, бібліотека скасує передавання (надішле фрагмент
+скасовування). Спеціальне слово вибрано так, щоб навіть якщо скасовування
+станеться безпосередньо наприкінці передавання (після того, як бібліотека
+завершить запис і розпочне очікувати на відповідь), «неоднозначний»
+прапорець скасовування не буде переплутано із повідомленням відповіді.
 
-This protocol allows the transfer of arbitrary sized files (no 32 bit
-limit), and also files where the size is not known in advance (eg. from
-pipes or sockets).  However the chunks are rather small
-(C<GUESTFS_MAX_CHUNK_SIZE>), so that neither the library nor the daemon need
-to keep much in memory.
+Цей протокол уможливлює передавання файлів довільного розміру (без обмеження
+у 32 біти), а також файлів, розмір яких невідомий наперед (наприклад з
+каналів обробки даних або сокетів). Втім, фрагменти є доволі малими
+(C<GUESTFS_MAX_CHUNK_SIZE>), отже, ні бібліотеці, ні фоновій службі не
+потрібно для передавання багато оперативної пам'яті.
 
-=head3 FUNCTIONS THAT HAVE FILEOUT PARAMETERS
+=head3 FФУНКЦІЇ З ПАРАМЕТРАМИ FILEOUT
 
-The protocol for FileOut parameters is exactly the same as for FileIn
-parameters, but with the roles of daemon and library reversed.
+Протокол для параметрів FileOut є тим самим, що і для параметрів FileIn, але
+у ньому фонова служба і бібліотека міняються місцями.
 
- total length (header + ret,
-      but not including the length word itself,
-      and not including the chunks)
- struct guestfs_message_header (encoded as XDR)
- struct guestfs_<foo>_ret (encoded as XDR)
- sequence of chunks for FileOut param #0
- sequence of chunks for FileOut param #1 etc.
-
+ загальна довжина (заголовок + повернуте значення,
+      але без включення самого слова length,
+      і без включення фрагментів)
+ struct guestfs_message_header (у кодуванні XDR)
+ struct guestfs_<щось>_ret (у кодуванні XDR)
+ послідовність фрагментів для параметра 0 FileOut
+ послідовність фрагментів для параметра 1 FileOut тощо
 =head3 ПОЧАТКОВЕ ПОВІДОМЛЕННЯ
 
-When the daemon launches it sends an initial word (C<GUESTFS_LAUNCH_FLAG>)
-which indicates that the guest and daemon is alive.  This is what
-L<guestfs(3)/guestfs_launch> waits for.
+Під час запуску фонова служба надсилає початкове слово
+(C<GUESTFS_LAUNCH_FLAG>), яке означає, що гостьова система і фонова служба
+працюють. Саме на це очікує L<guestfs(3)/guestfs_launch>.
 
 =head3 ПОВІДОМЛЕННЯ ЩОДО ПОСТУПУ
 
-The daemon may send progress notification messages at any time.  These are
-distinguished by the normal length word being replaced by
-C<GUESTFS_PROGRESS_FLAG>, followed by a fixed size progress message.
+Фонова служба може будь-коли надсилати сповіщення щодо поступу. Ці
+сповіщення відрізняються від інших тим, що звичайне слово length замінюється
+на C<GUESTFS_PROGRESS_FLAG>, а за ним слідує повідомлення щодо поступу
+фіксованого розміру.
 
-The library turns them into progress callbacks (see
-L<guestfs(3)/GUESTFS_EVENT_PROGRESS>) if there is a callback registered, or
-discards them if not.
+Бібліотека перетворює їх на зворотні виклики щодо поступу
+(див. L<guestfs(3)/GUESTFS_EVENT_PROGRESS>), якщо зареєстровано зворотний
+виклик; або відкидає їх, якщо виклик не зареєстровано.
 
-The daemon self-limits the frequency of progress messages it sends (see
-C<daemon/proto.c:notify_progress>).  Not all calls generate progress
-messages.
+Фонова служба автоматично обмежує частоту повідомлень щодо поступу, які вона
+надсилає (див. C<daemon/proto.c:notify_progress>). Не усі виклики створюють
+повідомлення щодо поступу.
 
 =head2 ФІКСОВАНА БАЗОВА СИСТЕМА
 
-When libguestfs (or libguestfs tools) are run, they search a path looking
-for an appliance.  The path is built into libguestfs, or can be set using
-the C<LIBGUESTFS_PATH> environment variable.
+Під час роботи libguestfs (або інструментів libguestfs) виконується пошук
+базової системи у відповідному каталозі. Типовий шлях до цього каталогу
+вбудовано до libguestfs, його також можна змінити за допомогою змінної
+середовища C<LIBGUESTFS_PATH>.
 
-Normally a supermin appliance is located on this path (see
-L<supermin(1)/SUPERMIN APPLIANCE>).  libguestfs reconstructs this into a
-full appliance by running C<supermin --build>.
+Зазвичай, базова система supermin зберігається саме у цьому каталозі
+(див. L<supermin(1)/БАЗОВА СИСТЕМА SUPERMIN>).  libguestfs перебудовує її у
+повноцінну базову систему за допомогою команди C<supermin --build>.
 
-However, a simpler "fixed appliance" can also be used.  libguestfs detects
-this by looking for a directory on the path containing all the following
-files:
+Втім, також можна скористатися простішою «фіксованою базовою
+системою». libguestfs визначає таку систему, виконуючи пошук каталогу, який
+містить такі файли:
 
 =over 4
 
@@ -355,7 +394,7 @@ files:
 
 =item * F<root>
 
-=item * F<README.fixed> (note that it B<must> be present as well)
+=item * F<README.fixed> (зауважте, що він також B<має> бути)
 
 =back
 
@@ -364,10 +403,11 @@ supermin взагалі і запустить віртуальну машину 
 поточного модуля обробки, див. L<guestfs(3)/МОДУЛЬ>) із ядром, initrd та
 кореневим диском із фіксованої базової системи.
 
-Thus the fixed appliance can be used when a platform or a Linux distribution
-does not support supermin.  You build the fixed appliance on a platform that
-does support supermin using L<libguestfs-make-fixed-appliance(1)>, copy it
-over, and use that to run libguestfs.
+Отже, фіксованою базовою системою можна скористатися, якщо для платформи або
+дистрибутива Linux не передбачено підтримки supermin. Ви збираєте базову
+систему на платформі, де таку підтримку передбачено, за допомогою
+L<libguestfs-make-fixed-appliance(1)>, копіюєте її і використовуєте для
+запуску libguestfs.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -381,5 +421,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

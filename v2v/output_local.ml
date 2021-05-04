@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,13 +31,10 @@ class output_local dir = object
 
   method as_options = sprintf "-o local -os %s" dir
 
-  method prepare_targets source targets =
+  method prepare_targets source overlays _ _ _ _ =
     List.map (
-      fun t ->
-        let target_file =
-          TargetFile (dir // source.s_name ^ "-" ^ t.target_overlay.ov_sd) in
-        { t with target_file }
-    ) targets
+      fun (_, ov) -> TargetFile (dir // source.s_name ^ "-" ^ ov.ov_sd)
+    ) overlays
 
   method supported_firmware = [ TargetBIOS; TargetUEFI ]
 
@@ -51,7 +48,8 @@ class output_local dir = object
         *)
        error_unless_uefi_firmware guestcaps.gcaps_arch
 
-  method create_metadata source _ target_buses guestcaps _ target_firmware =
+  method create_metadata source targets
+                         target_buses guestcaps inspect target_firmware =
     (* We don't know what target features the hypervisor supports, but
      * assume a common set that libvirt supports.
      *)
@@ -62,8 +60,8 @@ class output_local dir = object
       | _ -> [] in
 
     let doc =
-      create_libvirt_xml source target_buses
-                         guestcaps target_features target_firmware in
+      create_libvirt_xml source targets target_buses
+                         guestcaps target_features target_firmware inspect in
 
     let name = source.s_name in
     let file = dir // name ^ ".xml" in

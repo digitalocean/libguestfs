@@ -4,7 +4,7 @@
 %           and from the code in the generator/ subdirectory.
 %  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 % 
-%  Copyright (C) 2009-2018 Red Hat Inc.
+%  Copyright (C) 2009-2019 Red Hat Inc.
 % 
 %  This library is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU Lesser General Public
@@ -167,6 +167,7 @@
 -export([equal/3]).
 -export([exists/2]).
 -export([extlinux/2]).
+-export([f2fs_expand/2]).
 -export([fallocate/3]).
 -export([fallocate64/3]).
 -export([feature_available/2]).
@@ -269,6 +270,7 @@
 -export([inspect_get_major_version/2]).
 -export([inspect_get_minor_version/2]).
 -export([inspect_get_mountpoints/2]).
+-export([inspect_get_osinfo/2]).
 -export([inspect_get_package_format/2]).
 -export([inspect_get_package_management/2]).
 -export([inspect_get_product_name/2]).
@@ -394,6 +396,7 @@
 -export([lvm_canonical_lv_name/2]).
 -export([lvm_clear_filter/1]).
 -export([lvm_remove_all/1]).
+-export([lvm_scan/2]).
 -export([lvm_set_filter/2]).
 -export([lvremove/2]).
 -export([lvrename/3]).
@@ -1169,6 +1172,9 @@ exists(G, Path) ->
 extlinux(G, Directory) ->
   call_port(G, {extlinux, Directory}).
 
+f2fs_expand(G, Device) ->
+  call_port(G, {f2fs_expand, Device}).
+
 fallocate(G, Path, Len) ->
   call_port(G, {fallocate, Path, Len}).
 
@@ -1486,6 +1492,9 @@ inspect_get_minor_version(G, Root) ->
 
 inspect_get_mountpoints(G, Root) ->
   call_port(G, {inspect_get_mountpoints, Root}).
+
+inspect_get_osinfo(G, Root) ->
+  call_port(G, {inspect_get_osinfo, Root}).
 
 inspect_get_package_format(G, Root) ->
   call_port(G, {inspect_get_package_format, Root}).
@@ -1885,6 +1894,9 @@ lvm_clear_filter(G) ->
 
 lvm_remove_all(G) ->
   call_port(G, {lvm_remove_all}).
+
+lvm_scan(G, Activate) ->
+  call_port(G, {lvm_scan, Activate}).
 
 lvm_set_filter(G, Devices) ->
   call_port(G, {lvm_set_filter, Devices}).

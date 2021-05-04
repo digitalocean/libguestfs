@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,13 +40,13 @@ let error_if_libvirt_does_not_support_json_backingfile () =
     error (f_"because of libvirt bug https://bugzilla.redhat.com/1134878 you must EITHER upgrade to libvirt >= 2.1.0 OR set this environment variable:\n\nexport LIBGUESTFS_BACKEND=direct\n\nand then rerun the virt-v2v command.")
 
 (* Superclass. *)
-class virtual input_libvirt (password : string option) libvirt_uri guest =
+class virtual input_libvirt input_conn (input_password : string option) guest =
 object
   inherit input
 
   method as_options =
     sprintf "-i libvirt%s %s"
-      (match libvirt_uri with
+      (match input_conn with
       | None -> ""
       | Some uri -> " -ic " ^ uri)
       guest
@@ -55,9 +55,9 @@ end
 (* Subclass specialized for handling anything that's *not* VMware vCenter
  * or Xen.
  *)
-class input_libvirt_other password libvirt_uri guest =
+class input_libvirt_other input_conn input_password guest =
 object
-  inherit input_libvirt password libvirt_uri guest
+  inherit input_libvirt input_conn input_password guest
 
   method source () =
     debug "input_libvirt_other: source ()";
@@ -65,9 +65,10 @@ object
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)
      *)
-    let xml = Libvirt_utils.dumpxml ?password ?conn:libvirt_uri guest in
+    let xml = Libvirt_utils.dumpxml ?password_file:input_password
+                                    ?conn:input_conn guest in
 
-    let source, disks = parse_libvirt_xml ?conn:libvirt_uri xml in
+    let source, disks = parse_libvirt_xml ?conn:input_conn xml in
     let disks = List.map (fun { p_source_disk = disk } -> disk) disks in
     { source with s_disks = disks }
 end

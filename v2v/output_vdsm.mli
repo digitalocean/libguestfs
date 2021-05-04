@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,12 @@
 
 (** [-o vdsm] target. *)
 
-type vdsm_options = {
-  image_uuids : string list;          (* --vdsm-image-uuid (multiple) *)
-  vol_uuids : string list;            (* --vdsm-vol-uuid (multiple) *)
-  vm_uuid : string;                   (* --vdsm-vm-uuid *)
-  ovf_output : string;                (* --vdsm-ovf-output *)
-  compat : string;                    (* --vdsm-compat=0.10|1.1 *)
-}
+type vdsm_options
 (** Miscellaneous extra command line parameters used by VDSM. *)
+
+val print_output_options : unit -> unit
+val parse_output_options : (string * string) list -> vdsm_options
+(** Print and parse vdsm -oo options. *)
 
 val output_vdsm : string -> vdsm_options -> Types.output_allocation -> Types.output
 (** [output_vdsm os vdsm_options output_alloc] creates and

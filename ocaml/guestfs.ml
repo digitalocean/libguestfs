@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -547,6 +547,7 @@ external egrepi : t -> string -> string -> string array = "guestfs_int_ocaml_egr
 external equal : t -> string -> string -> bool = "guestfs_int_ocaml_equal"
 external exists : t -> string -> bool = "guestfs_int_ocaml_exists"
 external extlinux : t -> string -> unit = "guestfs_int_ocaml_extlinux"
+external f2fs_expand : t -> string -> unit = "guestfs_int_ocaml_f2fs_expand"
 external fallocate : t -> string -> int -> unit = "guestfs_int_ocaml_fallocate"
 external fallocate64 : t -> string -> int64 -> unit = "guestfs_int_ocaml_fallocate64"
 external feature_available : t -> string array -> bool = "guestfs_int_ocaml_feature_available"
@@ -649,6 +650,7 @@ external inspect_get_icon : t -> ?favicon:bool -> ?highquality:bool -> string ->
 external inspect_get_major_version : t -> string -> int = "guestfs_int_ocaml_inspect_get_major_version"
 external inspect_get_minor_version : t -> string -> int = "guestfs_int_ocaml_inspect_get_minor_version"
 external inspect_get_mountpoints : t -> string -> (string * string) list = "guestfs_int_ocaml_inspect_get_mountpoints"
+external inspect_get_osinfo : t -> string -> string = "guestfs_int_ocaml_inspect_get_osinfo"
 external inspect_get_package_format : t -> string -> string = "guestfs_int_ocaml_inspect_get_package_format"
 external inspect_get_package_management : t -> string -> string = "guestfs_int_ocaml_inspect_get_package_management"
 external inspect_get_product_name : t -> string -> string = "guestfs_int_ocaml_inspect_get_product_name"
@@ -774,6 +776,7 @@ external lvcreate_free : t -> string -> string -> int -> unit = "guestfs_int_oca
 external lvm_canonical_lv_name : t -> string -> string = "guestfs_int_ocaml_lvm_canonical_lv_name"
 external lvm_clear_filter : t -> unit = "guestfs_int_ocaml_lvm_clear_filter"
 external lvm_remove_all : t -> unit = "guestfs_int_ocaml_lvm_remove_all"
+external lvm_scan : t -> bool -> unit = "guestfs_int_ocaml_lvm_scan"
 external lvm_set_filter : t -> string array -> unit = "guestfs_int_ocaml_lvm_set_filter"
 external lvremove : t -> string -> unit = "guestfs_int_ocaml_lvremove"
 external lvrename : t -> string -> string -> unit = "guestfs_int_ocaml_lvrename"
@@ -1186,6 +1189,7 @@ class guestfs ?environment ?close_on_exit () =
     method equal = equal g
     method exists = exists g
     method extlinux = extlinux g
+    method f2fs_expand = f2fs_expand g
     method fallocate = fallocate g
     method fallocate64 = fallocate64 g
     method feature_available = feature_available g
@@ -1288,6 +1292,7 @@ class guestfs ?environment ?close_on_exit () =
     method inspect_get_major_version = inspect_get_major_version g
     method inspect_get_minor_version = inspect_get_minor_version g
     method inspect_get_mountpoints = inspect_get_mountpoints g
+    method inspect_get_osinfo = inspect_get_osinfo g
     method inspect_get_package_format = inspect_get_package_format g
     method inspect_get_package_management = inspect_get_package_management g
     method inspect_get_product_name = inspect_get_product_name g
@@ -1413,6 +1418,7 @@ class guestfs ?environment ?close_on_exit () =
     method lvm_canonical_lv_name = lvm_canonical_lv_name g
     method lvm_clear_filter () = lvm_clear_filter g
     method lvm_remove_all () = lvm_remove_all g
+    method lvm_scan = lvm_scan g
     method lvm_set_filter = lvm_set_filter g
     method lvremove = lvremove g
     method lvrename = lvrename g

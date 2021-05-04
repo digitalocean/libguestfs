@@ -116,8 +116,8 @@ ext2 フォーマット済みパーティションを含む 100MB ディスク�
 
 =head2 準備済みディスクを用いた起動
 
-An alternate way to create a 100MB disk called F<test1.img> containing a
-single ext2-formatted partition:
+Create a 1G disk called F<test1.img> containing a single ext2-formatted
+partition:
 
  guestfish -N fs
 
@@ -263,6 +263,23 @@ L<virt-inspector(1)> コードを使用すると、 オペレーティングシ�
 
 このフラグを使用することは、 C<inspect-os> コマンドを使用することとほぼ同じです。 検出されたファイルシステムをマウントするために
 他のコマンドを使用します。
+
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
 
 =item B<--keys-from-stdin>
 
@@ -1031,10 +1048,10 @@ before the type (see examples below).
 The type briefly describes how the disk should be sized, partitioned, how
 filesystem(s) should be created, and how content should be added.
 Optionally the type can be followed by extra parameters, separated by C<:>
-(colon) characters.  For example, I<-N fs> creates a default 100MB,
+(colon) characters.  For example, I<-N fs> creates a default 1G,
 sparsely-allocated disk, containing a single partition, with the partition
-formatted as ext2.  I<-N fs:ext4:1G> is the same, but for an ext4 filesystem
-on a 1GB disk instead.
+formatted as ext2.  I<-N fs:ext4:2G> is the same, but for an ext4 filesystem
+on a 2GB disk instead.
 
 Note that the prepared filesystem is not mounted.  You would usually have to
 use the C<mount /dev/sda1 /> command or add the I<-m /dev/sda1> option.
@@ -1044,7 +1061,7 @@ automatically launched.
 
 =head2 例
 
-Create a 100MB disk with an ext4-formatted partition, called F<test1.img> in
+Create a 1G disk with an ext4-formatted partition, called F<test1.img> in
 the current directory:
 
  guestfish -N fs:ext4
@@ -1565,5 +1582,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,6 +102,7 @@ let rec inspect_source root_choice g =
     i_root = root;
     i_type = typ;
     i_distro = g#inspect_get_distro root;
+    i_osinfo = g#inspect_get_osinfo root;
     i_arch = g#inspect_get_arch root;
     i_major_version = g#inspect_get_major_version root;
     i_minor_version = g#inspect_get_minor_version root;

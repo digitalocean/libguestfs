@@ -1,0 +1,156 @@
+
+=head1 НАЗВА
+
+virt-v2v-output-local - Using virt-v2v to convert guests to local files or
+libvirt
+
+=head1 КОРОТКИЙ ОПИС
+
+ virt-v2v [-i* options] [-o libvirt] -os POOL
+
+ virt-v2v [-i* options] -o local -os DIRECTORY
+
+ virt-v2v [-i* options] -o qemu -os DIRECTORY [--qemu-boot]
+
+ virt-v2v [-i* options] -o null
+
+=head1 ОПИС
+
+This page documents how to use L<virt-v2v(1)> to convert guests to local
+files or to a locally running libvirt instance.  There are four output modes
+you can select on the virt-v2v command line:
+
+=over 4
+
+=item B<-o libvirt -os> C<POOL>
+
+=item B<-os> C<POOL>
+
+This converts the guest to a libvirt directory pool call C<POOL>, and
+instantiates the guest in libvirt (but does not start it running).  See
+L</OUTPUT TO LIBVIRT> below.
+
+I<-o libvirt> is the default if no I<-o> option is given, so you can omit
+it.
+
+=item B<-o local -os> C<DIRECTORY>
+
+This converts the guest to files in C<DIRECTORY>.  A libvirt XML file is
+also created, but unlike I<-o libvirt> the guest is not instantiated in
+libvirt, only files are created.
+
+The files will be called:
+
+ NAME-sda, NAME-sdb, etc.      Guest disk(s).
+ NAME.xml                      Libvirt XML.
+
+where C<NAME> is the guest name.
+
+=item B<-o qemu -os> C<DIRECTORY>
+
+=item B<-o qemu -os> C<DIRECTORY> B<--qemu-boot>
+
+This converts the guest to files in C<DIRECTORY>.  Unlike I<-o local> above,
+a shell script is created which contains the raw qemu command you would need
+to boot the guest.  However the shell script is not run, I<unless> you also
+add the I<--qemu-boot> option.
+
+=item B<-o null>
+
+The guest is converted, but the final result is thrown away and no metadata
+is created.  This is mainly useful for testing.
+
+=back
+
+=head1 ВИВЕДЕННЯ ДО LIBVIRT
+
+За допомогою параметра I<-o libvirt> ви можете вивантажувати перетворені
+гостьові системи на основу систему під керуванням libvirt. Існує декілька
+обмежень:
+
+=over 4
+
+=item *
+
+Ви можете використовувати лише локальне з'єднання libvirt [див. нижче
+способи обійти це обмеження].
+
+=item *
+
+Параметр I<-os pool> має вказувати на буфер-каталог, а не щось екзотичніше,
+наприклад iSCSI [втім, див. нижче].
+
+=item *
+
+Вивантаження можливе лише до гіпервізору KVM.
+
+=back
+
+=head2 Workaround for output to a remote libvirt instance and/or a non-directory
+storage pool
+
+=over 4
+
+=item 1.
+
+Скористайтеся virt-v2v у режимі I<-o local> для перетворення дисків і
+метаданих гостьової системи до локального тимчасового каталогу:
+
+ virt-v2v [...] -o local -os /var/tmp
+
+Ця команда створює два (або більше) файли у F</var/tmp> із такими назвами:
+
+ /var/tmp/НАЗВА.xml     # XML libvirt (метадані)
+ /var/tmp/НАЗВА-sda     # перший диск гостьової системи
+
+(замість слова C<НАЗВА> має бути назва гостьової системи).
+
+=item 2.
+
+Вивантаження перетворених дисків до буфера сховища із назвою C<POOL>:
+
+ size=$(stat -c%s /var/tmp/НАЗВА-sda)
+ virsh vol-create-as POOL НАЗВА-sda $size --format raw
+ virsh vol-upload --pool POOL НАЗВА-sda /var/tmp/НАЗВА-sda
+
+=item 3.
+
+Внесіть зміни до F</var/tmp/НАЗВА.xml>, щоб замінити F</var/tmp/НАЗВА-sda>
+на назву буфера. Іншими словами, знайдіть такий фрагмент у XML:
+
+ <disk type='file' device='disk'>
+   <driver name='qemu' type='raw' cache='none' />
+   <source file='/var/tmp/NAME-sda' />
+   <target dev='hda' bus='ide' />
+ </disk>
+
+і змініть дві речі: атрибут C<type='file'> слід замінити на
+C<type='volume'>, а елемент C<E<lt>sourceE<gt>> слід змінити так, щоб у
+ньому були атрибути C<pool> і C<volume>:
+
+ <disk type='volume' device='disk'>
+   ...
+   <source pool='POOL' volume='NAME-sda' />
+   ...
+ </disk>
+
+=item 4.
+
+Визначте остаточну гостьову систему у libvirt:
+
+ virsh define /var/tmp/NAME.xml
+
+=back
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<virt-v2v(1)>.
+
+=head1 АВТОР
+
+Richard W.M. Jones
+
+=head1 АВТОРСЬКІ ПРАВА
+
+Copyright (C) 2009-2019 Red Hat Inc.
+

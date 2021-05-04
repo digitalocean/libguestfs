@@ -19,37 +19,40 @@ guestfs-java — як користуватися libguestfs з коду на Jav
 
 =head1 ОПИС
 
-This manual page documents how to call libguestfs from the Java programming
-language.  This page just documents the differences from the C API and gives
-some examples.  If you are not familiar with using libguestfs, you also need
-to read L<guestfs(3)>.
+На цій сторінці підручника наведено документацію щодо викликів libguestfs з
+коду мовою програмування Java. На сторінці задокументовано відмінності від
+програмного інтерфейсу C та подано декілька прикладів. Якщо ви не дуже
+знайомі із користуванням libguestfs, вам також слід прочитати підручник з
+L<guestfs(3)>.
 
 =head2 ЗАКРИТТЯ ДЕСКРИПТОРА
 
-The handle is closed when it is reaped by the garbage collector.  Because
-libguestfs handles include a lot of state, it is also possible to close (and
-hence free) them explicitly by calling the C<close> method.
+Дескриптор закривається, коли його вилучає засіб збирання сміття у
+системі. Оскільки дескриптори libguestfs у значній мірі керуються станами,
+можна закрити (і отже, звільнити) дескриптор явним чином, викликавши метод
+C<close>.
 
 =head2 ВИНЯТКИ
 
-Errors from libguestfs functions are mapped into the C<LibGuestFSException>
-exception.  This has a single parameter which is the error message (a
-C<String>).
+Помилки функцій libguestfs пов'язуються із виключенням
+C<LibGuestFSException>. Виключення містить єдиний параметр, яким є
+повідомлення про помилку (параметр C<String>).
 
-Calling any method on a closed handle raises the same exception.
+Спроба викликати будь-який метод для закритого дескриптора призведе до
+надсилання однакового виключення.
 
-If L<malloc(3)> or some other allocation fails inside the bindings, the
-C<LibGuestFSOutOfMemory> exception is thrown.
+Якщо у прив'язках станеться помилка L<malloc(3)> або якоїсь іншої функції
+отримання пам'яті, буде надіслано виключення C<LibGuestFSOutOfMemory>.
 
 =head2 ПОДІЇ
 
-The L<libguestfs event API|guestfs(3)/EVENTS> is fully supported from Java.
-Create a class which implements the C<EventCallback> interface, create an
-instance of this class, and then call the C<GuestFS#set_event_callback>
-method to register this instance.  The C<event> method of the class is
-called when libguestfs generates an event.
+З боку Java реалізовано повну підтримку L<програмного інтерфейсу подій
+libguestfs|guestfs(3)/ПОДІЇ>. Створіть клас, який реалізує інтерфейс
+C<EventCallback>, створіть екземпляр цього класу, а потім викличте метод
+C<GuestFS#set_event_callback> для реєстрації цього екземпляра. Метод
+C<event> класу викликається, коли libguestfs створює повідомлення про подію.
 
-For example, this will print all trace events:
+Наприклад, такий код виводить усі події трасування:
 
  GuestFS g = new GuestFS ();
  g.set_trace (true);
@@ -63,18 +66,19 @@ For example, this will print all trace events:
    },
    GuestFS.EVENT_TRACE);
  g.add_drive_ro ("disk.img");
- // etc.
+ // тощо
 
-The output looks similar to this:
+Виведені дані будуть подібними до таких:
 
  EVENT_TRACE: add_drive_ro "disk.img"
  EVENT_TRACE: add_drive_ro = 0
  // тощо
 
-=head2 OPTIONAL ARGUMENTS
+=head2 НЕОБОВ'ЯЗКОВІ АРГУМЕНТИ
 
-Some methods take an optional map of optional parameters.  An example of
-this is C<g.add_drive> which can be called in one of two ways:
+Деяким методам передається необов'язкова карта додаткових
+параметрів. Прикладом таких методів є метод C<g.add_drive>, який можна
+викликати в один з двох способів:
 
  g.add_drive ("disk.img");
 
@@ -89,12 +93,13 @@ this is C<g.add_drive> which can be called in one of two ways:
  };
  g.add_drive ("disk.img", optargs);
 
-For more information on this topic, see L<guestfs(3)/CALLS WITH OPTIONAL
-ARGUMENTS>.
+Щоб дізнатися більше про цю тему, див. L</ВИКЛИКИ ІЗ НЕОБОВ'ЯЗКОВИМИ
+АРГУМЕНТАМИ>.
 
-=head3 Optional handle parameters
+=head3 Необов'язкові параметри дескриптора
 
-When creating the handle you can also pass a map of optional parameters:
+При створенні дескриптора ви також можете передати карту необов'язкових
+параметрів:
 
  Map<String, Object> optargs =
    new HashMap<String, Object>() {
@@ -109,8 +114,8 @@ When creating the handle you can also pass a map of optional parameters:
 
 =head1 ЗБИРАННЯ І ЗАПУСК
 
-Libguestfs for Java is a Java Native Interface (JNI) extension, supplied in
-three parts:
+Libguestfs для Java є розширенням Java Native Interface (JNI), яке поділено
+на три частини:
 
 =over 4
 
@@ -118,16 +123,16 @@ three parts:
 
 =item F<libguestfs-I<ВЕРСІЯ>.jar>
 
-The pure Java JAR file which contains several classes, the primary one being
-C<com.redhat.et.libguestfs.GuestFS>.  Upstream, the JAR file contains a
-version number in the filename, but some Linux distros may rename it without
-the version number.
+Файл JAR з кодом суто Java, який містить декілька класів, основним з яких є
+C<com.redhat.et.libguestfs.GuestFS>. У основній гілці розробки назва файла
+JAR містить номер версії, але у деяких дистрибутивах Linux файл
+перейменовують так, щоб у назві не було номера версії.
 
 =item F<libguestfs_jni.so>
 
-The JNI code (written in C).  This contains private native functions that
-interface between Java code and the regular libguestfs C library.  You
-should B<not> call these directly.
+Код JNI (написаний на C). Ця частина містить приватні функції інтерфейсу між
+кодом Java і звичайною бібліотекою libguestfs, яку написано на C. Вам B<не
+слід> викликати ці функції безпосередньо.
 
 =item F<libguestfs.so>
 
@@ -135,14 +140,15 @@ should B<not> call these directly.
 
 =back
 
-To compile your Java program, you need to locate the JAR file and add it to
-the class path.  For example:
+Для збирання вашої програми мовою Java вам слід встановити розташування
+файла JAR і додати його до шляху до класів. Приклад:
 
  export CLASSPATH=/usr/share/java/libguestfs.jar
  javac MyProgram.java
 
-To run your Java program, you also need to ensure that the JAR file is on
-the class path, as well as the path of your program.  For example:
+Для запуску вашої програми Java вам також потрібно впевнитися, що файл JAR
+перебуває у каталозі зі шляху до класів, а також є частиною вашої
+програми. Приклад:
 
  export CLASSPATH=.:/usr/share/java/libguestfs.jar
  java MyProgram
