@@ -1,0 +1,36 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Mon, 13 Jan 2020 20:13:30 +0100
+Subject: Link .mli files corresponding to autorgenerated .ml files into
+ builddir
+
+This avoids build failures in separate builds such as this one:
+
+,----
+| ocamlfind ocamlc -package str,unix -I . -a guestfs_config.cmo stringMap.cmo stringSet.cmo std_utils.cmo -o mlstdutils.cma
+| ar cr libmlstdutils.a libmlstdutils_a-dummy.o
+| ranlib libmlstdutils.a
+| File "_none_", line 1:
+| Error: Files std_utils.cmo and guestfs_config.cmo
+|        make inconsistent assumptions over interface Guestfs_config
+| make[4]: *** [Makefile:2580: mlstdutils.cma] Error 2
+`----
+---
+ configure.ac | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 210d522..49eb576 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -373,6 +373,11 @@ AC_CONFIG_FILES([Makefile
+                  v2v/test-harness/Makefile
+                  v2v/test-harness/META
+                  website/index.html])
++
++AC_CONFIG_LINKS([common/mlstdutils/guestfs_config.mli:common/mlstdutils/guestfs_config.mli
++                 daemon/daemon_config.mli:daemon/daemon_config.mli
++                 v2v/config.mli:v2v/config.mli])
++
+ AC_OUTPUT
+ 
+ dnl Produce summary.

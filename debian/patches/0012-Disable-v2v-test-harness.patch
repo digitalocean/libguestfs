@@ -9,7 +9,7 @@ Debian yet.
  1 file changed, 2 insertions(+)
 
 diff --git a/v2v/test-harness/Makefile.am b/v2v/test-harness/Makefile.am
-index d691889..fe7c40a 100644
+index cebee99..e33e57b 100644
 --- a/v2v/test-harness/Makefile.am
 +++ b/v2v/test-harness/Makefile.am
 @@ -30,6 +30,7 @@ SOURCES_MLI = \

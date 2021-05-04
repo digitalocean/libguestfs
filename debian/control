@@ -3,14 +3,15 @@ Section: libs
 Priority: optional
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, Hilko Bengen <bengen@debian.org>
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper (>= 12),
   dh-autoreconf,
   po-debconf, bash-completion,
-  supermin (>= 4.1.5-2~),
+  supermin (>= 5),
   libreadline-dev, libaugeas-dev (>= 1.0.0), libselinux1-dev, libhivex-ocaml-dev (>= 1.3.14~),
   libounit-ocaml-dev,
   liblzma-dev, libmagic-dev, libncurses5-dev, libncursesw5-dev, libpcre3-dev, libxml2-dev,
   libconfig-dev, libc-dev-bin,
+  libdbus-1-dev,
   systemtap-sdt-dev,
   libcap-dev, libacl1-dev, libyajl-dev,
   libsystemd-dev | libsystemd-journal-dev,
@@ -29,9 +30,11 @@ Build-Depends: debhelper (>= 9),
   genisoimage, pkg-config,
   erlang-dev,
 # dh-lua,
-  ocaml-nox (>= 4.02.3~), ocaml-findlib, libpcre-ocaml-dev, libgettext-ocaml-dev,
-# python (>= 2.6.6-3~), python-all-dev (>= 2.6.6-3~), python3-all-dev,
+  dh-ocaml, ocaml-nox (>= 4.02.3~), ocaml-findlib, libpcre-ocaml-dev, libgettext-ocaml-dev,
+# python3-all-dev,
 # dh-python,
+# don't need python for the bindings but ocaml-dep.sh needs it
+  python-is-python2,
 # default-jdk,
 # gem2deb, rake, libjs-jquery,
   libmodule-build-perl,
@@ -58,10 +61,13 @@ Build-Depends: debhelper (>= 9),
   btrfs-progs,
   bzip2,
   cpio,
-  cryptsetup, busybox,
+  cryptsetup-bin, busybox,
+  debootstrap,
   dosfstools,
-  exfat-utils,
+  exfat-fuse, exfat-utils,
   extlinux [i386 amd64],
+  f2fs-tools,
+  fdisk,
   file,
   gawk,
   gdisk,
@@ -77,6 +83,7 @@ Build-Depends: debhelper (>= 9),
   isc-dhcp-client,
   jfsutils,
   kmod | module-init-tools,
+  kpartx,
   ldmtool,
   less,
 # libc-bin,
@@ -91,6 +98,7 @@ Build-Depends: debhelper (>= 9),
 # ocfs2-tools,
   openssh-client,
   parted,
+  pciutils,
   procps,
   psmisc,
   reiserfsprogs,
@@ -101,6 +109,7 @@ Build-Depends: debhelper (>= 9),
   syslinux [i386 amd64],
   udev,
 # ufsutils,
+  uuid-runtime,
   vim-tiny,
   e2fsprogs,
   xfsprogs,
@@ -108,7 +117,7 @@ Build-Depends: debhelper (>= 9),
   zerofree,
   zfs-fuse [i386 amd64 armel armhf powerpc ppc64el sparc],
 Homepage: http://libguestfs.org
-Standards-Version: 3.9.8
+Standards-Version: 4.3.0
 Vcs-Git: https://salsa.debian.org/libvirt-team/libguestfs.git
 Vcs-Browser: https://salsa.debian.org/libvirt-team/libguestfs
 XS-Ruby-Versions: all
@@ -343,23 +352,12 @@ Description: guest disk image management system - tools
  virt-filesystems, virt-inspector, virt-ls, virt-make-fs, virt-rescue,
  virt-resize, virt-tar, and virt-win-reg.
 
-#Package: python-guestfs
-#Section: python
-#Architecture: linux-any
-#Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
-#Provides: python-libguestfs
-#Conflicts: python-libguestfs, libguestfs-dev (<< 1:1.14.9-1~)
-#Description: guest disk image management system - Python bindings
-# The libguestfs library allows accessing and modifying guest disk
-# images.
-# .
-# This package contains the Python bindings.
-# 
 #Package: python3-guestfs
 #Section: python
 #Architecture: linux-any
 #Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
-#Breaks: python-guestfs (<< 1:1.22.2-1~)
+#Replaces: python-guestfs
+#Breaks: python-guestfs
 #Description: guest disk image management system - Python 3 bindings
 # The libguestfs library allows accessing and modifying guest disk
 # images.
