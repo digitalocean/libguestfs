@@ -114,10 +114,10 @@ override_dh_missing:
 # to libguestfs* dependencies
 	debian/gen-appliance-depends.sh
 
-override_dh_php:
-	dh_php -p php-guestfs
-override_dh_python3:
-	dh_python3 -p python3-guestfs
+#override_dh_php:
+#	dh_php -p php-guestfs
+#override_dh_python3:
+#	dh_python3 -p python3-guestfs
 override_dh_shlibdeps:
 	dh_shlibdeps
 # Add libraries needed by guestfsd to libguestfs0 dependencies
