@@ -377,7 +377,7 @@ Description: guest disk image management system - tools
 # images.
 # .
 # This package contains the Perl bindings.
-# 
+#
 #Package: libguestfs-ocaml
 #Section: ocaml
 #Architecture: linux-any
@@ -389,13 +389,13 @@ Description: guest disk image management system - tools
 # images.
 # .
 # This package includes the OCaml shared runtime stub libraries.
-# 
+#
 #Package: libguestfs-ocaml-dev
 #Section: ocaml
 #Architecture: linux-any
 #Depends: ${shlibs:Depends}, ${misc:Depends},
 # libguestfs0 (= ${binary:Version}),
-# libguestfs-dev (= ${binary:Version}), 
+# libguestfs-dev (= ${binary:Version}),
 # ${ocaml:Depends}
 #Provides: ${ocaml:Provides}
 #Conflicts: libguestfs-dev (<< 1:1.14.9-1~)

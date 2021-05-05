@@ -3,8 +3,9 @@ libguestfs (1:1.40.2-7) unstable; urgency=medium
   * Merge Debian's 1.40.2-7
     - Dropped the automake update patch
     - Adding python3 to the build deps for ocaml-dep.sh
+  * Trim trailing whitespace (lintian-brush)
 
- -- Andrew James <ajames@digitalocean.com>  Tue, 04 May 2021 13:56:42 -0600
+ -- Andrew James <ajames@digitalocean.com>  Tue, 04 May 2021 21:28:34 -0600
 
 libguestfs (1:1.40.2-7) unstable; urgency=medium
 
@@ -73,7 +74,7 @@ libguestfs (1:1.38.6-2digitalocean2) UNRELEASED; urgency=low
  -- Andrew James <ajames@digitalocean.com>  Mon, 03 May 2021 15:24:00 -0600
 
 libguestfs (1:1.38.6-2digitalocean1) UNRELEASED; urgency=low
-  
+
   * Golang bindings return error interface instead of struct
   * Generate golang type definitions in a separate package
   * Add comment to top of golang files that tells go linter it's generated
@@ -399,7 +400,7 @@ libguestfs (1:1.32.5-1) unstable; urgency=medium
   * New upstream version
   * Drop PHP7 compatibility patch that has been integrated upstream
   * Add version-specific GOROOT exclude rule
-  
+
  -- Hilko Bengen <bengen@debian.org>  Wed, 13 Jul 2016 18:56:44 +0200
 
 libguestfs (1:1.32.4-2) unstable; urgency=medium
@@ -836,7 +837,7 @@ libguestfs (1:1.27.11-1) experimental; urgency=medium
   * Run "make quickcheck" only once
   * Rebased patch queue
   * Updated symbols file
-  
+
  -- Hilko Bengen <bengen@debian.org>  Sat, 17 May 2014 21:29:58 +0200
 
 libguestfs (1:1.27.6-1) experimental; urgency=medium
@@ -1649,7 +1650,7 @@ libguestfs (1.12.8-2) unstable; urgency=low
 
 libguestfs (1.12.8-1) unstable; urgency=low
 
-  * New upstream version 
+  * New upstream version
   * [e85ce09] Rebased patch queue; fixed bindtests and inspector tests
   * [5294a7e] Got rid of a shortcut in building bindings for multiple
     Python versions. This stopped working with Python 2.7 being the
