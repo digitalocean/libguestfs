@@ -6,8 +6,9 @@ libguestfs (1:1.40.2-7digitalocean0) UNRELEASED; urgency=medium
   * Trim trailing whitespace (lintian-brush)
   * Remove 0016-relax-supermin-version-for-trusty.patch
   * Fix missing-build-dependency-for-dh_-command (php, python)
+  * Remove the dh-autoreconf build-dep (not needed at compat 12)
 
- -- Andrew James <ajames@digitalocean.com>  Tue, 04 May 2021 21:36:21 -0600
+ -- Andrew James <ajames@digitalocean.com>  Tue, 04 May 2021 21:39:34 -0600
 
 libguestfs (1:1.40.2-7) unstable; urgency=medium
 
