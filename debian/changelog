@@ -1,4 +1,4 @@
-libguestfs (1:1.40.2-7) unstable; urgency=medium
+libguestfs (1:1.40.2-7digitalocean0) UNRELEASED; urgency=medium
 
   * Merge Debian's 1.40.2-7
     - Dropped the automake update patch
