@@ -21,13 +21,14 @@ L<virt-tar-out(1)>.
 
 =head1 ПРИКЛАДИ
 
-Download C</home> from the VM into a local tarball:
+Отримати C</home> з віртуальної машини до локального архіву tar:
 
  virt-tar -x domname /home home.tar
 
  virt-tar -zx domname /home home.tar.gz
 
-Upload a local tarball and unpack it inside C</tmp> in the VM:
+Вивантажити локальний архів tar і розпакувати його до C</tmp> у віртуальній
+машині:
 
  virt-tar -u domname uploadstuff.tar /tmp
 
@@ -35,40 +36,46 @@ Upload a local tarball and unpack it inside C</tmp> in the VM:
 
 =head1 ПОПЕРЕДЖЕННЯ
 
-You must I<not> use C<virt-tar> with the I<-u> option (upload) on live
-virtual machines.  If you do this, you risk disk corruption in the VM.
-C<virt-tar> tries to stop you from doing this, but doesn't catch all cases.
+I<Не> використовуйте C<virt-tar> з параметром I<-u> (вивантаження) для
+активних віртуальних машин. Якщо ви зробите це, ви ризикуєте пошкодити диск
+у віртуальній машині. C<virt-tar> намагатиметься запобігти подібним діям,
+але програма не завжди може визначити усі можливі випадки.
 
-You can use I<-x> (extract) on live virtual machines, but you might get
-inconsistent results or errors if there is filesystem activity inside the
-VM.  If the live VM is synched and quiescent, then C<virt-tar> will usually
-work, but the only way to guarantee consistent results is if the virtual
-machine is shut down.
+Ви можете користуватися параметром I<-x> (видобути) для активних віртуальних
+машин, але результатом можуть бути некоректні дані або помилки, якщо під час
+видобування у файловій системі віртуальної машини відбуваються якісь
+дії. Якщо активна віртуальна машина є синхронізованою і перебуває у стані
+спокою, зазвичай, C<virt-tar> працюватиме, але єдиним способом гарантування
+коректних результатів є вимикання віртуальної машини.
 
 =head1 ОПИС
 
-C<virt-tar> is a general purpose archive tool for downloading and uploading
-parts of a guest filesystem.  There are many possibilities: making backups,
-uploading data files, snooping on guest activity, fixing or customizing
-guests, etc.
+C<virt-tar> — інструмент архівування загального призначення, завданням якого
+є отримання і вивантаження частин файлової системи гостьової операційної
+системи. У нього багато можливих застосувань: створення резервних копій,
+вивантаження файлів із даними, стеження за діями у гостьовій системі,
+виправлення та налаштовування гостьових систем тощо.
 
-If you want to just view a single file, use L<virt-cat(1)>.  If you just
-want to edit a single file, use L<virt-edit(1)>.  For more complex cases you
-should look at the L<guestfish(1)> tool.
+Якщо вам потрібен один файл, скористайтеся L<virt-cat(1)>. Якщо ви хочете
+внести зміни до одного файла, скористайтеся L<virt-edit(1)>.  Для виконання
+складніших дій можна скористатися програмою L<guestfish(1)>.
 
-There are two modes of operation: I<-x> (eXtract) downloads a directory and
-its contents (recursively) from the virtual machine into a local tarball.
-I<-u> uploads from a local tarball, unpacking it into a directory inside the
-virtual machine.  You cannot use these two options together.
+Передбачено два режими роботи: I<-x> (eXtract) отримує дані каталогу і його
+вміст (рекурсивно) з віртуальної машини до локального архіву tar. I<-u>
+вивантажує дані з локального архіву tar, розпаковуючи їх до каталогу у
+віртуальній машині. Параметри, які визначають ці два режими роботи, не можна
+використовувати разом у одній команді.
 
-In addition, you may need to use the I<-z> (gZip) option to enable
-compression.  When uploading, you have to specify I<-z> if the upload file
-is compressed because virt-tar won't detect this on its own.
+Крім того, ймовірно, вам знадобиться параметр I<-z> (gZip), який вмикає
+стискання даних. Під час вивантаження даних вам слід вказати параметр I<-z>,
+якщо вивантажуваний файл стиснуто, оскільки сама virt-tar не намагатиметься
+це визначити.
 
-C<virt-tar> can only handle tar (optionally gzipped) format tarballs.  For
-example it cannot do PKZip files or bzip2 compression.  If you want that
-then you'll have to rebuild the tarballs yourself.  (This is a limitation of
-the L<libguestfs(3)> API).
+C<virt-tar> може працювати лише з форматом архівів tar (з можливістю
+стискання gzip). Наприклад, програма не може працювати із файлами PKZip або
+архівами, які стиснуто bzip2. Якщо вам доводиться працювати з іншими
+форматами даних, вам доведеться перезібрати архіви власноруч. (Це обмеження
+є обмеженням програмного інтерфейсу L<libguestfs(3)>).
 
 =head1 ПАРАМЕТРИ
 
@@ -94,12 +101,13 @@ the L<libguestfs(3)> API).
 
 =item B<--format> raw
 
-Specify the format of disk images given on the command line.  If this is
-omitted then the format is autodetected from the content of the disk image.
+Визначає формат образу диска, назву якого вказано у рядку команди. Якщо
+формат не вказано, його буде визначено автоматично на основі вмісту образу
+диска.
 
-If disk images are requested from libvirt, then this program asks libvirt
-for this information.  In this case, the value of the format parameter is
-ignored.
+Якщо вказаний диск походить з libvirt, ця програма надішле запит щодо даних
+до libvirt. У цьому випадку вказане значення параметра формату буде
+проігноровано.
 
 Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
 ненадійних джерел, вам слід завжди вказувати назву формату.
@@ -114,19 +122,21 @@ ignored.
 
 =item B<--upload>
 
-Use I<-x> to extract (download) a directory from a virtual machine to a
-local tarball.
+Скористайтеся параметром I<-x> для видобування (отримання) каталогу з
+віртуальної машини до локального архіву tar.
 
-Use I<-u> to upload and unpack from a local tarball into a virtual machine.
-Please read the L</WARNING> section above before using this option.
+Скористайтеся параметром I<-u> для вивантаження і розпаковування локального
+архіву tar до віртуальної машини. Будь ласка, ознайомтеся із наведеним вище
+розділом L</ПОПЕРЕДЖЕННЯ>, перш ніж користуватися цим параметром.
 
-You must specify exactly one of these options.
+Слід вказувати лише один із цих параметрів.
 
 =item B<-z>
 
 =item B<--gzip>
 
-Specify that the input or output tarball is gzip-compressed.
+Надає змогу вказати, що вхідний або вихідний архів tar стиснуто за допомогою
+gzip.
 
 =back
 

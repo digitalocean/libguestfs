@@ -17,15 +17,17 @@ guestfs-perl — як використовувати libguestfs з Perl
 
 =head1 ОПИС
 
-This manual page documents how to call libguestfs from the Perl programming
-language.  This page just documents the differences from the C API and gives
-some examples.  If you are not familiar with using libguestfs, you also need
-to read L<guestfs(3)>.  To read the full Perl API, see L<Sys::Guestfs(3)>.
+На цій сторінці підручника наведено документацію щодо викликів libguestfs з
+коду мовою програмування Perl. На сторінці задокументовано відмінності від
+програмного інтерфейсу C та подано декілька прикладів. Якщо ви не дуже
+знайомі із користуванням libguestfs, вам також слід прочитати підручник з
+L<guestfs(3)>. Повністю програмний інтерфейс Perl описану на сторінці
+L<Sys::Guestfs(3)>.
 
 =head2 ПОМИЛКИ
 
-Errors from libguestfs functions turn into calls to C<croak> (see
-L<Carp(3)>).
+Помилки від функцій libguestfs перетворюються на виклики C<croak>
+(див. L<Carp(3)>).
 
 =head1 ПРИКЛАД 1. СТВОРЕННЯ ОБРАЗУ ДИСКА
 

@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,6 +209,10 @@ Frugalware.
 =item \"gentoo\"
 
 Gentoo.
+
+=item \"kalilinux\"
+
+Kali Linux.
 
 =item \"linuxmint\"
 
@@ -769,5 +773,19 @@ Operating system icons are usually trademarks.  Seek legal
 advice before using trademarks in applications.
 
 =back" };
+
+  { defaults with
+    name = "inspect_get_osinfo"; added = (1, 39, 1);
+    style = RString (RPlainString, "id"), [String (Mountable, "root")], [];
+    shortdesc = "get a possible osinfo short ID corresponding to this operating system";
+    longdesc = "\
+This function returns a possible short ID for libosinfo corresponding
+to the guest.
+
+I<Note:> The returned ID is only a guess by libguestfs, and nothing
+ensures that it actually exists in osinfo-db.
+
+If no ID could not be determined, then the string C<unknown> is
+returned." };
 
 ]

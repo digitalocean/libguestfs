@@ -1,7 +1,7 @@
 #!/bin/bash -
 # @configure_input@
 # virt-p2v-make-disk
-# Copyright (C) 2014-2018 Red Hat Inc.
+# Copyright (C) 2014-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -122,12 +122,8 @@ if [ $# -eq 1 ]; then
 else
     # If osversion was not set, then we must guess a good value
     # based on the host distro.
-    if test -f /etc/redhat-release; then
-        osversion="$(virt-builder -l | sort |
-                       @AWK@ '/^fedora-[1-9]/ {print $1}' | tail -1)"
-    elif test -f /etc/debian_version; then
-        osversion="$(virt-builder -l | sort |
-                       @AWK@ '/^debian-[1-9]/ {print $1}' | tail -1)"
+    if test -f /etc/os-release; then
+        osversion="`. /etc/os-release && echo ${ID}-${VERSION_ID}`"
     fi
     if [ "x$osversion" = "x" ]; then
         echo "$program: unable to guess a suitable os-version."

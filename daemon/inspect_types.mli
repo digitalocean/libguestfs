@@ -1,5 +1,5 @@
 (* guestfs-inspection
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,6 +85,7 @@ and distro =
   | DISTRO_FREEDOS
   | DISTRO_FRUGALWARE
   | DISTRO_GENTOO
+  | DISTRO_KALI_LINUX
   | DISTRO_LINUX_MINT
   | DISTRO_MAGEIA
   | DISTRO_MANDRIVA

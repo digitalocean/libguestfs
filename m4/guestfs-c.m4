@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -104,6 +104,9 @@ gl_WARN_ADD([-Wimplicit-fallthrough=4])
 
 dnl GCC level 2 gives incorrect warnings, so use level 1.
 gl_WARN_ADD([-Wformat-truncation=1])
+
+dnl GCC 9 at level 2 gives apparently bogus errors when %.*s is used.
+gl_WARN_ADD([-Wformat-overflow=1])
 
 AC_SUBST([WARN_CFLAGS])
 

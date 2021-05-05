@@ -1,5 +1,5 @@
 (* Common utilities for OCaml tools in libguestfs.
- * Copyright (C) 2010-2018 Red Hat Inc.
+ * Copyright (C) 2010-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,14 @@ open Std_utils
 open Common_gettext.Gettext
 open Getopt.OptionName
 
-external c_inspect_decrypt : Guestfs.t -> int64 -> unit = "guestfs_int_mllib_inspect_decrypt"
+type key_store = {
+  keys : (string, key_store_key) Hashtbl.t;
+}
+and key_store_key =
+  | KeyString of string
+  | KeyFileName of string
+
+external c_inspect_decrypt : Guestfs.t -> int64 -> (string * key_store_key) list -> unit = "guestfs_int_mllib_inspect_decrypt"
 external c_set_echo_keys : unit -> unit = "guestfs_int_mllib_set_echo_keys" "noalloc"
 external c_set_keys_from_stdin : unit -> unit = "guestfs_int_mllib_set_keys_from_stdin" "noalloc"
 
@@ -229,14 +236,69 @@ let human_size i =
     )
   )
 
+type machine_readable_fn = {
+  pr : 'a. ('a, unit, string, unit) format4 -> 'a;
+} (* [@@unboxed] *)
+
+type machine_readable_output_type =
+  | NoOutput
+  | Channel of out_channel
+  | File of string
+let machine_readable_output = ref NoOutput
+let machine_readable_channel = ref None
+let machine_readable () =
+  let chan =
+    if !machine_readable_channel = None then (
+      let chan =
+        match !machine_readable_output with
+        | NoOutput -> None
+        | Channel chan -> Some chan
+        | File f -> Some (open_out f) in
+      machine_readable_channel := chan
+    );
+    !machine_readable_channel
+  in
+  match chan with
+  | None -> None
+  | Some chan ->
+    let pr fs =
+      ksprintf (output_string chan) fs
+    in
+    Some { pr }
+
 type cmdline_options = {
   getopt : Getopt.t;
+  ks : key_store;
 }
 
 let create_standard_options argspec ?anon_fun ?(key_opts = false) ?(machine_readable = false) usage_msg =
   (** Install an exit hook to check gc consistency for --debug-gc *)
   let set_debug_gc () =
     at_exit (fun () -> Gc.compact()) in
+  let parse_machine_readable = function
+    | None ->
+      machine_readable_output := Channel stdout
+    | Some fmt ->
+      let outtype, outname = String.split ":" fmt in
+      if outname = "" then
+        error (f_"invalid format string for --machine-readable: %s") fmt;
+      (match outtype with
+      | "file" -> machine_readable_output := File outname
+      | "stream" ->
+        let chan =
+          match outname with
+          | "stdout" -> stdout
+          | "stderr" -> stderr
+          | n ->
+            error (f_"invalid output stream for --machine-readable: %s") fmt in
+        machine_readable_output := Channel chan
+      | n ->
+        error (f_"invalid output for --machine-readable: %s") fmt
+      )
+  in
+  let ks = {
+    keys = Hashtbl.create 13;
+  } in
   let argspec = [
     [ S 'V'; L"version" ], Getopt.Unit print_version_and_exit, s_"Display version and exit";
     [ S 'v'; L"verbose" ], Getopt.Unit set_verbose,  s_"Enable libguestfs debugging messages";
@@ -249,19 +311,30 @@ let create_standard_options argspec ?anon_fun ?(key_opts = false) ?(machine_read
   let argspec =
     argspec @
       (if key_opts then
+      let parse_key_selector arg =
+        let parts = String.nsplit ~max:3 ":" arg in
+        match parts with
+        | [ device; "key"; key ] ->
+          Hashtbl.replace ks.keys device (KeyString key)
+        | [ device; "file"; file ] ->
+          Hashtbl.replace ks.keys device (KeyFileName file)
+        | _ ->
+          error (f_"invalid selector string for --key: %s") arg
+      in
       [
         [ L"echo-keys" ],       Getopt.Unit c_set_echo_keys,       s_"Don’t turn off echo for passphrases";
         [ L"keys-from-stdin" ], Getopt.Unit c_set_keys_from_stdin, s_"Read passphrases from stdin";
+        [ L"key" ], Getopt.String (s_"SELECTOR", parse_key_selector), s_"Specify a LUKS key";
       ]
       else []) @
       (if machine_readable then
       [
-        [ L"machine-readable" ], Getopt.Unit set_machine_readable, s_"Make output machine readable";
+        [ L"machine-readable" ], Getopt.OptString ("format", parse_machine_readable), s_"Make output machine readable";
       ]
       else []) in
   let getopt = Getopt.create argspec ?anon_fun usage_msg in
   {
-    getopt;
+    getopt; ks;
   }
 
 (* Run an external command, slurp up the output as a list of lines. *)
@@ -335,9 +408,7 @@ and do_run ?(echo_cmd = true) ?stdout_fd ?stderr_fd args =
       fd
   in
   try
-    let app =
-      if Filename.is_relative app then which app
-      else (Unix.access app [Unix.X_OK]; app) in
+    let app = which app in
     let outfd = get_fd Unix.stdout stdout_fd in
     let errfd = get_fd Unix.stderr stderr_fd in
     if echo_cmd then
@@ -347,9 +418,11 @@ and do_run ?(echo_cmd = true) ?stdout_fd ?stderr_fd args =
     Either (pid, app, stdout_fd, stderr_fd)
   with
   | Executable_not_found _ ->
-    Or 127
-  | Unix.Unix_error (errcode, _, _) when errcode = Unix.ENOENT ->
-    Or 127
+     debug "%s: executable not found" app;
+     Or 127
+  | Unix.Unix_error (errcode, fn, _) when errcode = Unix.ENOENT ->
+     debug "%s: %s: executable not found" app fn;
+     Or 127
 
 and do_teardown app outfd errfd exitstat =
   Option.may Unix.close outfd;
@@ -548,13 +621,21 @@ let is_btrfs_subvolume g fs =
     if g#last_errno () = Guestfs.Errno.errno_EINVAL then false
     else raise exn
 
-let inspect_decrypt g =
+let inspect_decrypt g ks =
+  (* Turn the keys in the key_store into a simpler struct, so it is possible
+   * to read it using the C API.
+   *)
+  let keys_as_list = Hashtbl.fold (
+    fun k v acc ->
+      (k, v) :: acc
+  ) ks.keys [] in
   (* Note we pass original 'g' even though it is not used by the
    * callee.  This is so that 'g' is kept as a root on the stack, and
    * so cannot be garbage collected while we are in the c_inspect_decrypt
    * function.
    *)
   c_inspect_decrypt g#ocaml_handle (Guestfs.c_pointer g#ocaml_handle)
+    keys_as_list
 
 let with_timeout op timeout ?(sleep = 2) fn =
   let start_t = Unix.gettimeofday () in

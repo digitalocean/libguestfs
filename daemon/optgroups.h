@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ extern int optgroup_blkdiscard_available (void);
 extern int optgroup_blkdiscardzeroes_available (void);
 extern int optgroup_btrfs_available (void);
 extern int optgroup_extlinux_available (void);
+extern int optgroup_f2fs_available (void);
 extern int optgroup_fstrim_available (void);
 extern int optgroup_gdisk_available (void);
 extern int optgroup_grub_available (void);
@@ -128,6 +129,10 @@ extern int optgroup_zerofree_available (void);
 #define OPTGROUP_EXTLINUX_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_extlinux (const char *directory) { abort (); } \
   int optgroup_extlinux_available (void) { return 0; }
+
+#define OPTGROUP_F2FS_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_f2fs_expand (const char *device) { abort (); } \
+  int optgroup_f2fs_available (void) { return 0; }
 
 #define OPTGROUP_FSTRIM_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_fstrim (const char *mountpoint, int64_t offset, int64_t length, int64_t minimumfreeextent) { abort (); } \

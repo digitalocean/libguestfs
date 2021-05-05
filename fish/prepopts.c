@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,38 +29,38 @@
 #include "prepopts.h"
 
 static struct prep_param disk_args[] = {
-  { "size", "100M", "the size of the disk image" },
+  { "size", "1G", "the size of the disk image" },
 };
 
 static struct prep_param part_args[] = {
-  { "size", "100M", "the size of the disk image" },
+  { "size", "1G", "the size of the disk image" },
   { "partition", "mbr", "partition table type" },
 };
 
 static struct prep_param fs_args[] = {
   { "filesystem", "ext2", "the type of filesystem to use" },
-  { "size", "100M", "the size of the disk image" },
+  { "size", "1G", "the size of the disk image" },
   { "partition", "mbr", "partition table type" },
 };
 
 static struct prep_param lv_args[] = {
   { "name", "/dev/VG/LV", "the name of the VG and LV to use" },
-  { "size", "100M", "the size of the disk image" },
+  { "size", "1G", "the size of the disk image" },
   { "partition", "mbr", "partition table type" },
 };
 
 static struct prep_param lvfs_args[] = {
   { "name", "/dev/VG/LV", "the name of the VG and LV to use" },
   { "filesystem", "ext2", "the type of filesystem to use" },
-  { "size", "100M", "the size of the disk image" },
+  { "size", "1G", "the size of the disk image" },
   { "partition", "mbr", "partition table type" },
 };
 
 static struct prep_param bootroot_args[] = {
   { "bootfs", "ext2", "the type of filesystem to use for boot" },
   { "rootfs", "ext2", "the type of filesystem to use for root" },
-  { "size", "100M", "the size of the disk image" },
-  { "bootsize", "32M", "the size of the boot filesystem" },
+  { "size", "1G", "the size of the disk image" },
+  { "bootsize", "128M", "the size of the boot filesystem" },
   { "partition", "mbr", "partition table type" },
 };
 
@@ -68,31 +68,31 @@ static struct prep_param bootrootlv_args[] = {
   { "name", "/dev/VG/LV", "the name of the VG and LV for root" },
   { "bootfs", "ext2", "the type of filesystem to use for boot" },
   { "rootfs", "ext2", "the type of filesystem to use for root" },
-  { "size", "100M", "the size of the disk image" },
-  { "bootsize", "32M", "the size of the boot filesystem" },
+  { "size", "1G", "the size of the disk image" },
+  { "bootsize", "128M", "the size of the boot filesystem" },
   { "partition", "mbr", "partition table type" },
 };
 
 const struct prep preps[] = {
   { "disk", 1, disk_args,
     "create a blank disk",
-    "  Create a blank disk, size 100MB (by default).\n\n  The default size can be changed by supplying an optional parameter.",
+    "  Create a blank disk, size 1G (by default).\n\n  The default size can be changed by supplying an optional parameter.",
     prep_prelaunch_disk, prep_postlaunch_disk },
   { "part", 2, part_args,
     "create a partitioned disk",
-    "  Create a disk with a single partition. By default the size of the disk\n  is 100MB (the available space in the partition will be a tiny bit\n  smaller) and the partition table will be MBR (old DOS-style).\n\n  These defaults can be changed by supplying optional parameters.",
+    "  Create a disk with a single partition. By default the size of the disk\n  is 1G (the available space in the partition will be a tiny bit smaller)\n  and the partition table will be MBR (old DOS-style).\n\n  These defaults can be changed by supplying optional parameters.",
     prep_prelaunch_part, prep_postlaunch_part },
   { "fs", 3, fs_args,
     "create a filesystem",
-    "  Create a disk with a single partition, with the partition containing an\n  empty filesystem. This defaults to creating a 100MB disk (the available\n  space in the filesystem will be a tiny bit smaller) with an MBR (old\n  DOS-style) partition table and an ext2 filesystem.\n\n  These defaults can be changed by supplying optional parameters.",
+    "  Create a disk with a single partition, with the partition containing an\n  empty filesystem. This defaults to creating a 1G disk (the available\n  space in the filesystem will be a tiny bit smaller) with an MBR (old\n  DOS-style) partition table and an ext2 filesystem.\n\n  These defaults can be changed by supplying optional parameters.",
     prep_prelaunch_fs, prep_postlaunch_fs },
   { "lv", 3, lv_args,
     "create a disk with logical volume",
-    "  Create a disk with a single partition, set up the partition as an LVM2\n  physical volume, and place a volume group and logical volume on there.\n  This defaults to creating a 100MB disk with the VG and LV called\n  \"/dev/VG/LV\". You can change the name of the VG and LV by supplying an\n  alternate name as the first optional parameter.\n\n  Note this does not create a filesystem. Use 'lvfs' to do that.",
+    "  Create a disk with a single partition, set up the partition as an LVM2\n  physical volume, and place a volume group and logical volume on there.\n  This defaults to creating a 1G disk with the VG and LV called\n  \"/dev/VG/LV\". You can change the name of the VG and LV by supplying an\n  alternate name as the first optional parameter.\n\n  Note this does not create a filesystem. Use 'lvfs' to do that.",
     prep_prelaunch_lv, prep_postlaunch_lv },
   { "lvfs", 4, lvfs_args,
     "create a disk with logical volume and filesystem",
-    "  Create a disk with a single partition, set up the partition as an LVM2\n  physical volume, and place a volume group and logical volume on there.\n  Then format the LV with a filesystem. This defaults to creating a 100MB\n  disk with the VG and LV called \"/dev/VG/LV\", with an ext2 filesystem.",
+    "  Create a disk with a single partition, set up the partition as an LVM2\n  physical volume, and place a volume group and logical volume on there.\n  Then format the LV with a filesystem. This defaults to creating a 1G\n  disk with the VG and LV called \"/dev/VG/LV\", with an ext2 filesystem.",
     prep_prelaunch_lvfs, prep_postlaunch_lvfs },
   { "bootroot", 5, bootroot_args,
     "create a boot and root filesystem",

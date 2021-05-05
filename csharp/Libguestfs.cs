@@ -4,7 +4,7 @@
 //          and from the code in the generator/ subdirectory.
 // ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 //
-// Copyright (C) 2009-2018 Red Hat Inc.
+// Copyright (C) 2009-2019 Red Hat Inc.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -2467,6 +2467,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_f2fs_expand (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// expand a f2fs filesystem
+    /// </summary>
+    public void f2fs_expand (string device)
+    {
+      int r;
+      r = guestfs_f2fs_expand (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_fallocate (IntPtr h, [In] string path, int len);
 
     /// <summary>
@@ -3964,6 +3978,21 @@ namespace Guestfs
       for (size_t i = 0; i < r.Length; i += 2)
         rr.Add (r[i], r[i+1]);
       return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_inspect_get_osinfo (IntPtr h, [In] string root);
+
+    /// <summary>
+    /// get a possible osinfo short ID corresponding to this operating system
+    /// </summary>
+    public string inspect_get_osinfo (string root)
+    {
+      string r;
+      r = guestfs_inspect_get_osinfo (_handle, root);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -5757,6 +5786,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_lvm_remove_all (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_lvm_scan (IntPtr h, bool activate);
+
+    /// <summary>
+    /// scan for LVM physical volumes, volume groups and logical volumes
+    /// </summary>
+    public void lvm_scan (bool activate)
+    {
+      int r;
+      r = guestfs_lvm_scan (_handle, activate);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

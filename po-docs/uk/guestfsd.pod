@@ -12,7 +12,7 @@ guestfsd — фонова служба guestfs
 C<guestfsd> є фоновою службою libguestfs. У звичайних користувачів ніколи не
 виникатиме потреби у явному запуску цієї програми. На цій сторінці
 підручника обговорено, що саме C<guestfsd> робить у базовій системі
-libguestfs і коли libguestfs використовується «вживу».
+libguestfs і коли libguestfs використовується «наживо».
 
 =head2 БАЗОВА СИСТЕМА LIBGUESTFS
 
@@ -153,5 +153,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -6561,6 +6561,39 @@ guestfs_int_ocaml_extlinux (value gv, value directoryv)
 }
 
 /* Automatically generated wrapper for function
+ * val f2fs_expand : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_f2fs_expand (value gv, value devicev);
+
+value
+guestfs_int_ocaml_f2fs_expand (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("f2fs_expand");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_f2fs_expand (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "f2fs_expand");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val fallocate : t -> string -> int -> unit
  */
 
@@ -9866,6 +9899,40 @@ guestfs_int_ocaml_inspect_get_mountpoints (value gv, value rootv)
 
   rv = copy_table (r);
   for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inspect_get_osinfo : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_inspect_get_osinfo (value gv, value rootv);
+
+value
+guestfs_int_ocaml_inspect_get_osinfo (value gv, value rootv)
+{
+  CAMLparam2 (gv, rootv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("inspect_get_osinfo");
+
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inspect_get_osinfo (g, root);
+  caml_leave_blocking_section ();
+  free (root);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "inspect_get_osinfo");
+
+  rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
 }
@@ -14154,6 +14221,36 @@ guestfs_int_ocaml_lvm_remove_all (value gv)
   caml_leave_blocking_section ();
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "lvm_remove_all");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lvm_scan : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_lvm_scan (value gv, value activatev);
+
+value
+guestfs_int_ocaml_lvm_scan (value gv, value activatev)
+{
+  CAMLparam2 (gv, activatev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("lvm_scan");
+
+  int activate = Bool_val (activatev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lvm_scan (g, activate);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "lvm_scan");
 
   rv = Val_unit;
   CAMLreturn (rv);

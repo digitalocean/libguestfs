@@ -7,7 +7,7 @@ libguestfs generated file
           and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2018 Red Hat Inc.
+ Copyright (C) 2009-2019 Red Hat Inc.
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -3944,6 +3944,21 @@ L</guestfs_feature_available>.
 
 (1.21.27 において追加)
 
+=head2 guestfs_f2fs_expand
+
+ int
+ guestfs_f2fs_expand (guestfs_h *g,
+                      const char *device);
+
+This expands a f2fs filesystem to match the size of the underlying device.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+This function depends on the feature C<f2fs>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.39.3)
+
 =head2 guestfs_fallocate
 
  int
@@ -6323,6 +6338,10 @@ Frugalware.
 
 Gentoo.
 
+=item "kalilinux"
+
+Kali Linux.
+
 =item "linuxmint"
 
 Linux Mint.
@@ -6722,6 +6741,24 @@ C<n> keys and values alternate, followed by the trailing NULL entry.  I<The
 caller must free the strings and the array after use>.
 
 (1.5.3 において追加)
+
+=head2 guestfs_inspect_get_osinfo
+
+ char *
+ guestfs_inspect_get_osinfo (guestfs_h *g,
+                             const char *root);
+
+This function returns a possible short ID for libosinfo corresponding to the
+guest.
+
+I<Note:> The returned ID is only a guess by libguestfs, and nothing ensures
+that it actually exists in osinfo-db.
+
+If no ID could not be determined, then the string C<unknown> is returned.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.39.1)
 
 =head2 guestfs_inspect_get_package_format
 
@@ -8860,7 +8897,7 @@ writes to this block device are decrypted from and encrypted to the
 underlying C<device> respectively.
 
 If this block device contains LVM volume groups, then calling
-C<guestfs_vgscan> followed by C<guestfs_vg_activate_all> will make them
+C<guestfs_lvm_scan> with the C<activate> parameter C<true> will make them
 visible.
 
 すべてのデバイスマッパーデバイスを一覧表示するには C<guestfs_list_dm_devices> を使用します。
@@ -8982,6 +9019,28 @@ This function depends on the feature C<lvm2>.  See also
 L</guestfs_feature_available>.
 
 (0.8 において追加)
+
+=head2 guestfs_lvm_scan
+
+ int
+ guestfs_lvm_scan (guestfs_h *g,
+                   int activate);
+
+This scans all block devices and rebuilds the list of LVM physical volumes,
+volume groups and logical volumes.
+
+If the C<activate> parameter is C<true> then newly found volume groups and
+logical volumes are activated, meaning the LV F</dev/VG/LV> devices become
+visible.
+
+When a libguestfs handle is launched it scans for existing devices, so you
+do not normally need to use this API.  However it is useful when you have
+added a new device or deleted an existing device (such as when the
+C<guestfs_luks_open> API is used).
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.39.8)
 
 =head2 guestfs_lvm_set_filter
 
@@ -14889,6 +14948,13 @@ L</guestfs_feature_available>.
 
  int
  guestfs_vgscan (guestfs_h *g);
+
+I<This function is deprecated.> In new code, use the L</guestfs_lvm_scan>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 This rescans all block devices and rebuilds the list of LVM physical
 volumes, volume groups and logical volumes.

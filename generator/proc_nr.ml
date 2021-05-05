@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -512,6 +512,8 @@ let proc_nr = [
 502, "inspect_get_drive_mappings";
 503, "part_set_gpt_attributes";
 504, "part_get_gpt_attributes";
+505, "f2fs_expand";
+506, "lvm_scan";
 ]
 
 (* End of list.  If adding a new entry, add it at the end of the list

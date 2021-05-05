@@ -1,5 +1,5 @@
 (* virt-get-kernel
- * Copyright (C) 2013-2018 Red Hat Inc.
+ * Copyright (C) 2013-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,9 +75,11 @@ read the man page virt-get-kernel(1).
   (* Machine-readable mode?  Print out some facts about what
    * this binary supports.
    *)
-  if machine_readable () then (
-    printf "virt-get-kernel\n";
+  (match machine_readable () with
+  | Some { pr } ->
+    pr "virt-get-kernel\n";
     exit 0
+  | None -> ()
   );
 
   (* Check -a and -d options. *)
@@ -110,7 +112,7 @@ read the man page virt-get-kernel(1).
   let unversioned = !unversioned in
   let prefix = !prefix in
 
-  add, output, unversioned, prefix
+  add, output, unversioned, prefix, opthandle.ks
 
 let rec do_fetch ~transform_fn ~outputdir g root =
   (* Mount up the disks. *)
@@ -164,7 +166,7 @@ and pick_kernel_files_linux (g : Guestfs.guestfs) root =
 
 (* Main program. *)
 let main () =
-  let add, output, unversioned, prefix = parse_cmdline () in
+  let add, output, unversioned, prefix, ks = parse_cmdline () in
 
   (* Connect to libguestfs. *)
   let g = open_guestfs () in
@@ -172,7 +174,7 @@ let main () =
   g#launch ();
 
   (* Decrypt the disks. *)
-  inspect_decrypt g;
+  inspect_decrypt g ks;
 
   let roots = g#inspect_os () in
   if Array.length roots = 0 then

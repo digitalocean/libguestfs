@@ -12,18 +12,18 @@ virt-list-partitions — показ списку розділів у вірту�
 
 =head1 ЗАСТАРІЛЕ
 
-This tool is obsolete.  Use L<virt-filesystems(1)> as a more flexible
-replacement.
+Ця програма вважається застарілою. Замість неї слід використовувати програму
+L<virt-filesystems(1)>, яке є гнучкішим замінником.
 
 =head1 ОПИС
 
-C<virt-list-partitions> is a command line tool to list the partitions that
-are contained in a virtual machine or disk image.  It is mainly useful as a
-first step to using L<virt-resize(1)>.
+C<virt-list-partitions> — інструмент командного рядка для показу списку
+розділів, які містяться у віртуальній машині (або образі диска). В
+основному, ця програма корисна як перший крок до використання
+L<virt-resize(1)>.
 
-C<virt-list-partitions> is just a simple wrapper around L<libguestfs(3)>
-functionality.  For more complex cases you should look at the
-L<guestfish(1)> tool.
+C<virt-list-partitions> є простою обгорткою навколо L<libguestfs(3)>. Для
+виконання складніших дій можна скористатися програмою L<guestfish(1)>.
 
 =head1 ПАРАМЕТРИ
 
@@ -49,12 +49,13 @@ L<guestfish(1)> tool.
 
 =item B<--format> raw
 
-Specify the format of disk images given on the command line.  If this is
-omitted then the format is autodetected from the content of the disk image.
+Визначає формат образу диска, назву якого вказано у рядку команди. Якщо
+формат не вказано, його буде визначено автоматично на основі вмісту образу
+диска.
 
-If disk images are requested from libvirt, then this program asks libvirt
-for this information.  In this case, the value of the format parameter is
-ignored.
+Якщо вказаний диск походить з libvirt, ця програма надішле запит щодо даних
+до libvirt. У цьому випадку вказане значення параметра формату буде
+проігноровано.
 
 Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
 ненадійних джерел, вам слід завжди вказувати назву формату.
@@ -63,20 +64,22 @@ ignored.
 
 =item B<--human-readable>
 
-Show sizes in human-readable form (eg. "1G").
+Вивести дані щодо розмірів у зручному для читання форматі (наприклад, ось
+так: «1G»).
 
 =item B<-l>
 
 =item B<--long>
 
-With this option, C<virt-list-partitions> displays the type and size of each
-partition too (where "type" means C<ext3>, C<pv> etc.)
+Якщо вказано цей параметр, C<virt-list-partitions> показує тип і розмір
+кожного розділу (де під типом ми розуміємо C<ext3>, C<pv> тощо).
 
 =item B<-t>
 
 =item B<--total>
 
-Display the total size of each block device (as a separate row or rows).
+Вивести загальний розмір кожного блокового пристрою (як окремий рядок або як
+окремі рядки).
 
 =back
 
@@ -92,5 +95,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

@@ -1,5 +1,5 @@
 /* guestmount - mount guests using libguestfs and FUSE
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,7 @@ usage (int status)
   else {
     printf (_("%s: FUSE module for libguestfs\n"
               "%s lets you mount a virtual machine filesystem\n"
-              "Copyright (C) 2009-2018 Red Hat Inc.\n"
+              "Copyright (C) 2009-2019 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] mountpoint\n"
               "Options:\n"
@@ -119,6 +119,7 @@ usage (int status)
               "  --fuse-help          Display extra FUSE options\n"
               "  -i|--inspector       Automatically mount filesystems\n"
               "  --help               Display help message and exit\n"
+              "  --key selector       Specify a LUKS key\n"
               "  --keys-from-stdin    Read passphrases from stdin\n"
               "  --live               Connect to a live virtual machine\n"
               "  -m|--mount dev[:mnt[:opts[:fstype]] Mount dev on mnt (if omitted, /)\n"
@@ -165,6 +166,7 @@ main (int argc, char *argv[])
     { "fuse-help", 0, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
     { "inspector", 0, 0, 'i' },
+    { "key", 1, 0, 0 },
     { "keys-from-stdin", 0, 0, 0 },
     { "live", 0, 0, 0 },
     { "long-options", 0, 0, 0 },
@@ -192,6 +194,7 @@ main (int argc, char *argv[])
   int c, r;
   int option_index;
   struct sigaction sa;
+  struct key_store *ks = NULL;
 
   int debug_calls = 0;
   int dir_cache_timeout = -1;
@@ -246,6 +249,8 @@ main (int argc, char *argv[])
         if (sscanf (optarg, "%d", &pipe_fd) != 1 || pipe_fd < 0)
           error (EXIT_FAILURE, 0,
                  _("unable to parse --fd option value: %s"), optarg);
+      } else if (STREQ (long_options[option_index].name, "key")) {
+        OPTION_key;
       } else
         error (EXIT_FAILURE, 0,
                _("unknown long option: %s (%d)"),
@@ -369,6 +374,7 @@ main (int argc, char *argv[])
 
   free_drives (drvs);
   free_mps (mps);
+  free_key_store (ks);
 
   /* FUSE example does this, not clear if it's necessary, but ... */
   if (guestfs_umask (g, 0) == -1)

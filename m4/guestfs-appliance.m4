@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ AC_ARG_WITH([supermin-extra-options],
     [AS_HELP_STRING([--with-supermin-extra-options="--opt1 --opt2 ..."],
         [Pass additional supermin options. @<:@default=no@:>@])],
     [SUPERMIN_EXTRA_OPTIONS="$withval"
-     AC_MSG_RESULT([$SUPERMIN_EXTRA_OPTIONS"])],
+     AC_MSG_RESULT([$SUPERMIN_EXTRA_OPTIONS])],
     [AC_MSG_RESULT([not set])])
 
 AC_SUBST([SUPERMIN_EXTRA_OPTIONS])
@@ -105,7 +105,7 @@ AC_ARG_WITH([distro],
             DISTRO="`. /etc/os-release && echo $ID | tr '@<:@:lower:@:>@' '@<:@:upper:@:>@'`"
             AS_CASE([$DISTRO],
                     [FEDORA | RHEL | CENTOS],[DISTRO=REDHAT],
-                    [OPENSUSE | SLED | SLES],[DISTRO=SUSE],
+                    [OPENSUSE* | SLED | SLES],[DISTRO=SUSE],
                     [ARCH],[DISTRO=ARCHLINUX])
             AC_MSG_RESULT([$DISTRO (from /etc/os-release)])
         else

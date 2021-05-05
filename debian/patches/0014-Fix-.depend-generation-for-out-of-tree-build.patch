@@ -1,0 +1,23 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Tue, 22 Jan 2019 11:35:22 +0100
+Subject: Fix .depend generation for out-of-tree build
+
+---
+ v2v/Makefile.am | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/v2v/Makefile.am b/v2v/Makefile.am
+index 2312812..bb0a57f 100644
+--- a/v2v/Makefile.am
++++ b/v2v/Makefile.am
+@@ -700,8 +700,8 @@ v2v_unit_tests_LINK = \
+ .depend: \
+ 	$(srcdir)/*.mli \
+ 	$(srcdir)/*.ml \
+-	config.ml \
+-	output_rhv_upload_*_source.ml
++	$(srcdir)/config.ml \
++	$(srcdir)/output_rhv_upload_*_source.ml
+ 	$(top_builddir)/ocaml-dep.sh $^
+ -include .depend
+ 

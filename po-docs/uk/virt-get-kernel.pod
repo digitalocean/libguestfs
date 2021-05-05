@@ -11,15 +11,16 @@ virt-get-kernel — видобування ядра і диска в пам'ят
 
 =head1 ОПИС
 
-This option extracts the kernel and initramfs from a guest.
+За допомогою цього параметра можна видобути ядро та initramfs з гостьової
+системи.
 
 Формат образу диска буде визначено автоматично, якщо ви не вкажете його за
 допомогою параметра I<--format>.
 
-In the case where the guest contains multiple kernels, the one with the
-highest version number is chosen.  To extract arbitrary kernels from the
-disk image, see L<guestfish(1)>.  To extract the entire C</boot> directory
-of a guest, see L<virt-copy-out(1)>.
+Якщо у гостьовій системі декілька ядер, буде вибрано ядро із найбільшим
+номером. Щоб видобути із образу диска ядро з певним номером версії,
+скористайтеся L<guestfish(1)>. Щоб видобути із гостьової системи увесь вміст
+каталогу C</boot>, скористайтеся L<virt-copy-out(1)>.
 
 =head1 ПАРАМЕТРИ
 
@@ -83,14 +84,31 @@ TEMPEST-нападів, або у вашій кімнаті нікого, окр
 
 =item B<--format> auto
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for the I<-a> option on the
-command line.
+Типовим значенням для параметра I<-a> є автоматичне визначення формату
+образу диска. Використання цього параметра примусово визначає значення
+параметрів I<-a> формату диска у рядку команди.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
+
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
 
 =item B<--keys-from-stdin>
 
@@ -100,6 +118,8 @@ command line.
 
 =item B<--machine-readable>
 
+=item B<--machine-readable>=format
+
 За допомогою цього параметра можна зробити виведені дані придатнішими для
 обробки комп'ютером, якщо для цієї обробки використовуються інші
 програми. Див. L</ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ> нижче.
@@ -108,19 +128,20 @@ command line.
 
 =item B<--output> каталог
 
-This option specifies the output directory where kernel and initramfs from
-the guest are written.
+Цей параметр визначає каталог виведення, куди буде записано ядро і initramfs
+з гостьової системи.
 
-If not specified, the default output is the current directory.
+Якщо не вказано, типово, дані буде виведено до поточного каталогу.
 
 =item B<--prefix> префікс
 
 За допомогою цього параметра можна вказати префікс для видобутих файлів.
 
-If a prefix is specified, then there will be a dash (C<->) after the prefix
-and before the rest of the file name; for example, a kernel in the guest
-like C<vmlinuz-3.19.0-20-generic> is saved as
-C<mydistro-vmlinuz-3.19.0-20-generic> when the prefix is C<mydistro>.
+Якщо вказано префікс, програма додасть дефіс (C<->) після префікса і перед
+рештою назви файла. Наприклад, якщо у гостьовій системі ядро називалося
+C<vmlinuz-3.19.0-20-generic>, його буде збережено як
+C<mydistro-vmlinuz-3.19.0-20-generic>, якщо було вказано префікс
+C<mydistro>.
 
 Див. також I<--unversioned-names>.
 
@@ -134,10 +155,10 @@ C<mydistro-vmlinuz-3.19.0-20-generic> when the prefix is C<mydistro>.
 
 Цей параметр впливає на назву файла призначення для видобутих файлів.
 
-If enabled, files will be saved locally just with the base name; for
-example, kernel and ramdisk in the guest like C<vmlinuz-3.19.0-20-generic>
-and C<initrd.img-3.19.0-20-generic> are saved respectively as C<vmlinuz> and
-C<initrd.img>.
+Якщо увімкнено, файли буде збережено локально лише з базовою
+назвою. Наприклад, якщо ядро та диск у пам'яті у гостьовій системі
+називалися C<vmlinuz-3.19.0-20-generic> та C<initrd.img-3.19.0-20-generic>,
+їх буде збережено, відповідно, як C<vmlinuz> та C<initrd.img>.
 
 Див. також I<--prefix>.
 
@@ -166,14 +187,18 @@ C<initrd.img>.
 робить зручним використання virt-get-kernel з інших програм, графічних
 інтерфейсів тощо.
 
-Use the option on its own to query the capabilities of the virt-get-kernel
-binary.  Typical output looks like this:
+Скористайтеся цим параметром окремо, щоб опитати систему щодо можливостей
+виконуваного файла virt-get-kernel. Типово виведені дані виглядатимуть якось
+так:
 
  $ virt-get-kernel --machine-readable
  virt-get-kernel
 
 Виводиться список можливостей, по одній на рядок, і програма завершує роботу
 зі станом 0.
+
+It is possible to specify a format string for controlling the output; see
+L<guestfs(3)/ADVANCED MACHINE READABLE OUTPUT>.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -196,5 +221,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2013-2018 Red Hat Inc.
+Copyright (C) 2013-2019 Red Hat Inc.
 

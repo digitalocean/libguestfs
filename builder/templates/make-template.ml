@@ -1,6 +1,6 @@
 #!/usr/bin/env ocaml
 (* libguestfs
- * Copyright (C) 2016-2018 Red Hat Inc.
+ * Copyright (C) 2016-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -275,6 +275,10 @@ let rec main () =
   if Sys.command cmd <> 0 then exit 1;
   let output = output ^ ".xz" in
 
+  (* Set public readable permissions on the final file. *)
+  let cmd = sprintf "chmod 0644 %s" (quote output) in
+  if Sys.command cmd <> 0 then exit 1;
+
   printf "Template completed: %s\n%!" output;
 
   (* Construct the index fragment, but don't create this for the private
@@ -352,6 +356,7 @@ and os_of_string os ver =
   | "ubuntu", "12.04" -> Ubuntu (ver, "precise")
   | "ubuntu", "14.04" -> Ubuntu (ver, "trusty")
   | "ubuntu", "16.04" -> Ubuntu (ver, "xenial")
+  | "ubuntu", "18.04" -> Ubuntu (ver, "bionic")
   | "fedora", ver -> Fedora (int_of_string ver)
   | "freebsd", ver -> let maj, min = parse_major_minor ver in FreeBSD (maj, min)
   | "windows", ver -> parse_windows_version ver
@@ -418,6 +423,9 @@ and filename_of_os os arch ext =
   | CentOS (major, minor) ->
      if arch = X86_64 then sprintf "centos-%d.%d%s" major minor ext
      else sprintf "centos-%d.%d-%s%s" major minor (string_of_arch arch) ext
+  | RHEL (8, 0) -> (* RHEL 8 Alpha temporarily *)
+     if arch = X86_64 then sprintf "rhel-8.0-alpha%s" ext
+     else sprintf "rhel-8.0-alpha-%s%s" (string_of_arch arch) ext
   | RHEL (major, minor) ->
      if arch = X86_64 then sprintf "rhel-%d.%d%s" major minor ext
      else sprintf "rhel-%d.%d-%s%s" major minor (string_of_arch arch) ext
@@ -445,6 +453,7 @@ and string_of_os os arch = filename_of_os os arch ""
 and string_of_os_noarch = function
   | Fedora ver -> sprintf "fedora-%d" ver
   | CentOS (major, minor) -> sprintf "centos-%d.%d" major minor
+  | RHEL (8, 0) -> sprintf "rhel-8.0-alpha" (* RHEL 8 Alpha temporarily. *)
   | RHEL (major, minor) -> sprintf "rhel-%d.%d" major minor
   | Debian (ver, _) -> sprintf "debian-%d" ver
   | Ubuntu (ver, _) -> sprintf "ubuntu-%s" ver
@@ -878,14 +887,29 @@ and make_boot_media os arch =
   | RHEL (7, minor), X86_64 ->
      Location (sprintf "http://download.devel.redhat.com/released/RHEL-7/7.%d/Server/x86_64/os" minor)
 
-  | RHEL (7, minor), Aarch64 ->
-     Location (sprintf "http://download.eng.bos.redhat.com/released/RHEL-7/7.%d/Server/aarch64/os" minor)
-
   | RHEL (7, minor), PPC64 ->
      Location (sprintf "http://download.devel.redhat.com/released/RHEL-7/7.%d/Server/ppc64/os" minor)
 
   | RHEL (7, minor), PPC64le ->
      Location (sprintf "http://download.devel.redhat.com/released/RHEL-7/7.%d/Server/ppc64le/os" minor)
+
+  | RHEL (7, minor), S390X ->
+     Location (sprintf "http://download.devel.redhat.com/released/RHEL-7/7.%d/Server/s390x/os" minor)
+
+  | RHEL (7, minor), Aarch64 ->
+     Location (sprintf "http://download.eng.bos.redhat.com/released/RHEL-ALT-7/7.%d/Server/aarch64/os" minor)
+
+  | RHEL (8, 0), X86_64 ->
+     Location "http://download.eng.bos.redhat.com/released/RHEL-8/8.0-Alpha/BaseOS/x86_64/os"
+
+  | RHEL (8, 0), Aarch64 ->
+     Location "http://download.eng.bos.redhat.com/released/RHEL-8/8.0-Alpha/BaseOS/aarch64/os"
+
+  | RHEL (8, 0), PPC64le ->
+     Location "http://download.eng.bos.redhat.com/released/RHEL-8/8.0-Alpha/BaseOS/ppc64le/os"
+
+  | RHEL (8, 0), S390X ->
+     Location "http://download.eng.bos.redhat.com/released/RHEL-8/8.0-Alpha/BaseOS/s390x/os"
 
   | Ubuntu (_, dist), X86_64 ->
      Location (sprintf "http://archive.ubuntu.com/ubuntu/dists/%s/main/installer-amd64" dist)
@@ -1126,14 +1150,21 @@ and os_variant_of_os ?(for_fedora = false) os arch =
        sprintf "centos%d.%d" major minor
     | CentOS _, _ -> "centos7.0" (* max version known in Fedora 24 *)
 
-    | RHEL (major, minor), _ when (major, minor) <= (7,2) ->
+    | RHEL (6, minor), _ when minor <= 8 ->
+       sprintf "rhel6.%d" minor
+    | RHEL (6, _), _ -> "rhel6.9" (* max version known in Fedora 29 *)
+    | RHEL (7, minor), _ when minor <= 4 ->
+       sprintf "rhel7.%d" minor
+    | RHEL (7, _), _ -> "rhel7.5" (* max version known in Fedora 29 *)
+    | RHEL (major, minor), _ ->
        sprintf "rhel%d.%d" major minor
-    | RHEL _, _ -> "rhel7.2" (* max version known in Fedora 24 *)
 
     | Debian (ver, _), _ when ver <= 8 -> sprintf "debian%d" ver
     | Debian _, _ -> "debian8" (* max version known in Fedora 26 *)
 
-    | Ubuntu (ver, _), _ -> sprintf "ubuntu%s" ver
+    | Ubuntu (ver, _), _ when ver < "18.04" -> sprintf "ubuntu%s" ver
+    | Ubuntu ("18.04", _), _ -> "ubuntu17.04"
+    | Ubuntu _, _ -> assert false
 
     | FreeBSD (major, minor), _ -> sprintf "freebsd%d.%d" major minor
 
@@ -1189,36 +1220,45 @@ and make_rhel_yum_conf major minor arch =
   let buf = Buffer.create 4096 in
   let bpf fs = bprintf buf fs in
 
-  let baseurl, srpms, optional =
-    match major, arch with
-    | 5, (I686|X86_64) ->
-       let arch = match arch with I686 -> "i386" | _ -> string_of_arch arch in
-       let topurl =
-         sprintf "http://download.devel.redhat.com/released/RHEL-5-Server/U%d"
-                 minor in
-       sprintf "%s/%s/os/Server" topurl arch,
-       sprintf "%s/source/SRPMS" topurl,
-       None
-    | 6, (I686|X86_64) ->
-       let arch = match arch with I686 -> "i386" | _ -> string_of_arch arch in
-       let topurl =
-         sprintf "http://download.devel.redhat.com/released/RHEL-%d/%d.%d"
-                 major major minor in
-       sprintf "%s/Server/%s/os" topurl arch,
-       sprintf "%s/source/SRPMS" topurl,
-       Some (sprintf "%s/Server/optional/%s/os" arch topurl,
-             sprintf "%s/Server/optional/source/SRPMS" topurl)
-    | 7, (X86_64|Aarch64|PPC64|PPC64le) ->
-       let topurl =
-         sprintf "http://download.devel.redhat.com/released/RHEL-%d/%d.%d"
-                 major major minor in
-       sprintf "%s/Server/%s/os" topurl (string_of_arch arch),
-       sprintf "%s/Server/source/tree" topurl,
-       Some (sprintf "%s/Server-optional/%s/os" topurl (string_of_arch arch),
-             sprintf "%s/Server-optional/source/tree" topurl)
-    | _ -> assert false in
+  if major <= 7 then (
+    let baseurl, srpms, optional =
+      match major, arch with
+      | 5, (I686|X86_64) ->
+         let arch = match arch with I686 -> "i386" | _ -> string_of_arch arch in
+         let topurl =
+           sprintf "http://download.devel.redhat.com/released/RHEL-5-Server/U%d"
+                   minor in
+         sprintf "%s/%s/os/Server" topurl arch,
+         sprintf "%s/source/SRPMS" topurl,
+         None
+      | 6, (I686|X86_64) ->
+         let arch = match arch with I686 -> "i386" | _ -> string_of_arch arch in
+         let topurl =
+           sprintf "http://download.devel.redhat.com/released/RHEL-%d/%d.%d"
+                   major major minor in
+         sprintf "%s/Server/%s/os" topurl arch,
+         sprintf "%s/source/SRPMS" topurl,
+         Some (sprintf "%s/Server/optional/%s/os" arch topurl,
+               sprintf "%s/Server/optional/source/SRPMS" topurl)
+      | 7, (X86_64|PPC64|PPC64le|S390X) ->
+         let topurl =
+           sprintf "http://download.devel.redhat.com/released/RHEL-%d/%d.%d"
+                   major major minor in
+         sprintf "%s/Server/%s/os" topurl (string_of_arch arch),
+         sprintf "%s/Server/source/tree" topurl,
+         Some (sprintf "%s/Server-optional/%s/os" topurl (string_of_arch arch),
+               sprintf "%s/Server-optional/source/tree" topurl)
+      | 7, Aarch64 ->
+         let topurl =
+           sprintf "http://download.devel.redhat.com/released/RHEL-ALT-%d/%d.%d"
+                   major major minor in
+         sprintf "%s/Server/%s/os" topurl (string_of_arch arch),
+         sprintf "%s/Server/source/tree" topurl,
+         Some (sprintf "%s/Server-optional/%s/os" topurl (string_of_arch arch),
+               sprintf "%s/Server-optional/source/tree" topurl)
+      | _ -> assert false in
 
-  bpf "\
+    bpf "\
 # Yum configuration pointing to Red Hat servers.
 
 [rhel%d]
@@ -1236,10 +1276,10 @@ gpgcheck=0
 keepcache=0
 " major major baseurl major major srpms;
 
-  (match optional with
-   | None -> ()
-   | Some (optionalbaseurl, optionalsrpms) ->
-      bpf "\
+    (match optional with
+     | None -> ()
+     | Some (optionalbaseurl, optionalsrpms) ->
+        bpf "\
 
 [rhel%d-optional]
 name=RHEL %d Server Optional
@@ -1255,6 +1295,31 @@ enabled=0
 gpgcheck=0
 keepcache=0
 " major major optionalbaseurl major major optionalsrpms
+    )
+  ) else if major = 8 then (
+    bpf "\
+# Temporary configuration for RHEL 8 Alpha.
+
+[rhel8-BaseOS-nightly]
+name=rhel8-BaseOS-nightly
+baseurl=http://download.devel.redhat.com/nightly/latest-RHEL-8/compose/BaseOS/$basearch/os/
+enabled=1
+gpgcheck=0
+
+[rhel8-AppStream-nightly]
+name=rhel8-AppStream-nightly
+baseurl=http://download.devel.redhat.com/nightly/latest-RHEL-8/compose/AppStream/$basearch/os/
+enabled=0
+gpgcheck=0
+
+[rhel8-Buildroot-nightly]
+name=rhel8-Buildroot-nightly
+baseurl=http://download.devel.redhat.com/nightly/latest-BUILDROOT-8-RHEL-8/compose/Buildroot/$basearch/os/
+enabled=1
+gpgcheck=0
+"
+  ) else (
+    assert false (* not implemented for RHEL major >= 9 *)
   );
 
   Buffer.contents buf

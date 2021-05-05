@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2018 Red Hat Inc.
+ * Copyright (C) 2012-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ let () = Sysprep_operation.bake ()
 let () = Random.self_init ()
 
 let main () =
-  let operations, g, mount_opts =
+  let operations, g, mount_opts, ks =
     let domain = ref None in
     let dryrun = ref false in
     let files = ref [] in
@@ -213,10 +213,10 @@ read the man page virt-sysprep(1).
     add g dryrun;
     g#launch ();
 
-    operations, g, mount_opts in
+    operations, g, mount_opts, opthandle.ks in
 
   (* Decrypt the disks. *)
-  inspect_decrypt g;
+  inspect_decrypt g ks;
 
   (* Inspection. *)
   (match Array.to_list (g#inspect_os ()) with

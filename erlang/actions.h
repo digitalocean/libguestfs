@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,6 +226,7 @@ ETERM *run_egrepi (ETERM *args_tuple);
 ETERM *run_equal (ETERM *args_tuple);
 ETERM *run_exists (ETERM *args_tuple);
 ETERM *run_extlinux (ETERM *args_tuple);
+ETERM *run_f2fs_expand (ETERM *args_tuple);
 ETERM *run_fallocate (ETERM *args_tuple);
 ETERM *run_fallocate64 (ETERM *args_tuple);
 ETERM *run_feature_available (ETERM *args_tuple);
@@ -326,6 +327,7 @@ ETERM *run_inspect_get_icon (ETERM *args_tuple);
 ETERM *run_inspect_get_major_version (ETERM *args_tuple);
 ETERM *run_inspect_get_minor_version (ETERM *args_tuple);
 ETERM *run_inspect_get_mountpoints (ETERM *args_tuple);
+ETERM *run_inspect_get_osinfo (ETERM *args_tuple);
 ETERM *run_inspect_get_package_format (ETERM *args_tuple);
 ETERM *run_inspect_get_package_management (ETERM *args_tuple);
 ETERM *run_inspect_get_product_name (ETERM *args_tuple);
@@ -445,6 +447,7 @@ ETERM *run_lvcreate_free (ETERM *args_tuple);
 ETERM *run_lvm_canonical_lv_name (ETERM *args_tuple);
 ETERM *run_lvm_clear_filter (ETERM *args_tuple);
 ETERM *run_lvm_remove_all (ETERM *args_tuple);
+ETERM *run_lvm_scan (ETERM *args_tuple);
 ETERM *run_lvm_set_filter (ETERM *args_tuple);
 ETERM *run_lvremove (ETERM *args_tuple);
 ETERM *run_lvrename (ETERM *args_tuple);

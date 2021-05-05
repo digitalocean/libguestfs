@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Tue, 16 Apr 2019 15:58:05 +0200
+Subject: Change cryptsetop->cryptsetup-bin in appliance
+
+---
+ appliance/packagelist.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/appliance/packagelist.in b/appliance/packagelist.in
+index b6ff265..1963ffd 100644
+--- a/appliance/packagelist.in
++++ b/appliance/packagelist.in
+@@ -60,7 +60,7 @@ ifelse(DEBIAN,1,
+   bsdmainutils
+ dnl old name used in Jessie and earlier
+   btrfs-tools
+-  cryptsetup
++  cryptsetup-bin
+   dash
+   extlinux
+   fdisk

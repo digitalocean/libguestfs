@@ -68,7 +68,7 @@ make_mapname (const char *device, char *mapname, size_t len)
  * encryption schemes.
  */
 void
-inspect_do_decrypt (guestfs_h *g)
+inspect_do_decrypt (guestfs_h *g, struct key_store *ks)
 {
   CLEANUP_FREE_STRING_LIST char **partitions = guestfs_list_partitions (g);
   if (partitions == NULL)
@@ -82,7 +82,7 @@ inspect_do_decrypt (guestfs_h *g)
       char mapname[32];
       make_mapname (partitions[i], mapname, sizeof mapname);
 
-      CLEANUP_FREE char *key = read_key (partitions[i]);
+      CLEANUP_FREE char *key = get_key (ks, partitions[i]);
       /* XXX Should we call guestfs_luks_open_ro if readonly flag
        * is set?  This might break 'mount_ro'.
        */
@@ -94,9 +94,7 @@ inspect_do_decrypt (guestfs_h *g)
   }
 
   if (need_rescan) {
-    if (guestfs_vgscan (g) == -1)
-      exit (EXIT_FAILURE);
-    if (guestfs_vg_activate_all (g, 1) == -1)
+    if (guestfs_lvm_scan (g, 1) == -1)
       exit (EXIT_FAILURE);
   }
 }

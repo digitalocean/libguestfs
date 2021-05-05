@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1544,6 +1544,36 @@ run_luks_kill_slot (const char *cmd, size_t argc, char *argv[])
  out_keyslot:
   free (key);
  out_key:
+ out_noargs:
+  return ret;
+}
+
+int
+run_lvm_scan (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  int activate;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  switch (guestfs_int_is_true (argv[i++])) {
+    case -1:
+      fprintf (stderr,
+               _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+               getprogname (), argv[i-1]);
+      goto out_activate;
+    case 0:  activate = 0; break;
+    default: activate = 1;
+  }
+  r = guestfs_lvm_scan (g, activate);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_activate:
  out_noargs:
   return ret;
 }

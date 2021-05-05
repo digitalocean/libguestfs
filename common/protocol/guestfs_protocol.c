@@ -3080,6 +3080,16 @@ xdr_guestfs_extlinux_args (XDR *xdrs, guestfs_extlinux_args *objp)
 }
 
 bool_t
+xdr_guestfs_f2fs_expand_args (XDR *xdrs, guestfs_f2fs_expand_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_fallocate_args (XDR *xdrs, guestfs_fallocate_args *objp)
 {
 	register int32_t *buf;
@@ -5768,6 +5778,16 @@ xdr_guestfs_lvm_canonical_lv_name_ret (XDR *xdrs, guestfs_lvm_canonical_lv_name_
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->lv, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lvm_scan_args (XDR *xdrs, guestfs_lvm_scan_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->activate))
 		 return FALSE;
 	return TRUE;
 }

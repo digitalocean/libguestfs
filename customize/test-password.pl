@@ -75,7 +75,9 @@ if ($guestname eq "debian-7") {
     push @extra, "--edit",
         '/etc/inittab: s,^#([1-9].*respawn.*/sbin/getty.*),$1,';
 }
-elsif ($guestname eq "debian-8" || $guestname eq "ubuntu-16.04") {
+elsif ($guestname eq "debian-8" ||
+       $guestname eq "ubuntu-16.04" ||
+       $guestname eq "ubuntu-18.04") {
     # These commands are required to fix the serial console.
     # See https://askubuntu.com/questions/763908/ubuntu-16-04-has-no-vmware-console-access-once-booted-on-vmware-vsphere-5-5-clus/764476#764476
     push @extra, "--edit",
@@ -98,7 +100,7 @@ system ("virt-builder", $guestname, "--quiet",
 
 # Run qemu and make sure we get to the login prompt.
 my $exp = Expect->spawn ($qemu,
-                         "-nodefconfig", "-display", "none",
+                         "-no-user-config", "-display", "none",
                          "-machine", "accel=kvm:tcg",
                          "-m", "1024", "-boot", "c",
                          "-drive", "file=$disk,format=raw,if=ide",

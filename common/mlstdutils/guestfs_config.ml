@@ -1,6 +1,6 @@
 (* configuration for mllib.
  * common/mlstdutils/guestfs_config.ml.  Generated from guestfs_config.ml.in by configure.
- * Copyright (C) 2013-2018 Red Hat Inc.
+ * Copyright (C) 2013-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  *)
 
 let package_name = "libguestfs"
-let package_version = "1.38.6"
-let package_version_full = "1.38.6"
+let package_version = "1.40.2"
+let package_version_full = "1.40.2"
 let prefix = "/usr"
 let datadir = prefix ^ "/share"
 let host_cpu = "x86_64"

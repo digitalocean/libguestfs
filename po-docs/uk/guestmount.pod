@@ -14,36 +14,40 @@ guestmount — монтування файлової системи гостьо
 
 =head1 ОПИС
 
-The guestmount program can be used to mount virtual machine filesystems and
-other disk images on the host.  It uses libguestfs for access to the guest
-filesystem, and FUSE (the "filesystem in userspace") to make it appear as a
-mountable device.
+Програмою guestmount можна скористатися для монтування файлових систем
+віртуальної машини та інших образів дисків у основній системі. Програма
+використовує libguestfs для доступу до гостьової файлової системи і FUSE
+(«файлову систему у просторі користувача») так, що змонтована система
+з'являється у основній системі як додатковий змонтований пристрій.
 
-Along with other options, you have to give at least one device (I<-a>
-option) or libvirt domain (I<-d> option), and at least one mountpoint (I<-m>
-option) or use the I<-i> inspection option or the I<--live> option.  How
-this works is better explained in the L<guestfish(1)> manual page, or by
-looking at the examples below.
+Разом із іншими параметрами вам слід надати принаймні один пристрій
+(параметр I<-a>) або домен libvirt (параметр I<-d>) і принаймні одну точку
+монтування (параметр I<-m>) або скористатися параметром інспектування I<-i>
+чи параметром I<--live>. Кращий опис того, як це працює, наведено на
+сторінці підручника щодо L<guestfish(1)>. Також можна скористатися
+наведеними нижче прикладами.
 
-FUSE lets you mount filesystems as non-root.  The mountpoint must be owned
-by you.  The filesystem will not be visible to any other users unless you
-make configuration changes, see L</NOTES> below.
+FUSE надає вам змогу монтувати файлові системи від імені звичайного
+користувача. Власником точки монтування має бути ваш користувач. Файлова
+система лишатиметься невидимою для усіх інших користувачів, якщо ви не
+внесете змін до налаштувань. Див. L</ПРИМІТКИ> нижче.
 
-To unmount the filesystem, use the L<guestunmount(1)> command.
+Для демонтування файлової системи скористайтеся програмою
+L<guestunmount(1)>.
 
 =head1 ПРИКЛАДИ
 
-For a typical Windows guest which has its main filesystem on the first
-partition:
+Для типової гостьової системи Windows, основна файлова система якої
+розміщується на першому розділі:
 
  guestmount -a windows.img -m /dev/sda1 --ro /mnt
 
-For a typical Linux guest which has a /boot filesystem on the first
-partition, and the root filesystem on a logical volume:
+Для типової гостьової системи Linux із файловою системою /boot на першому
+розділі і кореневою файловою системою на логічному томі:
 
  guestmount -a linux.img -m /dev/VG/LV -m /dev/sda1:/boot --ro /mnt
 
-To get libguestfs to detect guest mountpoints for you:
+Щоб libguestfs виявила точки монтування гостьової системи:
 
  guestmount -a guest.img -i --ro /mnt
 
@@ -51,84 +55,92 @@ To get libguestfs to detect guest mountpoints for you:
 
  guestmount -d Guest -i --ro /mnt
 
-If you don’t know what filesystems are contained in a guest or disk image,
-use L<virt-filesystems(1)> first:
+Якщо ви не знаєте, які файлові системи містяться у гостьовій операційній
+системі або на образі диска, скористайтеся спочатку L<virt-filesystems(1)>:
 
  virt-filesystems -d MyGuest
 
-If you want to trace the libguestfs calls but without excessive debugging
-information, we recommend:
+Якщо вам потрібно трасувати виклики libguestfs, але без надмірних
+діагностичних даних, рекомендуємо зробити так:
 
  guestmount [...] --trace /mnt
 
-If you want to debug the program, we recommend:
+Якщо ви хочете виконати діагностику роботи програми, рекомендуємо таке:
 
  guestmount [...] --trace --verbose /mnt
 
-To unmount the filesystem after using it:
+Щоб демонтувати файлову систему після її використання:
 
  guestunmount /mnt
 
 =head1 ПРИМІТКИ
 
-=head2 Other users cannot see the filesystem by default
+=head2 Інші користувачі, типово, не можуть бачити файлову систему
 
-If you mount a filesystem as one user (eg. root), then other users will not
-be able to see it by default.  The fix is to add the FUSE C<allow_other>
-option when mounting:
+Якщо ви змонтуєте файлову систему від імені одного користувача (наприклад,
+root), інші користувачі типово не зможуть її бачити. Щоб виправити цей
+недолік, додайте під час монтування параметр C<allow_other> FUSE:
 
  sudo guestmount [...] -o allow_other /mnt
 
-B<and> to enable this option in F</etc/fuse.conf>.
+B<та> для вмикання цього параметра у F</etc/fuse.conf>.
 
-=head2 Enabling FUSE
+=head2 Вмикання FUSE
 
-On some distros, you may need to add yourself to a special group
-(eg. C<fuse>) before you can use any FUSE filesystem.  This is necessary on
-Debian and derivatives.
+У деяких дистрибутивах користувача потрібно додати до спеціальної групи
+(наприклад C<fuse>), перш ніж він зможе користуватися файловими системами
+FUSE. Так, зокрема, влаштовано систему доступу у Debian та похідних від
+нього дистрибутивах.
 
-On other distros, no special group is required.  It is not necessary on
-Fedora or Red Hat Enterprise Linux.
+У інших дистрибутивах, зокрема Fedora та Red Hat Enterprise Linux, членство
+у групі не є обов'язковим.
 
-=head2 fusermount error: "Device or resource busy"
+=head2 Помилка fusermount: «Device or resource busy»
 
-You can see this error when another process on the system jumps into the
-mountpoint you have just created, holding it open and preventing you from
-unmounting it.  The usual culprits are various GUI "indexing" programs.
+Ви можете побачити це повідомлення про помилку, коли інший процес у системі
+починає використовувати щойно створену вами точку монтування, утримуючи її
+відкритою і заважаючи вам її демонтувати. Звичними «винуватцями» таких
+проблем є різноманітні програми для індексування даних.
 
-The popular workaround for this problem is to retry the C<fusermount -u>
-command a few times until it works (L<guestunmount(1)> does this for you).
-Unfortunately this isn't a reliable fix if (for example)  the mounted
-filesystem is particularly large and the intruding program particularly
-persistent.
+Популярним способом обійти цю проблему є повторні спроби виконати
+C<fusermount -u> декілька разів, аж доки потрібну дію не буде виконано
+(L<guestunmount(1)> робити це за вас). На жаль, цей спосіб не є
+універсальним. Він не спрацює, якщо, наприклад, змонтована файлова система є
+доволі великою Unfortunately this isn't a reliable fix if (for example)  the
+mounted filesystem is particularly large and the intruding program
+particularly persistent.
 
-A proper fix is to use a private mountpoint by creating a new mount
-namespace using the Linux-specific L<clone(2)>/L<unshare(2)> flag
-C<CLONE_NEWNS>.  Unfortunately at the moment this requires root and we would
-also probably need to add it as a feature to guestmount.
+Належним вирішенням є використання приватної точки монтування шляхом
+створення простору назв монтування за допомогою специфічного для Linux
+прапорця L<clone(2)>/L<unshare(2)> C<CLONE_NEWNS>. На жаль, у поточній
+версії це потребує прав доступу root. Крім того, нам, ймовірно, потрібно
+буде додати цю можливість до guestmount.
 
-=head2 Race conditions possible when shutting down the connection
+=head2 Під час розірвання з'єднання можливий конфлікт через конкуренцію потоків
+обробки
 
-When L<guestunmount(1)>/L<fusermount(1)> exits, guestmount may still be
-running and cleaning up the mountpoint.  The disk image will not be fully
-finalized.
+Коли L<guestunmount(1)>/L<fusermount(1)> завершує роботу, guestmount усе ще
+може працювати над вилученням точки монтування. Образ диска у такому випадку
+може вийти незавершеним.
 
-This means that scripts like the following have a nasty race condition:
+Це означає, що скрипти, подібні до наведеного нижче, містять небезпечний
+потенційний конфлікт потоків обробки через конкуренцію.
 
  guestmount -a disk.img -i /mnt
  # скопіювати дані до /mnt
  guestunmount /mnt
  # негайно спробувати використати 'disk.img' ** НЕБЕЗПЕЧНО **
 
-The solution is to use the I<--pid-file> option to write the guestmount PID
-to a file, then after guestunmount spin waiting for this PID to exit.
+Рішенням є використання параметра I<--pid-file> для запису PID guestmount до
+файла, а потім, після guestunmount, очікування на завершення роботи цього
+PID.
 
  guestmount -a disk.img -i --pid-file guestmount.pid /mnt
  
  # ...
  # ...
  
- # Save the PID of guestmount *before* calling guestunmount.
+ # Зберегти PID guestmount *до* виклику guestunmount.
  pid="$(cat guestmount.pid)"
  
  # Демонтувати файлову систему.
@@ -146,11 +158,12 @@ to a file, then after guestunmount spin waiting for this PID to exit.
      exit 1
  fi
  
- # Now it is safe to use the disk image.
+ # Тепер можна безпечно користуватися образом диска.
 
-Note that if you use the C<guestfs_mount_local> API directly (see
-L<guestfs(3)/MOUNT LOCAL>) then it is much easier to write a safe, race-free
-program.
+Зауважте, що якщо ви використовуєте програмний інтерфейс
+C<guestfs_mount_local> безпосередньо (див. L<guestfs(3)/ЛОКАЛЬНЕ
+МОНТУВАННЯ>), набагато простіше буде написати безпечну, позбавлену
+конфліктів програму.
 
 =head1 ПАРАМЕТРИ
 
@@ -160,7 +173,7 @@ program.
 
 =item B<--add> ОБРАЗ
 
-Add a block device or virtual machine image.
+Додати блоковий пристрій або образ віртуальної машини.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -176,30 +189,30 @@ I<--format=..>.
 
 =item B<--connect> адреса
 
-When used in conjunction with the I<-d> option, this specifies the libvirt
-URI to use.  The default is to use the default libvirt connection.
+Якщо використано у поєднанні із параметром I<-d>, визначає адресу libvirt,
+якою слід скористатися. Типово, використовується типове з'єднання libvirt.
 
 =item B<-d> ДОМЕН_LIBVIRT
 
 =item B<--domain> ДОМЕН_LIBVIRT
 
-Add disks from the named libvirt domain.  If the I<--ro> option is also
-used, then any libvirt domain can be used.  However in write mode, only
-libvirt domains which are shut down can be named here.
+Додати диски із названого домену libvirt. Якщо також використано параметр
+I<--ro>, може бути використано будь-який домен libvirt. Втім, у режимі
+запису тут можна вказати лише домени libvirt, які вимкнено.
 
 Замість назв можна використовувати UUID доменів.
 
 =item B<--dir-cache-timeout> N
 
-Set the readdir cache timeout to I<N> seconds, the default being 60
-seconds.  The readdir cache [actually, there are several semi-independent
-caches] is populated after a readdir(2) call with the stat and extended
-attributes of the files in the directory, in anticipation that they will be
-requested soon after.
+Встановити час застарівання кешу readdir у значення I<N> секунд. Типовим
+значенням є 60 секунд. Кеш readdir [насправді, існує декілька
+напівнезалежних кешів] заповнюється після виклику readdir(2) статистикою і
+розширеними атрибутами файлів у каталозі у сподіванні, що вони невдовзі
+знову знадобляться.
 
-There is also a different attribute cache implemented by FUSE (see the FUSE
-option I<-o attr_timeout>), but the FUSE cache does not anticipate future
-requests, only cache existing ones.
+Існує також інший кеш атрибутів, реалізований за допомогою FUSE
+(див. параметр FUSE I<-o attr_timeout>), але кеш FUSE не розрахований на
+наступні виклики — його призначено лише для кешування наявних.
 
 =item B<--echo-keys>
 
@@ -208,12 +221,12 @@ requests, only cache existing ones.
 TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
 скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
-=item B<--fd=>FD
+=item B<--fd=>ДФ
 
-Specify a pipe or eventfd file descriptor.  When the mountpoint is ready to
-be used, guestmount writes a single byte to this file descriptor.  This can
-be used in conjunction with I<--no-fork> in order to run guestmount captive
-under another process.
+Вказати канал або дескриптор файла eventfd. Коли точка монтування буде
+готова до використання, guestmount запише один байт до цього дескриптора
+файла. Цим можна скористатися, у поєднанні із I<--no-fork>, щоб запустити
+guestmount у межах іншого процесу.
 
 =item B<--format=raw|qcow2|..>
 
@@ -233,7 +246,7 @@ under another process.
 
 =item B<--fuse-help>
 
-Display help on special FUSE options (see I<-o> below).
+Вивести довідку щодо спеціальних параметрів FUSE (див. I<-o> нижче).
 
 =item B<--help>
 
@@ -243,9 +256,26 @@ Display help on special FUSE options (see I<-o> below).
 
 =item B<--inspector>
 
-Using L<virt-inspector(1)> code, inspect the disks looking for an operating
-system and mount filesystems as they would be mounted on the real virtual
-machine.
+Використовуючи код L<virt-inspector(1)>, виконати інспектування дисків,
+шукаючи операційну систему і монтуючи файлові системи так, як їх мало б бути
+змонтовано у справжній віртуальній машині.
+
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
 
 =item B<--keys-from-stdin>
 
@@ -255,18 +285,19 @@ machine.
 
 =item B<--live>
 
-Connect to a live virtual machine.  (Experimental, see
-L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
+З'єднатися із запущеною віртуальною машиною. (Експериментальна можливість,
+див. L<guestfs(3)/ДОЛУЧЕННЯ ДО ЗАПУЩЕНИХ ФОНОВИХ СЛУЖБ>).
 
 =item B<-m> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
 =item B<--mount> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
-Mount the named partition or logical volume on the given mountpoint B<in the
-guest> (this has nothing to do with mountpoints in the host).
+Змонтувати вказаний за назвою розділ або логічний том до вказаної точки
+монтування B<у гостьовій системі> (немає нічого спільного із точками
+монтування у основній системі).
 
-If the mountpoint is omitted, it defaults to F</>.  You have to mount
-something on F</>.
+Якщо точку монтування не вказано, типовим значенням є F</>. Вам слід
+змонтувати щось до F</>.
 
 Третьою (і нечасто використовуваною) частиною параметра монтування є список
 параметрів монтування, які використовуються для того, щоб змонтувати
@@ -288,25 +319,26 @@ something on F</>.
 
 =item B<--no-fork>
 
-Don’t daemonize (or fork into the background).
+Не створювати фонової служби (або відгалуження у фоновий режим).
 
 =item B<-n>
 
 =item B<--no-sync>
 
-By default, we attempt to sync the guest disk when the FUSE mountpoint is
-unmounted.  If you specify this option, then we don't attempt to sync the
-disk.  See the discussion of autosync in the L<guestfs(3)> manpage.
+Типово, під час демонтування точки монтування FUSE буде виконано спробу
+синхронізувати диск гостьової операційної системи. Якщо ви вкажете цей
+параметр, спроби синхронізуватися не виконуватиметься. Див. обговорення
+автоматичної синхронізації на сторінці підручника L<guestfs(3)>.
 
-=item B<-o> OPTION
+=item B<-o> ПАРАМЕТР
 
-=item B<--option> OPTION
+=item B<--option> ПАРАМЕТР
 
-Pass extra options to FUSE.
+Передати додаткові параметри FUSE.
 
-To get a list of all the extra options supported by FUSE, use the command
-below.  Note that only the FUSE I<-o> options can be passed, and only some
-of them are a good idea.
+Щоб отримати список усіх додаткових параметрів, підтримку яких передбачено у
+FUSE, скористайтеся наведеною нижче командою. Зауважте, що можна передавати
+лише параметри FUSE I<-o> і що лише деякі з них варто насправді передавати.
 
  guestmount --fuse-help
 
@@ -316,59 +348,64 @@ of them are a good idea.
 
 =item B<-o> B<allow_other>
 
-Allow other users to see the filesystem.  This option has no effect unless
-you enable it globally in F</etc/fuse.conf>.
+Дозволити іншим користувачам бачити файлову систему. Цей параметр не
+працюватиме, якщо подібне спільне використання не передбачено на загальному
+рівні у F</etc/fuse.conf>.
 
 =item B<-o> B<attr_timeout=N>
 
-Enable attribute caching by FUSE, and set the timeout to I<N> seconds.
+Увімкнути кешування атрибутів у FUSE і встановити час застарівання у I<N>
+секунд.
 
 =item B<-o> B<kernel_cache>
 
-Allow the kernel to cache files (reduces the number of reads that have to go
-through the L<guestfs(3)> API).  This is generally a good idea if you can
-afford the extra memory usage.
+Дозволити ядру кешувати файли (зменшує кількість читань, які мають пройти
+через програмний інтерфейс L<guestfs(3)>). Зазвичай, корисно дозволяти певне
+додаткове використання пам'яті.
 
 =item B<-o> B<uid=N> B<-o> B<gid=N>
 
-Use these options to map all UIDs and GIDs inside the guest filesystem to
-the chosen values.
+Скористайтеся цими параметрами для прив'язки усіх UID та GID у гостьовій
+файловій системі до вибраних значень.
 
 =item B<-o> B<use_ino>
 
-Preserve inode numbers from the underlying filesystem.
+Зберігати номери inode із базової файлової системи.
 
-Without this option, FUSE makes up its own inode numbers.  The inode numbers
-you see in L<stat(2)>, C<ls -i> etc aren't the inode numbers of the
-underlying filesystem.
+Якщо цей параметр не вказано, FUSE створюватиме власні номери inode. Номери
+inode, які ви зазвичай бачите у L<stat(2)>, C<ls -i> тощо, не є номерами
+inode у базовій файловій системі.
 
-B<Note> this option is potentially dangerous if the underlying filesystem
-consists of multiple mountpoints, as you may see duplicate inode numbers
-appearing through FUSE.  Use of this option can confuse some software.
+B<Зауваження>: використання цього параметра є потенційно небезпечним, якщо у
+базова файлова система складається з декількох точок монтування, оскільки у
+такому випадку можливе дублювання номерів inode через FUSE. Використання
+цього параметра може призвести до неналежної роботи частини програм.
 
 =back
 
 =item B<--pid-file> НАЗВА_ФАЙЛА
 
-Write the PID of the guestmount worker process to C<filename>.
+Записати PID робочого процесу guestmount до файла C<назва_файла>.
 
 =item B<-r>
 
 =item B<--ro>
 
-Add devices and mount everything read-only.  Also disallow writes and make
-the disk appear read-only to FUSE.
+Додавати пристрої і монтування лише у режимі читання. Це заборонить запис, а
+диск у FUSE буде показано як придатний лише до читання.
 
-This is highly recommended if you are not going to edit the guest disk.  If
-the guest is running and this option is I<not> supplied, then there is a
-strong risk of disk corruption in the guest.  We try to prevent this from
-happening, but it is not always possible.
+Наполегливо рекомендуємо скористатися цим параметром, якщо ви не маєте
+намірів щодо редагування диска гостьової системи. Якщо гостьова система
+працює, а цей параметр I<не> вказано, існує дуже висока ймовірність
+пошкодити дані на диску. Ми намагаємося запобігати такому пошкодженню, але
+це не завжди можливо.
 
 Див. також L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 =item B<--selinux>
 
-This option is provided for backwards compatibility and does nothing.
+Цей параметр призначено для забезпечення зворотної сумісності, його
+використання не матиме жодних наслідків.
 
 =item B<-v>
 
@@ -386,8 +423,8 @@ This option is provided for backwards compatibility and does nothing.
 
 =item B<--rw>
 
-This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
-mounts are done read-write.
+Змінює дію параметрів I<-a>, I<-d> і I<-m> таким чином, що диски додаються і
+монтуються у режимі читання і запису.
 
 Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
@@ -395,10 +432,10 @@ mounts are done read-write.
 
 =item B<--trace>
 
-Trace libguestfs calls and entry into each FUSE function.
+Трасувати виклики libguestfs і заходити до кожної функції FUSE.
 
-This also stops the daemon from forking into the background (see
-I<--no-fork>).
+Це також забороняє фоновій службі створювати відгалуження у фоновому режимі
+(див. I<--no-fork>).
 
 =back
 
@@ -414,8 +451,8 @@ I<--no-fork>).
 
 =item /etc/libguestfs-tools.conf
 
-This configuration file controls the default read-only or read-write mode
-(I<--ro> or I<--rw>).
+Цей файл налаштувань керує типовим режимом — лише читання чи читання і запис
+(I<--ro> або I<--rw>).
 
 Див. L<libguestfs-tools.conf(5)>.
 
@@ -430,7 +467,7 @@ This configuration file controls the default read-only or read-write mode
 
 L<guestunmount(1)>, L<fusermount(1)>, L<guestfish(1)>, L<virt-inspector(1)>,
 L<virt-cat(1)>, L<virt-edit(1)>, L<virt-tar(1)>,
-L<libguestfs-tools.conf(5)>, L<guestfs(3)/MOUNT LOCAL>,
+L<libguestfs-tools.conf(5)>, L<guestfs(3)/ЛОКАЛЬНЕ МОНТУВАННЯ>,
 L<http://libguestfs.org/>, L<http://fuse.sf.net/>.
 
 =head1 АВТОРИ
@@ -439,5 +476,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

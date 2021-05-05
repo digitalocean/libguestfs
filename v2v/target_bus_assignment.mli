@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,4 +21,4 @@
     Do this as best we can.  This is not solvable for all guests,
     but at least avoid overlapping disks (RHBZ#1238053). *)
 
-val target_bus_assignment : Types.source -> Types.target list -> Types.guestcaps -> Types.target_buses
+val target_bus_assignment : Types.source -> Types.guestcaps -> Types.target_buses

@@ -21,14 +21,15 @@ guestfish — командна оболонка файлової системи 
 
 =head1 ОПИС
 
-Guestfish is a shell and command-line tool for examining and modifying
-virtual machine filesystems.  It uses libguestfs and exposes all of the
-functionality of the guestfs API, see L<guestfs(3)>.
+Guestfish — командна оболонка та засіб командного рядка для вивчення і
+внесення змін до файлових систем віртуальних машин. У програмі
+використовується libguestfs і надається доступ до усіх функціональних
+можливостей програмного інтерфейсу guestfs, див. L<guestfs(3)>.
 
-Guestfish gives you structured access to the libguestfs API, from shell
-scripts or the command line or interactively.  If you want to rescue a
-broken virtual machine image, you should look at the L<virt-rescue(1)>
-command.
+Guestfish надає вам структурований доступ до програмного інтерфейсу
+libguestfs зі скриптів оболонки, командного рядка або інтерактивно. Якщо ви
+хочете відновити пошкоджений образ віртуальної машини, вам слід скористатися
+командою L<virt-rescue(1)>.
 
 =head1 ПРИКЛАДИ
 
@@ -36,12 +37,12 @@ command.
 
  $ guestfish
  
- Welcome to guestfish, the guest filesystem shell for
- editing virtual machine filesystems.
- 
- Type: 'help' for a list of commands
-       'man' to read the manual
-       'quit' to quit the shell
+Ласкаво просимо до guestfish, оболонки файлової гостьової системи для
+редагування файлових систем віртуальних машин та образів дисків.
+
+ Введіть: «help» для отримання списку команд
+       «man» для читання підручника
+       «quit», щоб вийти з оболонки
  
  ><fs> add-ro диск.img
  ><fs> run
@@ -98,14 +99,14 @@ command.
 
 =head2 Автоматичне монтування дисків
 
-Use the I<-i> option to automatically mount the disks from a virtual
-machine:
+Скористайтеся параметром I<-i> для автоматичного монтування дисків з
+віртуальної машини:
 
  guestfish --ro -a disk.img -i cat /etc/group
 
  guestfish --ro -d libvirt-domain -i cat /etc/group
 
-Another way to edit F</boot/grub/grub.conf> interactively is:
+Іншим способом редагування F</boot/grub/grub.conf> інтерактивно є такий:
 
  guestfish --rw -a disk.img -i edit /boot/grub/grub.conf
 
@@ -121,8 +122,8 @@ Another way to edit F</boot/grub/grub.conf> interactively is:
 
 =head2 Розпочати з приготованого диска
 
-Альтернативний спосіб створення диска у 100 МБ із назвою F<test1.img>, що
-міститиме один розділ у форматі ext2:
+Create a 1G disk called F<test1.img> containing a single ext2-formatted
+partition:
 
  guestfish -N fs
 
@@ -134,7 +135,7 @@ Another way to edit F</boot/grub/grub.conf> interactively is:
 
 Доступ до віддаленого диска за допомогою ssh:
 
- guestfish -a ssh://example.com/path/to/disk.img
+ guestfish -a ssh://example.com/шлях/до/диска.img
 
 =head2 Дистанційне керування
 
@@ -173,9 +174,9 @@ Another way to edit F</boot/grub/grub.conf> interactively is:
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-Using this flag is mostly equivalent to using the C<add> command, with
-C<readonly:true> if the I<--ro> flag was given, and with C<format:...> if
-the I<--format=...> flag was given.
+Використання цього прапорця еквівалентне використанню команди C<add> з
+C<readonly:true>, якщо вказано прапорець I<--ro>, і з C<format:...>, якщо
+вказано прапорець I<--format=...>.
 
 =item B<-a> адреса
 
@@ -187,27 +188,28 @@ the I<--format=...> flag was given.
 
 =item B<--connect> адреса
 
-When used in conjunction with the I<-d> option, this specifies the libvirt
-URI to use.  The default is to use the default libvirt connection.
+Якщо використано у поєднанні із параметром I<-d>, визначає адресу libvirt,
+якою слід скористатися. Типово, використовується типове з'єднання libvirt.
 
 =item B<--csh>
 
-If using the I<--listen> option and a csh-like shell, use this option.  See
-section L</REMOTE CONTROL AND CSH> below.
+Якщо використовується параметр I<--listen> і csh-подібна команда оболонка,
+скористайтеся цим параметром.  Див. розділі L</ВІДДАЛЕНЕ КЕРУВАННЯ І CSH>
+нижче.
 
 =item B<-d> ДОМЕН_LIBVIRT
 
 =item B<--domain> ДОМЕН_LIBVIRT
 
-Add disks from the named libvirt domain.  If the I<--ro> option is also
-used, then any libvirt domain can be used.  However in write mode, only
-libvirt domains which are shut down can be named here.
+Додати диски із названого домену libvirt. Якщо також використано параметр
+I<--ro>, може бути використано будь-який домен libvirt. Втім, у режимі
+запису тут можна вказати лише домени libvirt, які вимкнено.
 
 Замість назв можна використовувати UUID доменів.
 
-Using this flag is mostly equivalent to using the C<add-domain> command,
-with C<readonly:true> if the I<--ro> flag was given, and with C<format:...>
-if the I<--format=...> flag was given.
+Використання цього прапорця, здебільшого, еквівалентне використанню команди
+C<add-domain> із C<readonly:true>, якщо вказано прапорець I<--ro>, і з
+C<format:...>, якщо вказано прапорець I<--format=...>.
 
 =item B<--echo-keys>
 
@@ -220,7 +222,8 @@ TEMPEST-нападів, або у вашій кімнаті нікого, окр
 
 =item B<--file> ФАЙЛ
 
-Read commands from C<FILE>.  To write pure guestfish scripts, use:
+Прочитати команди з файла C<ФАЙЛ>. Для написання суто скриптів guestfish
+скористайтеся таким вступом:
 
  #!/usr/bin/guestfish -f
 
@@ -256,31 +259,50 @@ L</add>.
 
 =item B<--inspector>
 
-Using L<virt-inspector(1)> code, inspect the disks looking for an operating
-system and mount filesystems as they would be mounted on the real virtual
-machine.
+Використовуючи код L<virt-inspector(1)>, виконати інспектування дисків,
+шукаючи операційну систему і монтуючи файлові системи так, як їх мало б бути
+змонтовано у справжній віртуальній машині.
 
 Типові варіанти використання:
 
  guestfish -d myguest -i
 
-(for an inactive libvirt domain called I<myguest>), or:
+(для неактивного домену libvirt із назвою I<myguest>) або:
 
  guestfish --ro -d myguest -i
 
-(for active domains, readonly), or specify the block device directly:
+(для активних доменів, лише читання), або вказати блоковий пристрій
+безпосередньо:
 
  guestfish --rw -a /dev/Guests/MyGuest -i
 
-Note that the command line syntax changed slightly over older versions of
-guestfish.  You can still use the old syntax:
+Зауважте, що синтаксис рядка команди було дещо змінено з часу старіших
+версій guestfish. Але ви все ще можете використовувати застарілий синтаксис:
 
- guestfish [--ro] -i disk.img
+ guestfish [--ro] -i диск.img
 
- guestfish [--ro] -i libvirt-domain
+ guestfish [--ro] -i домен-libvirt
 
-Using this flag is mostly equivalent to using the C<inspect-os> command and
-then using other commands to mount the filesystems that were found.
+Використання цього прапорця, здебільшого, еквівалентне до використання
+команди C<inspect-os> із наступним використанням інших команд для монтування
+файлових систем, які було знайдено.
+
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
 
 =item B<--keys-from-stdin>
 
@@ -290,13 +312,13 @@ then using other commands to mount the filesystems that were found.
 
 =item B<--listen>
 
-Fork into the background and listen for remote commands.  See section
-L</REMOTE CONTROL GUESTFISH OVER A SOCKET> below.
+Відгалузити процес у фоновий і очікувати на віддалені команди. Див. розділ
+L</ВІДДАЛЕНЕ КЕРУВАННЯ GUESTFISH КРІЗЬ СОКЕТ> нижче.
 
 =item B<--live>
 
-Connect to a live virtual machine.  (Experimental, see
-L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
+З'єднатися із запущеною віртуальною машиною. (Експериментальна можливість,
+див. L<guestfs(3)/ДОЛУЧЕННЯ ДО ЗАПУЩЕНИХ ФОНОВИХ СЛУЖБ>).
 
 =item B<-m> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
@@ -306,10 +328,11 @@ L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
 Якщо точку монтування не вказано, типовим значенням є F</>.
 
-You have to mount something on F</> before most commands will work.
+Вам слід змонтувати щось до F</>, перш ніж ви зможете скористатися більшістю
+команд.
 
-If any I<-m> or I<--mount> options are given, the guest is automatically
-launched.
+Якщо вказано якісь параметри I<-m> або I<--mount>, буде автоматично запущено
+гостьову систему.
 
 Якщо ви не знаєте, які саме файлові системи містяться у образі диска, ви
 можете або запустити guestfish без цього параметра і ознайомитися зі списком
@@ -340,51 +363,53 @@ C<mount-options>.
 
 =item B<--network>
 
-Enable QEMU user networking in the guest.
+Уможливити для користувача QEMU роботу у мережі у гостьовій системі.
 
-=item B<-N> [FILENAME=]TYPE
+=item B<-N> [НАЗВА_ФАЙЛА=]ТИП
 
-=item B<--new> [FILENAME=]TYPE
+=item B<--new> [НАЗВА_ФАЙЛА=]ТИП
 
 =item B<-N> B<help>
 
-Prepare a fresh disk image formatted as C<TYPE>.  This is an alternative to
-the I<-a> option: whereas I<-a> adds an existing disk, I<-N> creates a
-preformatted disk with a filesystem and adds it.  See L</PREPARED DISK
-IMAGES> below.
+Приготувати свіжий образ диска у форматі C<ТИП>. Це альтернатива параметру
+I<-a>: I<-a> додає наявний диск, а I<-N> створює попередньо форматований
+диск із файловою системою і додає його.  Див. L</ОБРАЗИ ПРИГОТОВАНИХ ДИСКІВ>
+нижче.
 
 =item B<-n>
 
 =item B<--no-sync>
 
-Disable autosync.  This is enabled by default.  See the discussion of
-autosync in the L<guestfs(3)> manpage.
+Вимкнути автоматичну синхронізацію. Типово, синхронізацію
+увімкнено. Див. обговорення автоматичної синхронізації на сторінці
+підручника L<guestfs(3)>.
 
 =item B<--no-dest-paths>
 
-Don’t tab-complete paths on the guest filesystem.  It is useful to be able
-to hit the tab key to complete paths on the guest filesystem, but this
-causes extra "hidden" guestfs calls to be made, so this option is here to
-allow this feature to be disabled.
+Не виконувати доповнення за Tab у гостьовій файловій системі. Корисно мати
+можливість натискати клавішу Tab для доповнення шляхів у гостьовій файловій
+системі, але це може призвести до зайвих «прихованих» викликів
+guestfs. Отже, цей параметр надає вам змогу вимкнути цю можливість.
 
 =item B<--pipe-error>
 
-If writes fail to pipe commands (see L</PIPES> below), then the command
-returns an error.
+Якщо запису не вдасться передати команди каналами (див. L</КАНАЛИ>), ця
+команда поверне повідомлення про помилку.
 
-The default (also for historical reasons) is to ignore such errors so that:
+Типово (також із історичних причин) такі помилки ігноруватимуться, отже,
+наприклад:
 
- ><fs> command_with_lots_of_output | head
+ ><fs> команда_яка_багато_чого_виводить | head
 
-doesn't give an error.
+не призводитиме до помилки.
 
 =item B<--progress-bars>
 
 Увімкнути смужки поступу, навіть якщо guestfish використовується не у
 інтерактивному режимі.
 
-Progress bars are enabled by default when guestfish is used as an
-interactive shell.
+Якщо guestfish використовується як інтерактивна командна оболонка, смужки
+поступу буде типово увімкнено.
 
 =item B<--no-progress-bars>
 
@@ -394,29 +419,31 @@ interactive shell.
 
 =item B<--remote=>PID
 
-Send remote commands to C<$GUESTFISH_PID> or C<pid>.  See section L</REMOTE
-CONTROL GUESTFISH OVER A SOCKET> below.
+Надіслати віддалені команди до C<$GUESTFISH_PID> або C<pid>. Див. розділ
+L</ВІДДАЛЕНЕ КЕРУВАННЯ GUESTFISH КРІЗЬ СОКЕТ> нижче.
 
 =item B<-r>
 
 =item B<--ro>
 
-This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
-mounts are done read-only.
+Змінює значення параметрів I<-a>, I<-d> і I<-m> так, що диски додаються і
+монтуються у режимі лише читання.
 
-The option must always be used if the disk image or virtual machine might be
-running, and is generally recommended in cases where you don't need write
-access to the disk.
+Цей параметр слід завжди використовувати, якщо образ диска або віртуальна
+машина може працювати. Загалом, рекомендуємо використовувати його у
+випадках, коли вам не потрібен доступ на запис до диска.
 
-Note that prepared disk images created with I<-N> are not affected by this
-option.  Also commands like C<add> are not affected - you have to specify
-the C<readonly:true> option explicitly if you need it.
+Зауважте, що цей параметр не стосується приготованих образів дисків,
+створених за допомогою I<-N>. Крім того, це не стосується команд, подібних
+до C<add> — вам слід вказати параметр C<readonly:true> явним чином, якщо вам
+це потрібно.
 
 Див. також L</ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ ТА ЗАПИСУ> нижче.
 
 =item B<--selinux>
 
-This option is provided for backwards compatibility and does nothing.
+Цей параметр призначено для забезпечення зворотної сумісності, його
+використання не матиме жодних наслідків.
 
 =item B<-v>
 
@@ -435,8 +462,8 @@ This option is provided for backwards compatibility and does nothing.
 
 =item B<--rw>
 
-This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
-mounts are done read-write.
+Змінює дію параметрів I<-a>, I<-d> і I<-m> таким чином, що диски додаються і
+монтуються у режимі читання і запису.
 
 Див. L</ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ ТА ЗАПИСУ> нижче.
 
@@ -451,18 +478,19 @@ mounts are done read-write.
 Усі додаткові аргументи (не пов’язані із параметрами команди) вважатимуться
 командами, які слід виконати.
 
-Commands to execute should be separated by a colon (C<:>), where the colon
-is a separate parameter.  Thus:
+Команди, які слід виконати, слід відокремлювати двокрапками (C<:>), де
+двокрапка є окремим параметром. Отже:
 
- guestfish cmd [args...] : cmd [args...] : cmd [args...] ...
+ guestfish команда [аргументи...] : команда [аргументи...] : команда [аргументи...] ...
 
-If there are no additional arguments, then we enter a shell, either an
-interactive shell with a prompt (if the input is a terminal) or a
-non-interactive shell.
+Якщо додаткових аргументів не буде, ми увійдемо до оболонки, інтерактивної
+із запитом щодо команди (якщо вхідні дані надходять з термінала) або
+неінтерактивної.
 
-In either command line mode or non-interactive shell, the first command that
-gives an error causes the whole shell to exit.  In interactive mode (with a
-prompt) if a command fails, you can continue to enter commands.
+Якщо у режимі командного рядка, так і у режимі неінтерактивної командної
+оболонки, перша ж команда, яка призводить до помилки, має наслідком вихід із
+командної оболонки. У інтерактивному режимі (із запитом щодо команди), якщо
+стається помилка команди, ви можете продовжити вводити команди.
 
 Note that arguments of the commands will be considered as guestfish options
 if they start with a dash (C<->): you can always separate the guestfish
@@ -473,9 +501,10 @@ dash (C<-->).  For example:
 
 =head1 КОРИСТУВАННЯ launch (АБО run)
 
-As with L<guestfs(3)>, you must first configure your guest by adding disks,
-then launch it, then mount any disks you need, and finally issue
-actions/commands.  So the general order of the day is:
+Як і для L<guestfs(3)>, вам слід спочатку налаштувати вашу гостьову систему
+додаванням дисків, потім запустити її, потім змонтувати потрібні диски і,
+нарешті, виконати з нею якісь дії або віддати команди. Отже, звичний порядок
+дій є таким:
 
 =over 4
 
@@ -497,45 +526,48 @@ mount або -m/--mount
 
 =back
 
-C<run> is a synonym for C<launch>.  You must C<launch> (or C<run>)  your
-guest before mounting or performing any other commands.
+C<run> є синонімом C<launch>. Вам слід виконати C<launch> (або C<run>) для
+вашої гостьової системи, перш ніж щось у ній монтувати або віддавати якісь
+інші команди.
 
-The only exception is that if any of the I<-i>, I<-m>, I<--mount>, I<-N> or
-I<--new> options were given then C<run> is done automatically, simply
-because guestfish can't perform the action you asked for without doing this.
+Єдиним виключенням є команди з параметрами I<-i>, I<-m>, I<--mount>, I<-N>
+або I<--new>. Якщо вказано таку команду, C<run> виконується автоматично,
+просто тому, що guestfish без цієї команди не зможе виконати потрібної вам
+дії.
 
 =head1 ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ ТА ЗАПИСУ
 
-The guestfish, L<guestmount(1)> and L<virt-rescue(1)> options I<--ro> and
-I<--rw> affect whether the other command line options I<-a>, I<-c>, I<-d>,
-I<-i> and I<-m> open disk images read-only or for writing.
+Параметри I<--ro> та I<--rw> guestfish, L<guestmount(1)> і L<virt-rescue(1)>
+стосуються інших параметрів командного рядка I<-a>, I<-c>, I<-d>, I<-i> і
+I<-m> щодо відкриття у режимі лише читання чи режимі із записом.
 
-In libguestfs E<le> 1.10, guestfish, guestmount and virt-rescue defaulted to
-opening disk images supplied on the command line for write.  To open a disk
-image read-only you have to do I<-a image --ro>.
+У libguestfs E<le> 1.10, guestfish, guestmount та virt-rescue типово
+відкривали вказані у командному рядку образи дисків на запис. Щоб відкрити
+образ диска лише для читання, слід було вказати I<-a образ --ro>.
 
-This matters: If you accidentally open a live VM disk image writable then
-you will cause irreversible disk corruption.
+Це означає ось що: якщо ви випадково відкрили запущений образ диска
+віртуальної машини для запису, вміст диска буде незворотним чином
+пошкоджено.
 
-In a future libguestfs we intend to change the default the other way.  Disk
-images will be opened read-only.  You will have to either specify
-I<guestfish --rw>, I<guestmount --rw>, I<virt-rescue --rw>, or change the
-configuration file in order to get write access for disk images specified by
-those other command line options.
+У майбутніх версіях libguestfs ми маємо намір змінити типову
+поведінку. Образи дисків відкриватимуться у режимі лише читання. Вам слід
+вказати I<guestfish --rw>, I<guestmount --rw>, I<virt-rescue --rw> або
+змінити файл налаштувань, щоб отримати доступ до запису на образи дисків,
+вказані за допомогою інших параметрів командного рядка.
 
-This version of guestfish, guestmount and virt-rescue has a I<--rw> option
-which does nothing (it is already the default).  However it is highly
-recommended that you use this option to indicate that you need write access,
-and prepare your scripts for the day when this option will be required for
-write access.
+Ця версія guestfish, guestmount і virt-rescue має параметр I<--rw>, який
+нічого не робить (відповідна поведінка вже є типовою). Втім, наполегливо
+рекомендуємо вам використовувати цей параметр для позначення того, що вам
+потрібен доступ до запису, і готувати ваші скрипти до дня, коли для
+отримання доступу до запису вам знадобиться цей параметр.
 
-B<Note:> This does I<not> affect commands like L</add> and L</mount>, or any
-other libguestfs program apart from guestfish and guestmount.
+B<Зауваження:> це I<не> стосується команд, подібних L</add> і L</mount>, або
+усіх інших програм libguestfs поза guestfish і guestmount.
 
 =head1 ЛАПКИ
 
-You can quote ordinary parameters using either single or double quotes.  For
-example:
+Звичайні параметри можна ізолювати одинарними або подвійними
+лапками. Приклад:
 
  add "файл із пробілами у назві.img"
 
@@ -543,19 +575,19 @@ example:
 
  rm '/"'
 
-A few commands require a list of strings to be passed.  For these, use a
-whitespace-separated list, enclosed in quotes.  Strings containing
-whitespace to be passed through must be enclosed in single quotes.  A
-literal single quote must be escaped with a backslash.
+Деяким командам потрібно передавати список рядків. Для передавання таких
+списків слід користуватися записами, відокремлених пробілами рядків, взятих
+у лапки. Рядки, які містять пробіли, слід передавати у одинарних лапках. Сам
+символ одинарної лапки слід екранувати символом зворотної похилої риски.
 
  vgcreate VG "/dev/sda1 /dev/sdb1"
  command "/bin/echo 'щось      десь'"
  command "/bin/echo \'щось\'"
 
-=head2 ESCAPE SEQUENCES IN DOUBLE QUOTED ARGUMENTS
+=head2 ЕКРАНОВАНІ ПОСЛІДОВНОСТІ У АРГУМЕНТАХ У ПОДВІЙНИХ ЛАПКАХ
 
-In double-quoted arguments (only) use backslash to insert special
-characters:
+У аргументах, які взято у подвійні лапки, (і лише у них) використовуйте
+символ зворотної похилої риски для вставляння спеціальних символів:
 
 =over 4
 
@@ -569,7 +601,7 @@ characters:
 
 =item C<\f>
 
-Form feed character.
+Символ заповнення форми.
 
 =item C<\n>
 
@@ -589,29 +621,31 @@ Form feed character.
 
 =item C<\">
 
-A literal double quote character.
+Сам символ подвійних лапок.
 
 =item C<\ooo>
 
-A character with octal value I<ooo>.  There must be precisely 3 octal digits
-(unlike C).
+Символ із вісімковим значенням I<ooo>. Має бути вказано точно три вісімкові
+цифри (на відміну від C).
 
 =item C<\xhh>
 
-A character with hex value I<hh>.  There must be precisely 2 hex digits.
+Символ із шістнадцятковим значенням I<hh>. Має бути вказано точно дві
+шістнадцяткові цифри.
 
-In the current implementation C<\000> and C<\x00> cannot be used in strings.
+У поточній реалізації не можна використовувати у рядках C<\000> і C<\x00>.
 
 =item C<\\>
 
-A literal backslash character.
+Сам символ зворотної похилої риски.
 
 =back
 
-=head1 OPTIONAL ARGUMENTS
+=head1 НЕОБОВ'ЯЗКОВІ АРГУМЕНТИ
 
-Some commands take optional arguments.  These arguments appear in this
-documentation as C<[argname:..]>.  You can use them as in these examples:
+Деяким командам передаються необов'язкові аргументи. Ці аргументи вказано у
+цій документації як C<[назва_аргументу:..]>.  Ви можете скористатися ними
+так, як у цих прикладах:
 
  add назва_файла
 
@@ -619,8 +653,8 @@ documentation as C<[argname:..]>.  You can use them as in these examples:
 
  add назва_файла format:qcow2 readonly:false
 
-Each optional argument can appear at most once.  All optional arguments must
-appear after the required ones.
+Кожен необов'язковий аргумент можна вказувати лише один раз. Усі
+необов'язкові аргументи має бути вказано після обов'язкових.
 
 =head1 ЧИСЛА
 
@@ -628,8 +662,9 @@ appear after the required ones.
 
 =head2 СУФІКС РОЗМІРУ
 
-When the command takes a parameter measured in bytes, you can use one of the
-following suffixes to specify kilobytes, megabytes and larger sizes:
+Якщо команда отримує параметр, який вимірюється у байтах, ви можете
+скористатися одним із вказаних нижче суфіксів, щоб вказати кілобайти,
+мегабайти або інші обсяги даних:
 
 =over 4
 
@@ -705,62 +740,65 @@ following suffixes to specify kilobytes, megabytes and larger sizes:
 
 обріже файл до об'єму у 1 ГБ.
 
-Be careful because a few commands take sizes in kilobytes or megabytes
-(eg. the parameter to L</memsize> is specified in megabytes already).
-Adding a suffix will probably not do what you expect.
+Будьте обережні, оскільки деяким командам передаються розміри у кілобайтах
+або мегабайтах (наприклад, параметр L</memsize> уже вказується у
+мегабайтах). Додавання суфікса у таких командах може призвести до небажаних
+наслідків.
 
 =head2 ВІСІМКОВІ І ШІСТНАДЦЯТКОВІ ЧИСЛА
 
-For specifying the radix (base) use the C convention: C<0> to prefix an
-octal number or C<0x> to prefix a hexadecimal number.  For example:
+Щоб вказати основу числення, скористайтеся форматом C: C<0> як префіксом для
+вісімкових чисел або C<0x> як префіксом для шістнадцяткових чисел. Приклад:
 
  1234      десяткове число 1234
  02322     вісімкове число, яке дорівнює десятковому числу 1234
  0x4d2     шістнадцяткове число, яке дорівнює десятковому числу 1234
 
-When using the C<chmod> command, you almost always want to specify an octal
-number for the mode, and you must prefix it with C<0> (unlike the Unix
-L<chmod(1)> program):
+Якщо ви користуєтеся командою C<chmod>, вам майже завжди зручно буде
+вказувати режим доступу у форматі вісімкового числа, отже вам слід додавати
+до числа префікс C<0> (не так, як у програмі L<chmod(1)> UNIX):
 
  chmod 0777 /public  # ПРАВИЛЬНО
  chmod 777 /public   # НЕПРАВИЛЬНО! Вказано десятковий режим 777 = вісімковому 01411.
 
-Commands that return numbers usually print them in decimal, but some
-commands print numbers in other radices (eg. C<umask> prints the mode in
-octal, preceded by C<0>).
+Команди, які повертають числові дані, зазвичай, виводять їх у десятковій
+формі, але деякі команди виводять числа у інших основах числення (наприклад,
+C<umask> виводить режим доступу у вісімковій формі із префіксом C<0>).
 
-=head1 WILDCARDS AND GLOBBING
+=head1 СИМВОЛИ-ЗАМІННИКИ І ЗАМІНИ
 
-Neither guestfish nor the underlying guestfs API performs wildcard expansion
-(globbing) by default.  So for example the following will not do what you
-expect:
+Ні у guestfish, ні у базовому програмному інтерфейсі guestfs типово не
+виконується розгортання символів-замінників (заміни).  Отже, наприклад,
+вказана нижче команда не буде виконана так, як ви б того сподівалися:
 
  rm-rf /home/*
 
-Assuming you don’t have a directory called literally F</home/*> then the
-above command will return an error.
+Якщо у вашій системі немає каталогу, який називається буквально F</home/*>,
+у результаті виконання вказаної вище команди ви побачите повідомлення про
+помилку.
 
-To perform wildcard expansion, use the C<glob> command.
+Для виконання розгортання символів-замінників скористайтеся командою C<glob>
 
  glob rm-rf /home/*
 
-runs C<rm-rf> on each path that matches (ie. potentially running the command
-many times), equivalent to:
+виконує C<rm-rf> для кожного відповідного каталогу (тобто потенційно
+запустити команду багато разів). Еквівалент такого:
 
  rm-rf /home/jim
  rm-rf /home/joe
  rm-rf /home/mary
 
-C<glob> only works on simple guest paths and not on device names.
+C<glob> працює лише для простих шляхів у гостьовій системі, а не для назв
+пристроїв.
 
-If you have several parameters, each containing a wildcard, then glob will
-perform a Cartesian product.
+Якщо параметрів декілька, кожен з яких містить символ-замінник, glob виконає
+рекурсивне розгортання.
 
 =head1 КОМЕНТАРІ
 
-Any line which starts with a I<#> character is treated as a comment and
-ignored.  The I<#> can optionally be preceded by whitespace, but B<not> by a
-command.  For example:
+Будь-який рядок, який розпочинається з символу I<#>, вважатиметься
+коментарем і ігноруватиметься. Якщо потрібно, перед I<#> може бути
+використано пробіл, але цього B<не можна> робити для команд. Приклад:
 
  # коментар
          # коментар
@@ -770,122 +808,128 @@ command.  For example:
 
 =head1 ЛОКАЛЬНИЙ ЗАПУСК КОМАНД
 
-Any line which starts with a I<!> character is treated as a command sent to
-the local shell (F</bin/sh> or whatever L<system(3)> uses).  For example:
+Будь-який рядок, який починається з символу I<!>, вважається командою,
+надісланою до локальної командної оболонки (F</bin/sh> або будь-якої іншої,
+яку використовує L<system(3)>). Приклад:
 
  !mkdir local
  tgz-out /remote local/remote-data.tar.gz
 
-will create a directory C<local> on the host, and then export the contents
-of F</remote> on the mounted filesystem to F<local/remote-data.tar.gz>.
-(See C<tgz-out>).
+створить каталог C<local> у основній системі, а потім експортує вміст
+F</remote> на змонтованій файловій системі до F<local/remote-data.tar.gz>.
+(Див. C<tgz-out>.)
 
-To change the local directory, use the C<lcd> command.  C<!cd> will have no
-effect, due to the way that subprocesses work in Unix.
+Щоб змінити локальний каталог, скористайтеся командою C<lcd>. C<!cd> не
+спрацює через спосіб, у який працюють підпроцеси у Unix.
 
-=head2 LOCAL COMMANDS WITH INLINE EXECUTION
+=head2 ЛОКАЛЬНІ КОМАНДИ ІЗ ВБУДОВАНИМ ВИКОНАННЯМ
 
-If a line starts with I<E<lt>!> then the shell command is executed (as for
-I<!>), but subsequently any output (stdout) of the shell command is parsed
-and executed as guestfish commands.
+Якщо рядок починається із I<E<lt>!>, виконується команда оболонки (як для
+I<!>), але далі усі виведені дані (stdout) команди оболонки обробляються і
+виконуються як команди guestfish.
 
-Thus you can use shell script to construct arbitrary guestfish commands
-which are then parsed by guestfish.
+Таким чином, ви можете використовувати скрипт командної оболонки для
+побудови довільних команд guestfish, виведення яких далі буде оброблено
+guestfish.
 
-For example it is tedious to create a sequence of files (eg. F</foo.1>
-through F</foo.100>) using guestfish commands alone.  However this is simple
-if we use a shell script to create the guestfish commands for us:
+Наприклад, створення послідовності файлів (наприклад, від F</foo.1> до
+F</foo.100>) за допомогою самих лише команд guestfish є марудною
+справою. Втім, зробити це доволі просто, якщо ми скористаємося скриптом
+оболонки для створення команд guestfish:
 
  <! for n in `seq 1 100`; do echo write /foo.$n $n; done
 
-or with names like F</foo.001>:
+або з назвами, які подібні до F</foo.001>:
 
  <! for n in `seq 1 100`; do printf "write /foo.%03d %d\n" $n $n; done
 
-When using guestfish interactively it can be helpful to just run the shell
-script first (ie. remove the initial C<E<lt>> character so it is just an
-ordinary I<!> local command), see what guestfish commands it would run, and
-when you are happy with those prepend the C<E<lt>> character to run the
-guestfish commands for real.
+При інтерактивному використанні guestfish може бути корисним спочатку
+запустити скрипт оболонки (тобто вилучити початковий символ C<E<lt>>, щоб
+зробити команду простою локальною командою із I<!>), подивитися, які команди
+guestfish вона запустить, а потім, якщо усе працює як слід, додати символ
+C<E<lt>>, щоб справді запустити команди guestfish.
 
 =head1 КАНАЛИ
 
-Use C<command E<lt>spaceE<gt> | command> to pipe the output of the first
-command (a guestfish command) to the second command (any host command).  For
-example:
+Скористайтеся конструкцією C<команда E<lt>пробілE<gt> | команда>, щоб
+передати каналом дані, виведені першою командою (командою guestfish) другій
+команді (будь-якій команді основної системи). Приклад:
 
  cat /etc/passwd | awk -F: '$3 == 0 { print }'
 
-(where C<cat> is the guestfish cat command, but C<awk> is the host awk
-program).  The above command would list all accounts in the guest filesystem
-which have UID 0, ie. root accounts including backdoors.  Other examples:
+(де C<cat> є командою cat guestfish, а C<awk> є програмою awk основної
+системи). Наведена вище команда має вивести список усіх облікових записів у
+файловій системі гостьової операційної системи, у яких UID 0, тобто
+адміністративних облікових записів, які містять входи для сторонніх
+осіб. Інші приклади:
 
  hexdump /bin/ls | head
  list-devices | tail -1
  tgz-out / - | tar ztf -
 
-The space before the pipe symbol is required, any space after the pipe
-symbol is optional.  Everything after the pipe symbol is just passed
-straight to the host shell, so it can contain redirections, globs and
-anything else that makes sense on the host side.
+Пробіл перед символом «|» є обов'язковим, а пробіл після цього символу —
+необов'язковим. Усе після символу «|» просто передається командній оболонці
+основної системи, отже, там можуть міститися переспрямування,
+символи-замінники і усе, що має сенс для інтерпретатора командної оболонки у
+основній системі.
 
-To use a literal argument which begins with a pipe symbol, you have to quote
-it, eg:
+Якщо потрібно використати буквальний аргумент із символом «|», його
+доведеться взяти у лапки. Ось так:
 
  echo "|"
 
 =head1 ДОМАШНІ КАТАЛОГИ
 
-If a parameter starts with the character C<~> then the tilde may be expanded
-as a home directory path (either C<~> for the current user's home directory,
-or C<~user> for another user).
+Якщо параметр починається із символу C<~>, тильду буде розгорнуто до назви
+домашнього каталогу (C<~> для домашнього каталогу поточного користувача або
+C<~user> для іншого користувача).
 
-Note that home directory expansion happens for users known I<on the host>,
-not in the guest filesystem.
+Зауважте, що розгортання домашнього каталогу виконується для користувачів,
+які відомі I<у основній системі>, а не у гостьовій файловій системі.
 
-To use a literal argument which begins with a tilde, you have to quote it,
-eg:
+Якщо потрібно використати буквальний аргумент із символом тильди, його
+доведеться взяти у лапки. Ось так:
 
  echo "~"
 
 =head1 ЗАШИФРОВАНІ ДИСКИ
 
-Libguestfs has some support for Linux guests encrypted according to the
-Linux Unified Key Setup (LUKS) standard, which includes nearly all whole
-disk encryption systems used by modern Linux guests.  Currently only
-LVM-on-LUKS is supported.
+Libguestfs має певну підтримку гостьових систем Linux, які зашифровано
+відповідно до стандарту Linux Unified Key Setup (LUKS), що включає майже усі
+системи шифрування усього диска, які використовуються сучасними гостьовими
+системами Linux. У поточній версії передбачено лише підтримку LVM-на-LUKS.
 
-Identify encrypted block devices and partitions using L</vfs-type>:
+Знайдіть шифровані блокові пристрої та розділи за допомогою L</vfs-type>:
 
  ><fs> vfs-type /dev/sda2
  crypto_LUKS
 
-Then open those devices using L</luks-open>.  This creates a device-mapper
-device called F</dev/mapper/luksdev>.
+Далі, відкрийте ці пристрої за допомогою L</luks-open>. У результаті буде
+створено пристрій прив'язки до пристрою із назвою F</dev/mapper/luksdev>.
 
  ><fs> luks-open /dev/sda2 luksdev
  Enter key or passphrase ("key"): <введіть пароль>
 
-Finally you have to tell LVM to scan for volume groups on the newly created
-mapper device:
+Нарешті, вам слід наказати LVM виконати сканування груп томів на
+новоствореному пристрої прив'язки:
 
  vgscan
  vg-activate-all true
 
-The logical volume(s) can now be mounted in the usual way.
+Тепер логічні томи можна змонтувати у звичний спосіб.
 
-Before closing a LUKS device you must unmount any logical volumes on it and
-deactivate the volume groups by calling C<vg-activate false VG> on each
-one.  Then you can close the mapper device:
+До закриття пристрою LUKS вам слід демонтувати усі логічні томи на ньому і
+деактивувати групи томів викликом C<vg-activate false VG> для кожної. Далі,
+ви можете закрити пристрій прив'язки:
 
  vg-activate false /dev/VG
  luks-close /dev/mapper/luksdev
 
 =head1 ШЛЯХИ У WINDOWS
 
-If a path is prefixed with C<win:> then you can use Windows-style drive
-letters and paths (with some limitations).  The following commands are
-equivalent:
+Якщо до шляху додано префікс C<win:>, ви зможете скористатися літерами
+дисків і шляхами у стилі Windows (з певними обмеженнями). Наведені нижче
+команди є еквівалентними:
 
  file /WINDOWS/system32/config/system.LOG
 
@@ -893,34 +937,36 @@ equivalent:
 
  file WIN:C:\Windows\SYSTEM32\CONFIG\SYSTEM.LOG
 
-The parameter is rewritten "behind the scenes" by looking up the position
-where the drive is mounted, prepending that to the path, changing all
-backslash characters to forward slash, then resolving the result using
-L</case-sensitive-path>.  For example if the E: drive was mounted on F</e>
-then the parameter might be rewritten like this:
+Параметр перезаписується «за лаштунками» шляхом пошуку місця, до якого
+змонтовано диск, дописування його перед шляхом, заміною усіх символів
+зворотної похилої риски на символ прямої похилої риски, а потім обробкою
+результату за допомогою L</case-sensitive-path>. Наприклад, якщо диск E:
+було змонтовано до F</e>, параметр може бути перезаписано так:
 
  win:e:\foo\bar => /e/FOO/bar
 
-This only works in argument positions that expect a path.
+Це працює лише у позиціях аргументів, де має бути вказано шлях.
 
 =head1 ВИВАНТАЖЕННЯ ТА ОТРИМАННЯ ФАЙЛІВ
 
-For commands such as C<upload>, C<download>, C<tar-in>, C<tar-out> and
-others which upload from or download to a local file, you can use the
-special filename C<-> to mean "from stdin" or "to stdout".  For example:
+Для команд, які подібні до C<upload>, C<download>, C<tar-in>, C<tar-out>, та
+інших, які вивантажують дані до образу або отримують дані до локального
+файла, ви можете скористатися спеціальною назвою файла C<->, яка означає «зі
+stdin» або «до stdout». Приклад:
 
  upload - /foo
 
-reads stdin and creates from that a file F</foo> in the disk image, and:
+читає дані з stdin і створює на їхній основі файл F</foo> у образі диска, а
+така команда:
 
  tar-out /etc - | tar tf -
 
-writes the tarball to stdout and then pipes that into the external "tar"
-command (see L</PIPES>).
+записує архів tar до stdout, а потім передає каналом дані до зовнішньої
+програми «tar» (див. L</КАНАЛИ>).
 
-When using C<-> to read from stdin, the input is read up to the end of
-stdin.  You can also use a special "heredoc"-like syntax to read up to some
-arbitrary end marker:
+Якщо використовується C<-> для читання зі stdin, дані читатимуться до кінця
+stdin. Ви також можете скористатися спеціальним синтаксисом «heredoc» для
+читання до певної довільної позначки кінця:
 
  upload -<<END /foo
  рядок 1
@@ -928,50 +974,55 @@ arbitrary end marker:
  рядок 3
  END
 
-Any string of characters can be used instead of C<END>.  The end marker must
-appear on a line of its own, without any preceding or following characters
-(not even spaces).
+Замість C<END> можна скористатися будь-яким іншим рядком символів. Позначка
+кінця має бути окремим рядком без будь-яких символів перед ним або після
+нього (навіть без пробілів).
 
-Note that the C<-E<lt>E<lt>> syntax only applies to parameters used to
-upload local files (so-called "FileIn" parameters in the generator).
+Зауважте, що синтаксис C<-E<lt>E<lt>> застосовується лише для параметрів,
+які використовуються для вивантаження локальних файлів (так званих
+параметрів «FileIn» у генераторі).
 
-=head1 EXIT ON ERROR BEHAVIOUR
+=head1 ВИХІД ПРИ ПОМИЛЦІ
 
-By default, guestfish will ignore any errors when in interactive mode
-(ie. taking commands from a human over a tty), and will exit on the first
-error in non-interactive mode (scripts, commands given on the command line).
+Типово, у інтерактивному режимі (тобто при отримання команд від людини за
+допомогою tty) guestfish ігноруватиме будь-які помилки і завершуватиме
+роботу при першій же помилці у неінтерактивному режимі (скрипти, команди із
+командного рядка).
 
-If you prefix a command with a I<-> character, then that command will not
-cause guestfish to exit, even if that (one) command returns an error.
+Якщо ви додасте до команди префікс I<->, ця команда не спричинятиме
+завершення роботи guestfish, навіть якщо ця (одна) команда поверне
+повідомлення про помилку.
 
-=head1 REMOTE CONTROL GUESTFISH OVER A SOCKET
+=head1 ВІДДАЛЕНЕ КЕРУВАННЯ GUESTFISH КРІЗЬ СОКЕТ
 
-Guestfish can be remote-controlled over a socket.  This is useful
-particularly in shell scripts where you want to make several different
-changes to a filesystem, but you don't want the overhead of starting up a
-guestfish process each time.
+Guestfish можна віддалено керувати за допомогою сокета. Це, зокрема, корисно
+у скриптах командної оболонки, де вам потрібно внести декілька різних змін
+до файлової системи, але ви не хочете отримати пенальті через запуск процесу
+guestfish для кожної окремо взятої зміни.
 
-Start a guestfish server process using:
+Запустіть процес сервера guestfish такою командою:
 
  eval "`guestfish --listen`"
 
-and then send it commands by doing:
+а потім надішліть команди ось так:
 
  guestfish --remote команда [...]
 
-To cause the server to exit, send it the exit command:
+Щоб наказати серверу завершити роботу (вийти), надішліть йому команду
+виходу:
 
  guestfish --remote exit
 
-Note that the server will normally exit if there is an error in a command.
-You can change this in the usual way.  See section L</EXIT ON ERROR
-BEHAVIOUR>.
+Зауважте, що за звичних умов сервер завершує роботу, якщо під час виконання
+команди станеться помилка. Ви можете змінити цю поведінку у звичний
+спосіб. Див. розділ L</ВИХІД ПРИ ПОМИЛЦІ>.
 
-=head2 CONTROLLING MULTIPLE GUESTFISH PROCESSES
+=head2 КЕРУВАННЯ ДЕКІЛЬКОМА ПРОЦЕСАМИ GUESTFISH
 
-The C<eval> statement sets the environment variable C<$GUESTFISH_PID>, which
-is how the I<--remote> option knows where to send the commands.  You can
-have several guestfish listener processes running using:
+Інструкція C<eval> встановлює змінну середовища C<$GUESTFISH_PID>, саме так
+команда із параметром I<--remote> визначає, куди слід надсилати команди. Ви
+можете користуватися декількома процесами guestfish, які очікуватимуть на
+команди, ось так:
 
  eval "`guestfish --listen`"
  pid1=$GUESTFISH_PID
@@ -981,29 +1032,31 @@ have several guestfish listener processes running using:
  guestfish --remote=$pid1 cmd
  guestfish --remote=$pid2 cmd
 
-=head2 REMOTE CONTROL AND CSH
+=head2 ВІДДАЛЕНЕ КЕРУВАННЯ І CSH
 
-When using csh-like shells (csh, tcsh etc) you have to add the I<--csh>
-option:
+Якщо ви користуєтеся csh-подібними оболонками (csh, tcsh тощо), вам слід
+додати параметр I<--csh>:
 
  eval "`guestfish --listen --csh`"
 
-=head2 REMOTE CONTROL DETAILS
+=head2 ПОДРОБИЦІ ЩОДО ВІДДАЛЕНОГО КЕРУВАННЯ
 
-Remote control happens over a Unix domain socket called
-F</tmp/.guestfish-$UID/socket-$PID>, where C<$UID> is the effective user ID
-of the process, and C<$PID> is the process ID of the server.
+Віддалене керування відбувається за допомогою сокетів домену Unix, які мають
+назви F</tmp/.guestfish-$UID/socket-$PID>, де C<$UID> — ідентифікатор
+ефективного користувача для процесу, а C<$PID> — ідентифікатор процесу
+сервера.
 
-Guestfish client and server versions must match exactly.
+Версії клієнта і сервера guestfish мають бути абсолютно однаковими.
 
-Older versions of guestfish were vulnerable to CVE-2013-4419 (see
-L<guestfs(3)/CVE-2013-4419>).  This is fixed in the current version.
+Застарілі версії guestfish були вразливими до CVE-2013-4419
+(див. L<guestfs(3)/CVE-2013-4419>). Вразливість виправлено у поточній
+версії.
 
-=head2 USING REMOTE CONTROL ROBUSTLY FROM SHELL SCRIPTS
+=head2 НАДІЙНЕ ВИКОРИСТАННЯ ВІДДАЛЕНОГО КЕРУВАННЯ У СКРИПТАХ ОБОЛОНКИ
 
-From Bash, you can use the following code which creates a guestfish
-instance, correctly quotes the command line, handles failure to start, and
-cleans up guestfish when the script exits:
+У Bash ви можете використовувати наведений нижче код, який створює екземпляр
+guestfish, правильно використовує лапки у командному рядку, обробляє помилки
+при запуску та чистить дані guestfish, коли скрипт завершує роботу:
 
  #!/bin/bash -
  
@@ -1032,15 +1085,17 @@ cleans up guestfish when the script exits:
  
  # ...
 
-=head2 REMOTE CONTROL DOES NOT WORK WITH I<-a> ETC. OPTIONS
+=head2 ВІДДАЛЕНЕ КЕРУВАННЯ НЕ ПРАЦЮЄ ІЗ ПАРАМЕТРАМИ, ПОДІБНИМИ ДО I<-a>
 
-Options such as I<-a>, I<--add>, I<-N>, I<--new> etc don’t interact properly
-with remote support.  They are processed locally, and not sent through to
-the remote guestfish.  In particular this won't do what you expect:
+Параметри, які подібні до I<-a>, I<--add>, I<-N>, I<--new>, не можуть
+належним чином працювати із підтримкою віддаленого керування. Вони
+обробляються локально і не надсилаються до віддаленого екземпляра
+guestfish. Зокрема, ось таке не працюватиме так, як ви б того сподівалися:
 
  guestfish --remote --add диск.img
 
-Don’t use these options.  Use the equivalent commands instead, eg:
+Не використовуйте ці параметри. Замість них, використовуйте еквівалентні
+команди. Приклад:
 
  guestfish --remote add-drive диск.img
 
@@ -1049,52 +1104,55 @@ Don’t use these options.  Use the equivalent commands instead, eg:
  guestfish --remote
  ><fs> add диск.img
 
-=head2 REMOTE CONTROL RUN COMMAND HANGING
+=head2 ЗАВИСАННЯ ЗАПУЩЕНОЇ ЗА ДОПОМОГОЮ ВІДДАЛЕНОГО КЕРУВАННЯ КОМАНДИ
 
-Using the C<run> (or C<launch>) command remotely in a command substitution
-context hangs, ie. don't do (note the backquotes):
+Використання команди C<run> (або C<launch>) віддалено у контексті
+підстановки команд призводить до повисання. Тобто, не слід робити так
+(зверніть увагу на зворотні лапки):
 
  a=`guestfish --remote run`
 
-Since the C<run> command produces no output on stdout, this is not useful
-anyway.  For further information see
+Оскільки команда C<run> нічого не виводить до stdout, це все одно не має
+сенсу. Докладніший опис наведено тут:
 L<https://bugzilla.redhat.com/show_bug.cgi?id=592910>.
 
-=head1 ПРИГОТОВАНІ ОБРАЗИ ДИСКІВ
+=head1 ОБРАЗИ ПРИГОТОВАНИХ ДИСКІВ
 
-Use the I<-N [filename=]type> or I<--new [filename=]type> parameter to
-select one of a set of preformatted disk images that guestfish can make for
-you to save typing.  This is particularly useful for testing purposes.  This
-option is used instead of the I<-a> option, and like I<-a> can appear
-multiple times (and can be mixed with I<-a>).
+Скористайтеся параметром I<-N [назва_файла=]тип> або I<--new
+[назва_файла=]тип> для вибору одного з набору попередньо форматованих
+образів дисків, які може створити guestfish, щоб заощадити час на введення
+назв вручну. Це, зокрема, корисно для тестування. Цей параметр
+використовується замість параметра I<-a> і,  як I<-a>, його можна
+використовувати декілька разів (і поєднувати з I<-a>).
 
-The new disk is called F<test1.img> for the first I<-N>, F<test2.img> for
-the second and so on.  Existing files in the current directory are
-I<overwritten>.  You can use a different filename by specifying C<filename=>
-before the type (see examples below).
+Новий диск буде названо F<test1.img> для першого I<-N>, F<test2.img> — для
+другого, тощо. Наявні файли у поточному каталозі буде I<перезаписано>. Ви
+можете скористатися іншою назвою файла, якщо вкажете рядок C<назва_файла=>
+до типу (див. наведені нижче приклади).
 
 The type briefly describes how the disk should be sized, partitioned, how
 filesystem(s) should be created, and how content should be added.
 Optionally the type can be followed by extra parameters, separated by C<:>
-(colon) characters.  For example, I<-N fs> creates a default 100MB,
+(colon) characters.  For example, I<-N fs> creates a default 1G,
 sparsely-allocated disk, containing a single partition, with the partition
-formatted as ext2.  I<-N fs:ext4:1G> is the same, but for an ext4 filesystem
-on a 1GB disk instead.
+formatted as ext2.  I<-N fs:ext4:2G> is the same, but for an ext4 filesystem
+on a 2GB disk instead.
 
-Note that the prepared filesystem is not mounted.  You would usually have to
-use the C<mount /dev/sda1 /> command or add the I<-m /dev/sda1> option.
+Зауважте, що приготовану файлову систему не змонтовано. Вам, зазвичай, слід
+скористатися командою C<mount /dev/sda1 />  або додати параметр I<-m
+/dev/sda1>.
 
-If any I<-N> or I<--new> options are given, the libguestfs appliance is
-automatically launched.
+Якщо вказано якісь параметри I<-N> або I<--new>, буде автоматично запущено
+базову систему libguestfs.
 
 =head2 ПРИКЛАДИ
 
-Create a 100MB disk with an ext4-formatted partition, called F<test1.img> in
+Create a 1G disk with an ext4-formatted partition, called F<test1.img> in
 the current directory:
 
  guestfish -N fs:ext4
 
-Create a 32MB disk with a VFAT-formatted partition, and mount it:
+Створити диск у 32 МБ із форматованим у VFAT розділом і змонтувати його:
 
  guestfish -N fs:vfat:32M -m /dev/sda1
 
@@ -1102,7 +1160,8 @@ Create a 32MB disk with a VFAT-formatted partition, and mount it:
 
  guestfish -N disk:200M
 
-Create a blank 200MB disk called F<blankdisk.img> (instead of F<test1.img>):
+Створити порожній диск у 200 МБ із назвою F<blankdisk.img> (замість
+F<test1.img>):
 
  guestfish -N blankdisk.img=disk:200M
 
@@ -1110,26 +1169,27 @@ __PREPOPTS__
 
 =head1 ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА
 
-I<For API-level documentation on this topic, see
-L<guestfs(3)/guestfs_add_drive_opts> and L<guestfs(3)/REMOTE STORAGE>>.
+I<Документацію рівня програмного інтерфейсу щодо цього питання наведено у
+розділах L<guestfs(3)/guestfs_add_drive_opts> і L<guestfs(3)/ВІДДАЛЕНЕ
+СХОВИЩЕ>>.
 
-On the command line, you can use the I<-a> option to add network block
-devices using a URI-style format, for example:
+У командному рядку ви можете скористатися параметром I<-a> для додавання
+мережевих блокових пристроїв за допомогою формату у стилі адрес. Приклад:
 
  guestfish -a ssh://root@example.com/диск.img
 
-URIs I<cannot> be used with the L</add> command.  The equivalent command
-using the API directly is:
+Адреси I<не можна> використовувати разом із командою L</add>. Еквівалентною
+командою у безпосередньому використанні програмному інтерфейсі є:
 
  ><fs> add /disk.img protocol:ssh server:tcp:example.com username:root
 
-The possible I<-a URI> formats are described below.
+Можливі формати I<-a адреса> описано нижче.
 
 =head2 B<-a disk.img>
 
 =head2 B<-a file:///шлях/на/диску.img>
 
-Add the local disk image (or device) called F<disk.img>.
+Додати локальний образ диска (або пристрою) із назвою F<disk.img>.
 
 =head2 B<-a ftp://[user@]example.com[:port]/disk.img>
 
@@ -1141,9 +1201,9 @@ Add the local disk image (or device) called F<disk.img>.
 
 =head2 B<-a tftp://[user@]example.com[:порт]/disk.img>
 
-Add a disk located on a remote FTP, HTTP or TFTP server.
+Додати диск на віддаленому сервері FTP, HTTP або TFTP.
 
-The equivalent API command would be:
+Еквівалентною командою із програмного інтерфейсу є така:
 
  ><fs> add /disk.img protocol:(ftp|...) server:tcp:example.com username:root
 
@@ -1154,7 +1214,7 @@ The equivalent API command would be:
 Сервером є комп'ютер, на якому запущено C<glusterd>, ним може бути
 C<localhost>.
 
-The equivalent API command would be:
+Еквівалентною командою із програмного інтерфейсу є така:
 
  ><fs> add volname/image protocol:gluster server:tcp:example.com
 
@@ -1162,7 +1222,7 @@ The equivalent API command would be:
 
 Додати диск з сервера iSCSI.
 
-The equivalent API command would be:
+Еквівалентною командою із програмного інтерфейсу є така:
 
  ><fs> add target-iqn-name/lun protocol:iscsi server:tcp:example.com
 
@@ -1176,14 +1236,16 @@ The equivalent API command would be:
 
 Додати образ диска, розташований у сховищі даних Network Block Device (nbd).
 
-The I</exportname> part of the URI specifies an NBD export name, but is
-usually left empty.
+Частина I</exportname> адреси вказує назву експортування NBD, але, зазвичай,
+її лишають порожньою.
 
-The optional I<?socket> parameter can be used to specify a Unix domain
-socket that we talk to the NBD server over.  Note that you cannot mix server
-name (ie. TCP/IP) and socket path.
+Необов'язковим параметром I<?socket> може бути використано для визначення
+сокета домену Unix, крізь який можна обмінюватися даними із сервером
+NBD. Зауважте, що не можна поєднувати назву сервера (тобто TCP/IP) і шлях до
+сокета.
 
-The equivalent API command would be (no export name):
+Еквівалентною командою із програмного інтерфейсу є така (без назви
+експортування):
 
  ><fs> add "" protocol:nbd server:[tcp:example.com|unix:/сокет]
 
@@ -1191,80 +1253,83 @@ The equivalent API command would be (no export name):
 
 =head2 B<-a rbd://example.com[:порт]/буфер/диск>
 
-Add a disk image located on a Ceph (RBD/librbd) storage volume.
+Додати образ диска, розташований на томі сховища Ceph (RBD/librbd).
 
-Although libguestfs and Ceph supports multiple servers, only a single server
-can be specified when using this URI syntax.
+Хоча у libguestfs та Ceph передбачено підтримку декількох серверів, при
+використанні цього синтаксису адреси можна вказати лише один сервер.
 
-The equivalent API command would be:
+Еквівалентною командою із програмного інтерфейсу є така:
 
  ><fs> add pool/disk protocol:rbd server:tcp:example.com:порт
 
 =head2 B<-a sheepdog://[example.com[:порт]]/том/образ>
 
-Add a disk image located on a Sheepdog volume.
+Додати образ диска, розташований на томі Sheepdog.
 
-The server name is optional.  Although libguestfs and Sheepdog supports
-multiple servers, only at most one server can be specified when using this
-URI syntax.
+Назва сервера є необов'язковою. Хоча у libguestfs та Sheepdog передбачено
+підтримку декількох серверів, при використанні цього синтаксису адреси можна
+вказати не більше одного сервера.
 
-The equivalent API command would be:
+Еквівалентною командою із програмного інтерфейсу є така:
 
  ><fs> add volume protocol:sheepdog [server:tcp:example.com]
 
 =head2 B<-a ssh://[користувач@]example.com[:порт]/диск.img>
 
-Add a disk image located on a remote server, accessed using the Secure Shell
-(ssh) SFTP protocol.  SFTP is supported out of the box by all major SSH
-servers.
+Додати образ диска, розташований на віддаленому сервері, доступ до якого
+здійснюється за допомогою протоколу Secure Shell (ssh) SFTP. Підтримку SFTP
+передбачено від початку в усіх основних серверах SSH.
 
-The equivalent API command would be:
+Еквівалентною командою із програмного інтерфейсу є така:
 
  ><fs> add /disk protocol:ssh server:tcp:example.com [username:user]
 
-Note that the URIs follow the syntax of L<RFC
-3986|https://tools.ietf.org/html/rfc3986>: in particular, there are
-restrictions on the allowed characters for the various components of the
-URI.  Characters such as C<:>, C<@>, and C</> B<must> be percent-encoded:
+Зауважте, що для адрес використовується синтаксис L<RFC
+3986|https://tools.ietf.org/html/rfc3986>: зокрема, існують обмеження на
+дозволені символи для різних компонентів адреси. Деякі символи, зокрема
+C<:>, C<@> і C</> B<має> бути закодовано з використанням символу відсотків:
 
  $ guestfish -a ssh://користувач:пароль%40word@example.com/диск.img
 
-In this case, the password is C<pass@word>.
+У цьому випадку паролем є C<pass@word>.
 
 =head1 СМУЖКИ ПОСТУПУ
 
-Some (not all) long-running commands send progress notification messages as
-they are running.  Guestfish turns these messages into progress bars.
+Деякі (не усі) команди, які виконуються довго, надсилають сповіщення щодо
+поступу під час виконання. Guestfish перетворює такі повідомлення на смужки
+поступу.
 
-When a command that supports progress bars takes longer than two seconds to
-run, and if progress bars are enabled, then you will see one appearing below
-the command:
+Якщо виконання команди, де передбачено смужки поступу, триває понад 2
+секунди і увімкнено смужки поступу, ви побачите таку смужку під рядком
+команди:
 
  ><fs> copy-size /великий-файл /інший-файл 2048M
  / 10% [#####-----------------------------------------] 00:30
 
-The spinner on the left hand side moves round once for every progress
-notification received from the backend.  This is a (reasonably) golden
-assurance that the command is "doing something" even if the progress bar is
-not moving, because the command is able to send the progress notifications.
-When the bar reaches 100% and the command finishes, the spinner disappears.
+Символ ліворуч прокручуватиметься у відповідь на кожне отримане сповіщення
+щодо поступу від модуля обробки. Це доволі добра гарантія того, що команда
+«щось робить», навіть якщо смужка поступу не рухається, оскільки команда
+здатна надсилати сповіщення щодо поступу. Коли на смужці поступу буде
+досягнуто рівня 100% і команда завершить роботу, символ автоматично зникне.
 
-Progress bars are enabled by default when guestfish is used interactively.
-You can enable them even for non-interactive modes using I<--progress-bars>,
-and you can disable them completely using I<--no-progress-bars>.
+Якщо guestfish використовується як інтерактивна командна оболонка, смужки
+поступу буде типово увімкнено. Ви можете увімкнути їх навіть у
+неінтерактивному режимі за допомогою параметра I<--progress-bars> або
+повністю вимкнути їх за допомогою параметра I<--no-progress-bars>.
 
 =head1 ЗАПИТ
 
-You can change or add colours to the default prompt (C<E<gt>E<lt>fsE<gt>>)
-by setting the C<GUESTFISH_PS1> environment variable.  A second string
-(C<GUESTFISH_OUTPUT>) is printed after the command has been entered and
-before the output, allowing you to control the colour of the output.  A
-third string (C<GUESTFISH_INIT>)  is printed before the welcome message,
-allowing you to control the colour of that message.  A fourth string
-(C<GUESTFISH_RESTORE>) is printed before guestfish exits.
+Ви можете змінити або додати кольори до типового запиту щодо команди
+(C<E<gt>E<lt>fsE<gt>>), встановивши відповідне значення змінної середовища
+C<GUESTFISH_PS1>. Другий рядок (C<GUESTFISH_OUTPUT>) буде виведено після
+введення команди і перед її виведенням. Він надає вам змогу керувати
+розфарбовуванням виведених даних. Третій рядок (C<GUESTFISH_INIT>)
+виводиться перед повідомленням вітання і надає вам змогу розфарбувати це
+повідомлення. Четвертий рядок (C<GUESTFISH_RESTORE>) виводиться перед
+завершенням роботи guestfish.
 
-A simple prompt can be set by setting C<GUESTFISH_PS1> to an alternate
-string:
+Простий запит можна встановити за допомогою визначення для C<GUESTFISH_PS1>
+якогось альтернативного рядка:
 
  $ GUESTFISH_PS1='(введіть команду) '
  $ export GUESTFISH_PS1
@@ -1272,24 +1337,25 @@ string:
  [...]
  (введіть команду) ▂
 
-You can also use special escape sequences, as described in the table below:
+Ви також можете використовувати послідовності спеціальних символів, які
+описано у наведеній нижче таблиці:
 
 =over 4
 
 =item \\
 
-A literal backslash character.
+Сам символ зворотної похилої риски.
 
 =item \[
 
 =item \]
 
-(These should only be used in C<GUESTFISH_PS1>.)
+(Ці послідовності має бути використано лише у C<GUESTFISH_PS1>.)
 
-Place non-printing characters (eg. terminal control codes for colours)
-between C<\[...\]>.  What this does it to tell the L<readline(3)> library
-that it should treat this subsequence as zero-width, so that command-line
-redisplay, editing etc works.
+Розташовуйте непридатні до виведення символи (наприклад, коди термінала для
+кольорів) між C<\[...\]>. Це вкаже бібліотеці L<readline(3)>, що їй слід
+вважати таку підпослідовність символом нульової ширини. Це уможливить
+повторний показ, редагування та інші операції.
 
 =item \a
 
@@ -1297,7 +1363,7 @@ redisplay, editing etc works.
 
 =item \e
 
-An ASCII ESC (escape) character.
+Символ ESC ASCII.
 
 =item \n
 
@@ -1309,17 +1375,18 @@ An ASCII ESC (escape) character.
 
 =item \NNN
 
-The ASCII character whose code is the octal value NNN.
+Символ ASCII, кодом якого є вісімкове значення NNN.
 
 =item \xNN
 
-The ASCII character whose code is the hex value NN.
+Символ ASCII, кодом якого є шістнадцяткове значення NN.
 
 =back
 
 =head2 ПРИКЛАДИ ЗАПИТІВ
 
-Note that these examples require a terminal that supports ANSI escape codes.
+Зауважте, що для користування цими прикладами вам знадобиться термінал, у
+якому передбачено коди екранування ANSI.
 
 =over 4
 
@@ -1327,7 +1394,7 @@ Note that these examples require a terminal that supports ANSI escape codes.
 
  GUESTFISH_PS1='\[\e[1;30m\]><fs>\[\e[0;30m\] '
 
-A bold black version of the ordinary prompt.
+Жирна чорна версія звичайного запиту.
 
 =item *
 
@@ -1336,20 +1403,19 @@ A bold black version of the ordinary prompt.
  GUESTFISH_RESTORE="$GUESTFISH_OUTPUT"
  GUESTFISH_INIT='\e[1;34m'
 
-Blue welcome text, green prompt, red commands, black command output.
+Синій текст вітання, зелений запит, червоні команди, чорне виведення команд.
 
 =back
 
 =head1 WINDOWS 8
 
-Windows 8 "fast startup" can prevent guestfish from mounting NTFS
-partitions.  See L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST
-STARTUP>.
+«Швидкий запуск» Windows 8 може заважати монтуванню у guestfish розділів
+NTFS. Див. L<guestfs(3)/ПРИСИПЛЯННЯ WINDOWS  ТА ШВИДКИЙ ЗАПУСК WINDOWS 8>.
 
 =head1 КОМАНДИ GUESTFISH
 
-The commands in this section are guestfish convenience commands, in other
-words, they are not part of the L<guestfs(3)> API.
+Команди у цьому розділі є допоміжними командами guestfish. Інакше кажучи,
+вони не є частиною програмного інтерфейсу L<guestfs(3)>.
 
 =head2 help
 
@@ -1359,15 +1425,17 @@ words, they are not part of the L<guestfs(3)> API.
 
 Без параметра показує загальну довідкову інформацію.
 
-With a C<cmd> parameter, this displays detailed help for that command.
+Якщо вказано із параметром C<команда>, ця команда показує довідку щодо
+заданої команди.
 
-With I<-l> or I<--list>, this list all commands.
+Якщо вказано параметр I<-l> або I<--list>, буде показано список усіх команд.
 
 =head2 exit
 
 =head2 quit
 
-This exits guestfish.  You can also use C<^D> key.
+Завершує роботу guestfish. Ви також можете скористатися комбінацією клавіш
+C<^D>.
 
 __FISH_COMMANDS__
 
@@ -1377,8 +1445,8 @@ __ACTIONS__
 
 =head1 СТАН ВИХОДУ
 
-guestfish returns 0 if the commands completed without error, or 1 if there
-was an error.
+guestfish повертає 0, якщо команди виконано без помилок, або 1, якщо сталася
+помилка.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -1386,13 +1454,15 @@ was an error.
 
 =item РЕДАКТОР
 
-The C<edit> command uses C<$EDITOR> as the editor.  If not set, it uses
-C<vi>.
+Для редагування у команді C<edit> використовується редактор, вказаний за
+допомогою змінної середовища C<$EDITOR>. Якщо значення цієї змінної не
+встановлено, використовується C<vi>.
 
 =item GUESTFISH_DISPLAY_IMAGE
 
-The C<display> command uses C<$GUESTFISH_DISPLAY_IMAGE> to display images.
-If not set, it uses L<display(1)>.
+Для показу зображень команда C<display> використовує програму, вказану за
+допомогою змінної середовища C<$GUESTFISH_DISPLAY_IMAGE>. Якщо значення цієї
+змінної не встановлено, буде використано L<display(1)>.
 
 =item GUESTFISH_INIT
 
@@ -1404,8 +1474,9 @@ If not set, it uses L<display(1)>.
 
 =item GUESTFISH_PID
 
-Used with the I<--remote> option to specify the remote guestfish process to
-control.  See section L</REMOTE CONTROL GUESTFISH OVER A SOCKET>.
+Використовується разом із параметром I<--remote> для задання віддаленого
+процесу guestfish для керування. Див. розділ L</ВІДДАЛЕНЕ КЕРУВАННЯ
+GUESTFISH КРІЗЬ СОКЕТ>.
 
 =item GUESTFISH_PS1
 
@@ -1417,13 +1488,15 @@ control.  See section L</REMOTE CONTROL GUESTFISH OVER A SOCKET>.
 
 =item HEXEDITOR
 
-The L</hexedit> command uses C<$HEXEDITOR> as the external hex editor.  If
-not specified, the external L<hexedit(1)> program is used.
+Команда L</hexedit> використовує програму, вказану за допомогою змінної
+середовища C<$HEXEDITOR>, як зовнішній шістнадцятковий редактор. Якщо
+значення цієї змінної середовища не встановлено, використовується зовнішня
+програма L<hexedit(1)>.
 
 =item ДОМІВКА
 
-If compiled with GNU readline support, various files in the home directory
-can be used.  See L</FILES>.
+Якщо програму зібрано із підтримкою GNU readline, можна використовувати
+різноманітні файли у домашньому каталозі. Див. L</ФАЙЛИ>.
 
 =item LIBGUESTFS_APPEND
 
@@ -1435,46 +1508,49 @@ can be used.  See L</FILES>.
 
 =item LIBGUESTFS_BACKEND
 
-Choose the default way to create the appliance.  See
-L<guestfs(3)/guestfs_set_backend>.
+Вибрати типовий спосіб створення базової
+системи. Див. L<guestfs(3)/guestfs_set_backend>.
 
 =item LIBGUESTFS_BACKEND_SETTINGS
 
-A colon-separated list of backend-specific settings.  See
-L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>.
+Список відокремлених двокрапками параметрів, специфічних для модуля
+обробки. Див. L<guestfs(3)/МОДУЛЬ>, L<guestfs(3)/ПАРАМЕТРИ МОДУЛЯ>.
 
 =item LIBGUESTFS_CACHEDIR
 
-The location where libguestfs will cache its appliance, when using a
-supermin appliance.  The appliance is cached and shared between all handles
-which have the same effective user ID.
+Місце, де зберігатиметься кеш базової системи libguestfs, якщо
+використовується базова система supermin. Базова система кешується і спільно
+використовується усіма дескрипторами, які мають однаковий ідентифікатор
+ефективного користувача.
 
-If C<LIBGUESTFS_CACHEDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR>
-is not set, then F</var/tmp> is used.
+Якщо значення C<LIBGUESTFS_CACHEDIR> не встановлено, буде використано
+C<TMPDIR>. Якщо не встановлено значення C<TMPDIR>, буде використано
+F</var/tmp>.
 
 Див. також L</LIBGUESTFS_TMPDIR>, L</set-cachedir>.
 
 =item LIBGUESTFS_DEBUG
 
-Set C<LIBGUESTFS_DEBUG=1> to enable verbose messages.  This has the same
-effect as using the B<-v> option.
+Встановіть значення C<LIBGUESTFS_DEBUG=1>, щоб увімкнути режим докладних
+повідомлень. Ця змінна має той самий ефект, що і параметр B<-v>.
 
 =item LIBGUESTFS_HV
 
-Set the default hypervisor (usually qemu) binary that libguestfs uses.  If
-not set, then the qemu which was found at compile time by the configure
-script is used.
+Встановити типовий виконуваний файл гіпервізору (зазвичай, qemu), яким
+користуватиметься libguestfs. Якщо не встановлено, буде використано qemu,
+знайдений скриптом налаштовування під час збирання.
 
 =item LIBGUESTFS_MEMSIZE
 
-Set the memory allocated to the qemu process, in megabytes.  For example:
+Встановлює обсяг пам'яті, який надається процесу qemu, у
+мегабайтах. Приклад:
 
  LIBGUESTFS_MEMSIZE=700
 
 =item LIBGUESTFS_PATH
 
-Set the path that guestfish uses to search for kernel and initrd.img.  See
-the discussion of paths in L<guestfs(3)>.
+Встановити шлях, який guestfish використовує для пошуку ядра та
+initrd.img. Див. обговорення шляхів у L<guestfs(3)>.
 
 =item LIBGUESTFS_QEMU
 
@@ -1482,28 +1558,30 @@ the discussion of paths in L<guestfs(3)>.
 
 =item LIBGUESTFS_TMPDIR
 
-The location where libguestfs will store temporary files used by each
-handle.
+Місце, де libguestfs зберігатиме тимчасові файли, які використовуються
+кожним з дескрипторів.
 
-If C<LIBGUESTFS_TMPDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR> is
-not set, then F</tmp> is used.
+Якщо значення C<LIBGUESTFS_TMPDIR> не встановлено, буде використано
+C<TMPDIR>. Якщо не встановлено значення C<TMPDIR>, буде використано F</tmp>.
 
 Див. також L</LIBGUESTFS_CACHEDIR>, L</set-tmpdir>.
 
 =item LIBGUESTFS_TRACE
 
-Set C<LIBGUESTFS_TRACE=1> to enable command traces.
+Встановіть значення C<LIBGUESTFS_TRACE=1>, щоб увімкнути трасування команд.
 
 =item РОЗБИТТЯ НА СТОРІНКИ
 
-The C<more> command uses C<$PAGER> as the pager.  If not set, it uses
-C<more>.
+Для редагування у команді C<more> використовується пейджер, вказаний за
+допомогою змінної середовища C<$PAGER>. Якщо значення цієї змінної не
+встановлено, використовується C<more>.
 
 =item ШЛЯХ
 
-Libguestfs and guestfish may run some external programs, and rely on
-C<$PATH> being set to a reasonable value.  If using the libvirt backend,
-libvirt will not work at all unless C<$PATH> contains the path of qemu/KVM.
+Libguestfs можуть запускати деякі зовнішні програми і вважати, що для
+C<$PATH> встановлено якесь правильне значення. Якщо використовується модуль
+обробки libvirt, libvirt не працюватиме взагалі, якщо у C<$PATH> не
+міститься шляху до qemu/KVM.
 
 =item SUPERMIN_KERNEL
 
@@ -1511,10 +1589,11 @@ libvirt will not work at all unless C<$PATH> contains the path of qemu/KVM.
 
 =item SUPERMIN_MODULES
 
-These three environment variables allow the kernel that libguestfs uses in
-the appliance to be selected.  If C<$SUPERMIN_KERNEL> is not set, then the
-most recent host kernel is chosen.  For more information about kernel
-selection, see L<supermin(1)>.
+За допомогою цих трьох змінних середовища можна вибрати ядро, яке libguestfs
+використовуватиме у базовій системі. Якщо не встановлено
+C<$SUPERMIN_KERNEL>, буде вибрано найсвіжіше з ядер основної
+системи. Докладніший опис вибору ядра можна знайти на сторінці підручника
+щодо L<supermin(1)>.
 
 =item ТИМЧАСОВИЙ КАТАЛОГ
 
@@ -1522,11 +1601,11 @@ selection, see L<supermin(1)>.
 
 =item XDG_RUNTIME_DIR
 
-This directory represents a user-specific directory for storing
-non-essential runtime files.
+Цей каталог є специфічним каталогом користувача, який призначено для
+зберігання неважливих файлів під час роботи.
 
-If it is set, then is used to store temporary sockets.  Otherwise, F</tmp>
-is used.
+Якщо встановлено, використовується для зберігання тимчасових сокетів. Якщо
+не встановлено, використовується F</tmp>.
 
 Див. також L</get-sockdir>,
 L<http://www.freedesktop.org/wiki/Specifications/basedir-spec/>.
@@ -1545,43 +1624,45 @@ L<http://www.freedesktop.org/wiki/Specifications/basedir-spec/>.
 
 =item /etc/libguestfs-tools.conf
 
-This configuration file controls the default read-only or read-write mode
-(I<--ro> or I<--rw>).
+Цей файл налаштувань керує типовим режимом — лише читання чи читання і запис
+(I<--ro> або I<--rw>).
 
 Див. L<libguestfs-tools.conf(5)>.
 
 =item $HOME/.guestfish
 
-If compiled with GNU readline support, then the command history is saved in
-this file.
+Якщо програму зібрано із підтримкою GNU readline, до цього файла
+зберігатиметься журнал команд.
 
 =item $HOME/.inputrc
 
 =item /etc/inputrc
 
-If compiled with GNU readline support, then these files can be used to
-configure readline.  For further information, please see
-L<readline(3)/INITIALIZATION FILE>.
+Якщо програму зібрано із підтримкою GNU readline, цими файлами можна
+скористатися для налаштовування readline. Докладніший опис можна знайти на
+сторінці підручника L<readline(3)/INITIALIZATION FILE>.
 
-To write rules which only apply to guestfish, use:
+Для створення правил, які застосовуватимуться лише до guestfish,
+скористайтеся таким:
 
  $if guestfish
  ...
  $endif
 
-Variables that you can set in inputrc that change the behaviour of guestfish
-in useful ways include:
+Серед змінних, які ви можете встановити у inputrc для внесення змін до
+поведінки guestfish, такі:
 
 =over 4
 
 =item completion-ignore-case (типово: on)
 
-By default, guestfish will ignore case when tab-completing paths on the
-disk.  Use:
+Типово, guestfish ігноруватиме регістр символів під час автоматичного
+доповнення шляхів на диску у відповідь на натискання клавіші
+Tab. Скористайтеся таким:
 
  set completion-ignore-case off
 
-to make guestfish case sensitive.
+щоб наказати guestfish враховувати регістр символів.
 
 =back
 
@@ -1589,11 +1670,11 @@ to make guestfish case sensitive.
 
 =item test2.img (тощо)
 
-When using the I<-N> or I<--new> option, the prepared disk or filesystem
-will be created in the file F<test1.img> in the current directory.  The
-second use of I<-N> will use F<test2.img> and so on.  Any existing file with
-the same name will be overwritten.  You can use a different filename by
-using the C<filename=> prefix.
+При використанні параметра I<-N> або I<--new> приготований диск або файлову
+систему буде створено у файлі F<test1.img> у поточному каталозі. Друге
+використання I<-N> призведе до використання F<test2.img> тощо. Усі наявні
+файли із такими самими назвами буде перезаписано. Ви можете скористатися
+іншими назвами файлів за допомогою вказаного префікса C<filename=>.
 
 =back
 
@@ -1616,5 +1697,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

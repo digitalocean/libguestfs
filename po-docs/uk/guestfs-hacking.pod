@@ -1,52 +1,58 @@
 
 =head1 НАЗВА
 
-guestfs-hacking - extending and contributing to libguestfs
+guestfs-hacking — розширення можливостей і участь у розробці libguestfs
 
 =head1 ОПИС
 
-This manual page is for hackers who want to extend libguestfs itself.
+Цю сторінку підручника призначено для тих, хто хоче розширити можливості
+libguestfs власноруч.
 
 =head1 ПОЧАТКОВИЙ КОД
 
 Код libguestfs зберігається у сховищі github
 L<https://github.com/libguestfs/libguestfs>
 
-Large amounts of boilerplate code in libguestfs (RPC, bindings,
-documentation) are generated.  This means that many source files will appear
-to be missing from a straightforward git checkout.  You have to run the
-generator (C<./autogen.sh && make -C generator>) in order to create those
-files.
+Велика частина стереотипного коду у libguestfs (RPC, прив'язки,
+документація) створюється автоматично. Це означає, що у звичайному клоні
+сховища git не буде багатьох файлів, які є у архівах з початковим кодом. Вам
+доведеться запустити генератор (C<./autogen.sh && make -C generator>), щоб
+створити ці файли.
 
-Libguestfs uses an autotools-based build system, with the main files being
-F<configure.ac> and F<Makefile.am>.  See L</THE BUILD SYSTEM>.
+У libguestfs використовується система збирання на основі autotools,
+основними файлами якої є F<configure.ac> і F<Makefile.am>. Див. L</СИСТЕМА
+ЗБИРАННЯ>.
 
-The F<generator> subdirectory contains the generator, plus files describing
-the API.  The F<lib> subdirectory contains source for the library.  The
-F<appliance> and F<daemon> subdirectories contain the source for the code
-that builds the appliance, and the code that runs in the appliance
-respectively.  Other directories are covered in the section L<SOURCE CODE
-SUBDIRECTORIES> below.
+У підкаталозі F<generator> міститься генератор та файли із описом
+програмного інтерфейсу. У підкаталозі F<lib> міститься початковий код
+бібліотеки. У підкаталогах F<appliance> та F<daemon> зберігається початковий
+код, який збирає базову систему, так код, який запускає базову систему,
+відповідно. Інші каталоги описано у розділі L<ПІДКАТАЛОГИ ПОЧАТКОВОГО КОДУ>
+нижче.
 
-Apart from the fact that all API entry points go via some generated code,
-the library is straightforward.  (In fact, even the generated code is
-designed to be readable, and should be read as ordinary code).  Some actions
-run entirely in the library, and are written as C functions in files under
-F<lib>.  Others are forwarded to the daemon where (after some generated RPC
-marshalling) they appear as C functions in files under F<daemon>.
+Окрім того факту, що усі вхідні точки програмного інтерфейсу перебувають у
+певному створеному коді, сама бібліотека є простою. (Фактично, навіть
+створений код читається так самою легко, як і звичайний код.) Деякі дії
+виконуються суто у бібліотеці, їхній код написано мовою C, він зберігається
+у підкаталозі F<lib>. Виконання інших дій переспрямовується до фонової
+служби, де (після певного скерування RPC) їх реалізовано як функції мовою C
+у файлах підкаталогу F<daemon>.
 
-To build from source, first read the L<guestfs-building(1)>.
+Настанови щодо збирання з початкового коду наведено у підручнику
+L<guestfs-building(1)>.
 
 =head2 ПІДКАТАЛОГИ ПОЧАТКОВОГО КОДУ
 
-There are a lot of subdirectories in the source tree! Which ones should you
-concentrate on first? F<lib> and F<daemon> which contain the source code of
-the core library.  F<generator> is the code generator described above, so
-that is important.  The F<Makefile.am> in the root directory will tell you
-in which order the subdirectories get built.  And then if you are looking at
-a particular tool (eg. F<v2v>) or language binding (eg. F<python>), go
-straight to that subdirectory, but remember that if you didn't run the
-generator yet, then you may find files which appear to be missing.
+У ієрархії початкового коду багато підкаталогів! На яких слід зосередити
+увагу передусім? На каталогах F<lib> та F<daemon>, у яких міститься
+початковий код основи бібліотеки. F<generator> містить код генератора,
+описаного вище, тому цей підкаталог також є важливим. Файл F<Makefile.am> у
+кореневому каталозі містить цінні дані щодо порядку збирання коду у
+підкаталогах. І нарешті, якщо ви шукаєте код певного інструмента (наприклад
+F<v2v>) або прив'язки до мови (наприклад F<python>), зверніться
+безпосередньо до відповідного підкаталогу, але пам'ятайте, що якщо ще не
+було запущено генератор, вам може здатися, що у початковому коді не вистачає
+багатьох файлів.
 
 =over 4
 
@@ -56,7 +62,7 @@ generator yet, then you may find files which appear to be missing.
 
 =item F<appliance>
 
-The libguestfs appliance, build scripts and so on.
+Базова система libguestfs, скрипти збирання тощо.
 
 =item F<bash>
 
@@ -64,7 +70,7 @@ The libguestfs appliance, build scripts and so on.
 
 =item F<build-aux>
 
-Різномантні скрипти збирання, які використовуються autotools.
+Різноманітні скрипти збирання, які використовуються autotools.
 
 =item F<builder>
 
@@ -84,8 +90,8 @@ L<virt-ls(1)> and L<virt-tail(1)> та документація до них.
 
 =item F<common/edit>
 
-Common code for interactively and non-interactively editing files within a
-libguestfs filesystem.
+Загальний код для інтерактивного та неінтерактивного редагування файлів у
+файловій системі libguestfs.
 
 =item F<common/errnostring>
 
@@ -95,24 +101,26 @@ libguestfs filesystem.
 
 =item F<common/miniexpect>
 
-A copy of the miniexpect library from
-L<http://git.annexia.org/?p=miniexpect.git;a=summary>.  This is used in
+Копія бібліотеки miniexpect з
+L<http://git.annexia.org/?p=miniexpect.git;a=summary>. Використовується у
 virt-p2v.
 
 =item F<common/mlaugeas>
 
-Bindings for the Augeas library.  These come from the ocaml-augeas library
+Прив'язки до бібліотеки Augeas. Їх запозичено з бібліотеки ocaml-augeas,
 L<http://git.annexia.org/?p=ocaml-augeas.git>
 
 =item F<common/mlgettext>
 
-Small, generated wrapper which allows libguestfs to be compiled with or
-without ocaml-gettext.  This is generated by F<./configure>.
+Невеличкий автоматично створений скрипт-обгортка, який надає змогу збирати
+libguestfs з ocaml-gettext та без нього. Скрипт створюється за допомогою
+F<./configure>.
 
 =item F<common/mlpcre>
 
-Lightweight OCaml bindings for Perl Compatible Regular Expressions (PCRE).
-Note this is not related in any way to Markus Mottl's ocaml-pcre library.
+Невибагливі до ресурсів прив'язки до OCaml бібліотеки сумісних із Perl
+формальних виразів (PCRE). Зауважте, що цей код ніяким чином не пов'язано із
+бібліотекою ocaml-pcre, яку створив Markus Mottl.
 
 =item F<common/mlprogress>
 
@@ -120,21 +128,22 @@ Note this is not related in any way to Markus Mottl's ocaml-pcre library.
 
 =item F<common/mlstdutils>
 
-A library of pure OCaml utility functions used in many places.
+Бібліотека допоміжних функцій, які використовуються у багатьох місцях, суто
+мовою OCaml.
 
 =item F<common/mltools>
 
-OCaml utility functions only used by the OCaml virt tools (like
-C<virt-sysprep>, C<virt-v2v> etc.)
+Допоміжні функції OCaml, які використовуються лише інструментами
+віртуалізації мовою OCaml (зокрема C<virt-sysprep>, C<virt-v2v> тощо)
 
 =item F<common/mlutils>
 
-OCaml bindings for C functions in C<common/utils>, and some POSIX bindings
-which are missing from the OCaml stdlib.
+Прив'язки до OCaml для функцій C у C<common/utils> та деякі прив'язки POSIX,
+яких немає у стандартній бібліотеці OCaml.
 
 =item F<common/mlvisit>
 
-OCaml bindings for the visit functions (see F<common/visit>).
+Прив'язки до OCaml для функцій visit (див. F<common/visit>).
 
 =item F<common/mlxml>
 
@@ -142,11 +151,12 @@ OCaml bindings for the visit functions (see F<common/visit>).
 
 =item F<common/options>
 
-Common options parsing for guestfish, guestmount and some virt tools.
+Загальна обробка параметрів для guestfish, guestmount та деяких інструментів
+віртуалізації.
 
 =item F<common/parallel>
 
-A framework used for processing multiple libvirt domains in parallel.
+Комплект бібліотек для паралельної обробки декількох доменів libvirt.
 
 =item F<common/progress>
 
@@ -164,8 +174,8 @@ A framework used for processing multiple libvirt domains in parallel.
 
 =item F<common/structs>
 
-Common code for printing and freeing libguestfs structs, used by the library
-and some tools.
+Загальний код для виведення та вивільнення структур libguestfs, який
+використовується у бібліотеці та деяких інструментах.
 
 =item F<common/utils>
 
@@ -174,7 +184,7 @@ and some tools.
 
 =item F<common/visit>
 
-Recursively visit a guestfs filesystem hierarchy.
+Рекурсивний обхід ієрархії файлових систем guestfs.
 
 =item F<common/windows>
 
@@ -184,7 +194,7 @@ Recursively visit a guestfs filesystem hierarchy.
 
 =item F<contrib>
 
-Outside contributions, experimental parts.
+Зовнішні внески, експериментальні частини.
 
 =item F<customize>
 
@@ -306,27 +316,29 @@ POD. Колись ми об'єднаємо ці дані з каталогом F
 
 =item F<test-data>
 
-Files and other test data used by the tests.
+Файли та інші тестові дані, які використовуються при тестуванні.
 
 =item F<test-tool>
 
-Test tool for end users to test if their qemu/kernel combination will work
-with libguestfs.
+Засіб тестування, який допоможе визначити кінцевим користувачам, чи
+працюватиме їхня комбінація qemu/ядро з libguestfs.
 
 =item F<tmp>
 
-Used for temporary files when running the tests (instead of F</tmp> etc).
-The reason is so that you can run multiple parallel tests of libguestfs
-without having one set of tests overwriting the appliance created by
-another.
+Використовується для тимчасових файлів під час тестування (замість F</tmp>
+та подібних каталогів). Причиною створення є уможливлення запуску декількох
+тестів libguestfs паралельно без ризику перезапису базової системи набором
+тестів, який виконується паралельно із набором, за допомогою якого було
+створено базову систему.
 
 =item F<tools>
 
-Command line tools written in Perl (L<virt-win-reg(1)> and many others).
+Засоби командного рядка, які написано мовою програмування Perl
+(L<virt-win-reg(1)> та багато інших).
 
 =item F<utils>
 
-Miscellaneous utilities, such as C<boot-benchmark>.
+Різноманітні допоміжні програми, зокрема C<boot-benchmark>.
 
 =item F<v2v>
 
@@ -334,7 +346,7 @@ Miscellaneous utilities, such as C<boot-benchmark>.
 
 =item F<website>
 
-The L<http://libguestfs.org> website files.
+Файли сайта L<http://libguestfs.org>.
 
 =item F<csharp>
 
@@ -364,100 +376,104 @@ The L<http://libguestfs.org> website files.
 
 =back
 
-=head2 THE BUILD SYSTEM
+=head2 СИСТЕМА ЗБИРАННЯ
 
-Libguestfs uses the GNU autotools build system (autoconf, automake,
+Libguestfs використовує систему збирання GNU autotools (autoconf, automake,
 libtool).
 
-The F<./configure> script is generated from F<configure.ac> and
-F<m4/guestfs-*.m4>.  Most of the configure script is split over many m4
-macro files by topic, for example F<m4/guestfs-daemon.m4> deals with the
-dependencies of the daemon.
+Скрипт F<./configure> створюється на основі F<configure.ac> і
+F<m4/guestfs-*.m4>. Більшу частину вмісту скрипту configure складають дані з
+багатьох файлів макросів m4, поділених за розділами, наприклад,
+F<m4/guestfs-daemon.m4> призначено для обробки залежностей фонової служби
+(daemon).
 
-The job of the top level F<Makefile.am> is mainly to list the subdirectories
-(C<SUBDIRS>) in the order they should be compiled.
+Завданням файла F<Makefile.am> на верхньому рівні є визначення списку
+підкаталогів (C<SUBDIRS>) у порядку їхнього збирання.
 
-F<common-rules.mk> is included in every F<Makefile.am> (top level and
-subdirectories).  F<subdir-rules.mk> is included only in subdirectory
-F<Makefile.am> files.
+F<common-rules.mk> включається до усіх файлів F<Makefile.am> (верхнього
+рівня та підкаталогів). F<subdir-rules.mk> включається лише до файлів
+F<Makefile.am> у підкаталогах.
 
-There are many make targets.  Use this command to list them all:
+Цілей збирання багато. Скористайтеся цією командою, щоб побачити список:
 
  make help
 
-=head1 EXTENDING LIBGUESTFS
+=head1 РОЗШИРЕННЯ МОЖЛИВОСТЕЙ LIBGUESTFS
 
-=head2 ADDING A NEW API
+=head2 ДОДАВАННЯ НОВИХ ПРОГРАМНИХ ІНТЕРФЕЙСІВ
 
-Because large amounts of boilerplate code in libguestfs are generated, this
-makes it easy to extend the libguestfs API.
+Оскільки більша частина стереотипного коду у libguestfs створюється у
+автоматичному режимі, розширити програмний інтерфейс libguestfs доволі
+просто.
 
-To add a new API action there are two changes:
+Щоб додати нову дію програмного інтерфейсу, слід внести дві зміни:
 
 =over 4
 
 =item 1.
 
-You need to add a description of the call (name, parameters, return type,
-tests, documentation) to F<generator/actions_*.ml> and possibly
-F<generator/proc_nr.ml>.
+Вам слід додати опис виклику (назву, параметри, тип значення, яке
+повертається, тести, документацію) до F<generator/actions_*.ml> і, можливо,
+до F<generator/proc_nr.ml>.
 
-There are two sorts of API action, depending on whether the call goes
-through to the daemon in the appliance, or is serviced entirely by the
-library (see L<guestfs-internals(1)/ARCHITECTURE>).
-L<guestfs(3)/guestfs_sync> is an example of the former, since the sync is
-done in the appliance.  L<guestfs(3)/guestfs_set_trace> is an example of the
-latter, since a trace flag is maintained in the handle and all tracing is
-done on the library side.
+Існує два різновиди дій програмного інтерфейсу. Тип залежить від того,
+проходить виклик до базової системи через фонову службу, чи обслуговується
+лише засобами бібліотеки
+(див. L<guestfs-internals(1)/АРХІТЕКТУРА>). L<guestfs(3)/guestfs_sync> є
+прикладом дій першого типу, оскільки синхронізація відбувається у базовій
+системі. L<guestfs(3)/guestfs_set_trace> є прикладом дій другого типу,
+оскільки прапорець трасування обслуговується у дескрипторі, а усе трасування
+виконується на боці бібліотеки.
 
-Most new actions are of the first type, and get added to the
-C<daemon_functions> list.  Each function has a unique procedure number used
-in the RPC protocol which is assigned to that action when we publish
-libguestfs and cannot be reused.  Take the latest procedure number and
-increment it.
+Більшість нових дій належить до першого типу, тому їхні записи додаються до
+списку C<daemon_functions>. У кожної функції є унікальний номер процедури,
+який використовується у протоколі RPC, який пов'язується із цією дією під
+час оприлюднення версії libguestfs і який не можна використовувати
+повторно. Знайдіть останній номер процедури і додайте до нього одиницю, щоб
+отримати ваш номер.
 
-For library-only actions of the second type, add to the
-C<non_daemon_functions> list.  Since these functions are serviced by the
-library and do not travel over the RPC mechanism to the daemon, these
-functions do not need a procedure number, and so the procedure number is set
-to C<-1>.
+Дії другого типу, які пов'язано лише з бібліотекою, слід додавати до списку
+C<non_daemon_functions>. Оскільки ці функції обслуговуються бібліотекою і не
+поширюються механізмом RPC до фонової служби, ці функції не потребують
+номеру процедури; отже, для них встановлюється номер процедури C<-1>.
 
 =item 2.
 
-Implement the action (in C):
+Реалізація дії (мовою C):
 
-For daemon actions, implement the function C<do_E<lt>nameE<gt>> in the
-C<daemon/> directory.
+Для дій фонової служби слід реалізувати функцію C<do_E<lt>назваE<gt>> у
+каталозі C<daemon/>.
 
-For library actions, implement the function C<guestfs_impl_E<lt>nameE<gt>>
-in the C<lib/> directory.
+Для дій бібліотеки слід реалізувати функцію C<guestfs_impl_E<lt>назваE<gt>>
+у каталозі C<lib/>.
 
-In either case, use another function as an example of what to do.
+У обох випадках скористайтеся якоюсь іншою функцією як прикладом реалізації.
 
 =item 3.
 
-As an alternative to step 2: Since libguestfs 1.38, daemon actions can be
-implemented in OCaml.  You have to set the C<impl = OCaml ...> flag in the
-generator.  Take a look at F<daemon/file.ml> for an example.
+Альтернатива кроку 2: починаючи з версії libguestfs 1.38, дії фонової служби
+може бути реалізовано мовою OCaml. Вам слід встановити прапорець C<impl =
+OCaml ...> у генераторі. Прикладом може слугувати файл F<daemon/file.ml>.
 
 =back
 
 Після внесення цих змін скористайтеся командою C<make> для збирання.
 
-Note that you don’t need to implement the RPC, language bindings, manual
-pages or anything else.  It’s all automatically generated from the OCaml
-description.
+Зауважте, що вам не потрібно реалізовувати RPC, прив'язки до мов, сторінки
+підручника або щось інше. Усе це буде створено автоматично на основі опису
+OCaml.
 
 =head3 Додавання тестів для програмного інтерфейсу
 
-You can supply zero or as many tests as you want per API call.  The tests
-can either be added as part of the API description
-(F<generator/actions_*.ml>), or in some rarer cases you may want to drop a
-script into C<tests/*/>.  Note that adding a script to C<tests/*/> is
-slower, so if possible use the first method.
+До кожного виклику програмного інтерфейсу можна не додавати тести або
+додавати будь-яку кількість тестів. Тести може бути додано або як частину
+опису програмного інтерфейсу (F<generator/actions_*.ml>), або у деяких
+рідкісних випадках, додати скрипт до C<tests/*/>. Зауважте, що додавання
+скрипту до C<tests/*/> уповільнює тестування, тому, якщо можна, користуйтеся
+першим зі способів.
 
-The following describes the test environment used when you add an API test
-in F<actions_*.ml>.
+Нижче описано тестове середовище, яке використовується при додавання тесту
+програмного інтерфейсу до F<actions_*.ml>.
 
 У середовищі тестування 4 блокових пристрої:
 
@@ -482,21 +498,21 @@ ISO із фіксованим вмістом (див. F<images/test.iso>).
 
 =back
 
-To be able to run the tests in a reasonable amount of time, the libguestfs
-appliance and block devices are reused between tests.  So don't try testing
-L<guestfs(3)/guestfs_kill_subprocess> :-x
+Щоб мати змогу виконувати тестування у прийнятні строки, базову систему та
+блокові пристрої libguestfs слід повторно використовувати у тестах. Отже, не
+намагайтеся тестувати L<guestfs(3)/guestfs_kill_subprocess> :-x
 
-Each test starts with an initial scenario, selected using one of the
-C<Init*> expressions, described in F<generator/types.ml>.  These initialize
-the disks mentioned above in a particular way as documented in F<types.ml>.
-You should not assume anything about the previous contents of other disks
-that are not initialized.
+Кожен тест запускає початковий сценарій, який вибирається за допомогою
+одного з виразів C<Init*>, описаний у F<generator/types.ml>. Сценарій
+ініціалізує диски, згадані вище, у спосіб, який задокументовано у
+F<types.ml>. Ви не повинні робити у своєму коді жодних припущень щодо
+попереднього вмісту інших дисків, які не ініціалізовано.
 
-You can add a prerequisite clause to any individual test.  This is a
-run-time check, which, if it fails, causes the test to be skipped.  Useful
-if testing a command which might not work on all variations of libguestfs
-builds.  A test that has prerequisite of C<Always> means to run
-unconditionally.
+Ви можете додати інструкцію щодо попередніх вимог до будь-якого окремого
+тесту. Це динамічна перевірка, яка, якщо її не буде пройдено, призведе до
+пропускання тесту. Це корисно для тестування команди, яка може не працювати
+у всіх різновидах збірок libguestfs. Тест, для якого попередньою вимогою є
+C<Always>, запускається безумовно.
 
 Крім того, пакувальники можуть пропускати окремі тести встановленням
 відповідних змінних середовища до запуску C<make check>.
@@ -510,14 +526,16 @@ L<guestfs(3)/guestfs_command>.
 
  SKIP_TEST_<CMD>=1
 
-eg: C<SKIP_TEST_ZEROFREE=1> skips all L<guestfs(3)/guestfs_zerofree> tests.
+Приклад: C<SKIP_TEST_ZEROFREE=1> призводить до пропускання усіх тестів
+L<guestfs(3)/guestfs_zerofree>.
 
-Packagers can run only certain tests by setting for example:
+Пакувальники можуть обмежити тестування певним набором тестів, встановлюючи,
+наприклад, таке:
 
  TEST_ONLY="vfs_type zerofree"
 
-See F<tests/c-api/tests.c> for more details of how these environment
-variables work.
+Див. F<tests/c-api/tests.c>, щоб дізнатися більше про те, як працюють ці
+змінні середовища.
 
 =head3 Діагностика нових програмних інтерфейсів
 
@@ -525,9 +543,10 @@ variables work.
 
 Для перевірки нових команд ви можете скористатися guestfish.
 
-Debugging the daemon is a problem because it runs inside a minimal
-environment.  However you can fprintf messages in the daemon to stderr, and
-they will show up if you use C<guestfish -v>.
+Діагностика фонової служби є проблематичною, оскільки вона виконується у
+мінімалістичному середовищі. Втім, ви можете скористатися виведенням
+повідомлень за допомогою fprintf у фоновій службі до stderr. Повідомлення
+можна буде переглядати за допомогою C<guestfish -v>.
 
 =head2 ДОДАВАННЯ НОВОЇ ПРИВ’ЯЗКИ ДО МОВИ
 
@@ -540,51 +559,52 @@ F<generator/perl.ml>.
 
 =head3 Додавання тестів для прив'язок до мов
 
-Language bindings should come with tests.  Previously testing of language
-bindings was rather ad-hoc, but we have been trying to formalize the set of
-tests that every language binding should use.
+Прив'язки до мов мають постачатися із тестами. Раніше тестування прив'язок
+до мов було суто ситуативним, але тепер ми намагаємося формалізувати набір
+тестів, які має використовувати кожна прив'язка до мови.
 
-Currently only the OCaml and Perl bindings actually implement the full set
-of tests, and the OCaml bindings are canonical, so you should emulate what
-the OCaml tests do.
+У поточній версії повний набір тестів реалізовано лише для прив'язок до
+OCaml і Perl. Канонічним набором є набір для OCaml, тому вам слід емулювати
+тести саме для OCaml.
 
-This is the numbering scheme used by the tests:
+Ось схема нумерації, яка використовується у тестах:
 
  - 000+, базові перевірки:
  
    010  завантажити бібліотеку
-   020  create
-   030  create-flags
-   040  create multiple handles
-   050  test setting and getting config properties
-   060  explicit close
-   065  implicit close (у мовах із GC)
-   070  optargs
-   080  version
-   090  retvalues
+   020  створення
+   030  прапорці створення
+   040  створення декількох дескрипторів
+   050  налаштовування тестування та отримання властивостей налаштовування
+   060  явне закриття
+   065  неявне закриття (у мовах із збирачем сміття)
+   070  аргументи параметрів
+   080  версія
+   090  повернуті значення
  
- - 100  launch, create partitions and LVs and filesystems
+ - 100  запуск, створення розділів та логічних томів, а також файлових систем
  
  - події 400+:
  
-   410  close event
-   420  log messages
-   430  progress messages
+   410  подія закриття
+   420  повідомлення журналу
+   430  повідомлення щодо поступу
  
  - 800+ тести на регресії (специфічні для мови)
  
- - 900+ будь-які інші нетипові теси для мови
+ - 900+ будь-які інші нетипові тести для мови
 
-To save time when running the tests, only 100, 430, 800+, 900+ should launch
-the handle.
+Для заощадження часу під час виконання тестування дескриптор запускатимуть
+лише 100, 430, 800+, 900+.
 
 =head2 ФОРМАТУВАННЯ КОДУ
 
-Our C source code generally adheres to some basic code-formatting
-conventions.  The existing code base is not totally consistent on this
-front, but we do prefer that contributed code be formatted similarly.  In
-short, use spaces-not-TABs for indentation, use 2 spaces for each
-indentation level, and other than that, follow the K&R style.
+Наш початковий код мовою C загалом відповідає деяким базовим вимогам щодо
+форматування коду. Наявна кодова база є повністю однорідною у цьому сенсі,
+але ми б хотіли, щоб увесь новий код також було форматовано подібним
+чином. Якщо коротко, користуйтеся пробілами, а не символами табуляції,
+використовуйте додаткові 2 пробіли на кожному із рівнів відступів, у інших
+аспектах форматування слідуйте стилю книги Кернігана та Річі.
 
 If you use Emacs, add the following to one of your start-up files (e.g.,
 ~/.emacs), to help ensure that you get indentation right:
@@ -642,75 +662,82 @@ If you use Emacs, add the following to one of your start-up files (e.g.,
 
 =item C<make check-direct>
 
-Runs all tests using default appliance back-end.  This only has any effect
-if a non-default backend was selected using C<./configure
---with-default-backend=...>
+Виконує усі тести за допомогою типового модуля роботи із базовою
+системою. Працює, лише якщо за допомогою C<./configure
+--with-default-backend=...> було вибрано нетиповий модуль.
 
 =item C<make check-valgrind-direct>
 
-Run a subset of the test suite under valgrind using the default appliance
-back-end.
+Запустити підмножину комплексу тестів під керуванням valgrind з
+використанням типового модуля базової системи.
 
 =item C<make check-uml>
 
 Виконує усі тести з використанням модуля режиму користувача у Linux.
 
-As there is no standard location for the User-Mode Linux kernel, you I<have>
-to set C<LIBGUESTFS_HV> to point to the kernel image, eg:
+Оскільки немає стандартизованого місця для зберігання ядра Linux з режимом
+користувача, вам I<слід> встановити значення C<LIBGUESTFS_HV> таким чином,
+щоб воно вказувало на образ ядра. Приклад:
 
  make check-uml LIBGUESTFS_HV=~/d/linux-um/vmlinux
 
 =item C<make check-valgrind-uml>
 
-Runs all tests using the User-Mode Linux backend, under valgrind.
+Виконує усі тести з використанням модуля режиму користувача Linux під
+керуванням valgrind.
 
-As above, you have to set C<LIBGUESTFS_HV> to point to the kernel.
+Як і вище, вам слід встановити значення C<LIBGUESTFS_HV> так, щоб воно
+вказувало на ядро.
 
 =item C<make check-with-upstream-qemu>
 
-Runs all tests using a local qemu binary.  It looks for the qemu binary in
-QEMUDIR (defaults to F<$HOME/d/qemu>), but you can set this to another
-directory on the command line, eg:
+Виконує усі тести з використанням локального виконуваного файла qemu. Шукає
+виконуваний файл qemu за допомогою змінної QEMUDIR (типове значення
+F<$HOME/d/qemu>), але ви можете встановити інший каталог за допомогою рядка
+команди. Приклад:
 
  make check-with-upstream-qemu QEMUDIR=/usr/src/qemu
 
 =item C<make check-with-upstream-libvirt>
 
-Runs all tests using a local libvirt.  This only has any effect if the
-libvirt backend was selected using C<./configure
---with-default-backend=libvirt>
+Виконує усі тести за допомогою локальної копії libvirt. Працює, лише якщо за
+допомогою C<./configure --with-default-backend=libvirt> було вибрано модуль
+libvirt.
 
-It looks for libvirt in LIBVIRTDIR (defaults to F<$HOME/d/libvirt>), but you
-can set this to another directory on the command line, eg:
+Пошук libvirt виконуватиметься у каталозі LIBVIRTDIR (типово,
+F<$HOME/d/libvirt>), але ви можете вказати інший каталог у рядку
+команди. Приклад:
 
  make check-with-upstream-libvirt LIBVIRTDIR=/usr/src/libvirt
 
 =item C<make check-slow>
 
-Runs some slow/long-running tests which are not run by default.
+Запускає повільні тести або тести, які виконуються довго. Такі тести типово
+не запускаються.
 
-To mark a test as slow/long-running:
+Щоб позначити тест як повільний або такий, який виконується довго:
 
 =over 4
 
 =item *
 
-Add it to the list of C<TESTS> in the F<Makefile.am>, just like a normal
-test.
+Додайте це до списку C<TESTS> у F<Makefile.am>, подібно до звичайного тесту.
 
 =item *
 
-Modify the test so it checks if the C<SLOW=1> environment variable is set,
-and if I<not> set it skips (ie. returns with exit code 77).  If using
-C<$TEST_FUNCTIONS>, you can call the function C<slow_test> for this.
+Змініть тест так, щоб у ньому перевірялася умова для змінної середовища
+C<SLOW=1>, і якщо таке значення змінної I<не> встановлено, тест пропускався
+(тобто повертав код виходу 77). Якщо використовується C<$TEST_FUNCTIONS>,
+для цього ви можете викликати функцію C<slow_test>.
 
 =item *
 
-Add a variable C<SLOW_TESTS> to the F<Makefile.am> listing the slow tests.
+Додайте змінну C<SLOW_TESTS> до файла F<Makefile.am> зі значенням-списком
+повільних тестів.
 
 =item *
 
-Add a rule to the F<Makefile.am>:
+Додайте таке правило до F<Makefile.am>:
 
  check-slow:
    $(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
@@ -719,32 +746,34 @@ Add a rule to the F<Makefile.am>:
 
 =item C<sudo make check-root>
 
-Runs some tests which require root privileges.  These are supposed to be
-safe, but take care.  You have to run this as root (eg. using L<sudo(8)>
-explicitly).
+Запускає деякі тести, які потребують прав доступу користувача root. Ці
+тести, як ми припускаємо, безпечні, але вам слід вжити усіх додаткових
+засобів захисту. Вам слід запускати цю команду від імені root (наприклад, за
+допомогою явного використання L<sudo(8)>).
 
-To mark a test as requiring root:
+Щоб позначити тест як такий, що вимагає прав доступу користувача root:
 
 =over 4
 
 =item *
 
-Add it to the list of C<TESTS> in the F<Makefile.am>, just like a normal
-test.
+Додайте це до списку C<TESTS> у F<Makefile.am>, подібно до звичайного тесту.
 
 =item *
 
-Modify the test so it checks if euid == 0, and if I<not> set it skips
-(ie. returns with exit code 77).  If using C<$TEST_FUNCTIONS>, you can call
-the function C<root_test> for this.
+Внесіть зміни до тесту так, щоб тест перевіряв, чи euid == 0, і якщо це
+значення I<не> встановлено, тест пропускається (тобто повертає код виходу
+77). Якщо використовується C<$TEST_FUNCTIONS>, ви можете викликати функцію
+C<root_test> для цього.
 
 =item *
 
-Add a variable C<ROOT_TESTS> to the F<Makefile.am> listing the root tests.
+Додайте змінну C<ROOT_TESTS> до файла F<Makefile.am> зі значенням-списком
+тестів для root.
 
 =item *
 
-Add a rule to the F<Makefile.am>:
+Додайте таке правило до F<Makefile.am>:
 
  check-root:
    $(MAKE) check TESTS="$(ROOT_TESTS)"
@@ -753,12 +782,12 @@ Add a rule to the F<Makefile.am>:
 
 =item C<make check-all>
 
-Equivalent to running all C<make check*> rules except C<check-root>.
+Еквівалент запуску усіх правил C<make check*>, окрім C<check-root>.
 
 =item C<make check-release>
 
-Runs a subset of C<make check*> rules that are required to pass before a
-tarball can be released.  Currently this is:
+Виконує підмножину правил C<make check*>, які слід передати до створення
+архіву tar. У поточній версії це:
 
 =over 4
 
@@ -786,10 +815,10 @@ check-slow
 
 =item C<make installcheck>
 
-Run C<make check> on the installed copy of libguestfs.
+Запустити C<make check> для встановленої копії libguestfs.
 
-The version of installed libguestfs being tested, and the version of the
-libguestfs source tree must be the same.
+Версії встановленої libguestfs, тестування якої виконується, та версія у
+ієрархії початкового коду libguestfs мають збігатися.
 
 Команди:
 
@@ -802,57 +831,60 @@ libguestfs source tree must be the same.
 
 =head2 VALGRIND
 
-When you do C<make check-valgrind>, it searches for any F<Makefile.am> in
-the tree that has a C<check-valgrind:> target and runs it.
+Коли ви віддаєте команду C<make check-valgrind>, відбувається пошук
+будь-якого F<Makefile.am> у ієрархії коду, де є ціль C<check-valgrind:>, і
+його запуск.
 
-Writing the F<Makefile.am> and tests correctly to use valgrind and working
-with automake parallel tests is subtle.
+Правильно написати F<Makefile.am> і тести, щоб скористатися valgrind і
+паралельним тестуванням automake, не так уже і просто.
 
-If your tests are run via a shell script wrapper, then in the wrapper use:
+Якщо ваш тести запускаються за допомогою скриптової обгортки для командної
+оболонки, у обгортці слід скористатися таким кодом:
 
  $VG virt-foo
 
-and in the F<Makefile.am> use:
+а у F<Makefile.am> слід вказати:
 
  check-valgrind:
      make VG="@VG@" check
 
-However, if your binaries run directly from the C<TESTS> rule, you have to
-modify the F<Makefile.am> like this:
+Втім, якщо ваші виконувані файли запускаються безпосередньо з правила
+C<TESTS>, до F<Makefile.am> слід внести такий рядок:
 
  LOG_COMPILER = $(VG)
  
  check-valgrind:
      make VG="@VG@" check
 
-In either case, check that the right program is being tested by examining
-the F<tmp/valgrind*> log files carefully.
+Який би з варіантів ви не реалізовували, слід перевіряти, чи ту програму ви
+тестуєте, шляхом уважного вивчення файлів журналу F<tmp/valgrind*>.
 
 =head2 НАДСИЛАННЯ ЛАТОК
 
-Submit patches to the mailing list:
-L<http://www.redhat.com/mailman/listinfo/libguestfs> and CC to
+Надсилайте латки до списку листування,
+L<http://www.redhat.com/mailman/listinfo/libguestfs> і копію повідомлення до
 L<rjones@redhat.com>.
 
-You do not need to subscribe to the mailing list if you don’t want to.
-There may be a short delay while your message is moderated.
+Можете не підписуватися на список листування, якщо не хочете. Втім, для
+непідписаних користувачів повідомлення з'являються у списку із затримкою,
+потрібною на модерацію.
 
 =head2 НЕТИПОВІ ЗАСОБИ ФОРМАТУВАННЯ PRINTF У ФОНОВІЙ СЛУЖБІ
 
-In the daemon code we have created custom printf formatters C<%Q> and C<%R>,
-which are used to do shell quoting.
+У коді фонової служби напис створено нетипові форматувальники printf C<%Q> і
+C<%R>, які використовуються для режиму встановлення лапок у командній
+оболонці.
 
 =over 4
 
 =item %Q
 
-Simple shell quoted string.  Any spaces or other shell characters are
-escaped for you.
+Простий рядок командної оболонки із лапками. Автоматичне екранування
+пробілів та інших керівних символів оболонки.
 
 =item %R
 
-Same as C<%Q> except the string is treated as a path which is prefixed by
-the sysroot.
+Те саме, що і C<%Q>, але рядок вважатиметься шляхом із префіксом sysroot.
 
 =back
 
@@ -860,97 +892,100 @@ the sysroot.
 
  asprintf (&cmd, "cat %R", path);
 
-would produce C<cat /sysroot/some\ path\ with\ spaces>
+дасть C<cat /sysroot/якийсь\ шлях\ із\ пробілами>
 
-I<Note:> Do I<not> use these when you are passing parameters to the
-C<command{,r,v,rv}()> functions.  These parameters do NOT need to be quoted
-because they are not passed via the shell (instead, straight to exec).  You
-probably want to use the C<sysroot_path()> function however.
+I<Зауваження:> I<не> використовуйте ці замінники, якщо передаєте параметри
+функціям C<command{,r,v,rv}()>. У параметрах цих функцій НЕ потрібно нічого
+міняти, оскільки вони не передаються крізь командну оболонку (а
+безпосередньо передаються функції exec). Втім, ймовірно, варто
+використовувати функцію C<sysroot_path()>.
 
 =head2 ПІДТРИМКА ІНТЕРНАЦІОНАЛІЗАЦІЇ (I18N)
 
-We support i18n (gettext anyhow) in the library.
+У нашій бібліотеці передбачено можливість інтернаціоналізації (засобами
+gettext).
 
-However many messages come from the daemon, and we don’t translate those at
-the moment.  One reason is that the appliance generally has all locale files
-removed from it, because they take up a lot of space.  So we'd have to readd
-some of those, as well as copying our PO files into the appliance.
+Втім, багато повідомлень надходять від фонової служби, і у поточній версії
+ми їх не перекладаємо. Однією з причин цього є те, що, загалом, у базовій
+системі немає файлів локалей, оскільки вони досить об'ємні. Тому для
+реалізації можливості перекладу нам довелося б додати ці файли і скопіювати
+наші файли PO до базової системи.
 
-Debugging messages are never translated, since they are intended for the
-programmers.
+Діагностичні повідомлення не перекладаються, оскільки їх призначено для
+програмістів.
 
 =head1 ІНШІ ТЕМИ
 
-=head2 HOW OCAML PROGRAMS ARE COMPILED AND LINKED
+=head2 ЯК КОМПІЛЮЮТЬСЯ І КОМПОНУЮТЬСЯ ПРОГРАМИ OCAML
 
-Mostly this section is "how we make automake & ocamlopt work together" since
-OCaml programs themselves are easy to compile.
+Більша частина цього розділу присвячена питанню «як ми змусили automake і
+ocamlopt працювати разом», оскільки самі програми OCaml зібрати легко.
 
-Automake has no native support for OCaml programs, ocamlc nor ocamlopt.
-What we do instead is to treat OCaml programs as C programs which happen to
-contain these "other objects" (C<"DEPENDENCIES"> in automake-speak) that
-happen to be the OCaml objects.  This works because OCaml programs usually
-have C files for native bindings etc.
+У automake немає вбудованої підтримки програм OCaml, ocamlc та ocamlopt. Наш
+підхід полягає у обробці програм OCaml як програм C, які можуть містити такі
+«інші об'єкти» (C<"DEPENDENCIES"> у термінології automake), які можуть бути
+об'єктами OCaml. Це працює, оскільки програми OCaml зазвичай містять файли C
+для природних прив'язок до бібліотек тощо.
 
-So a typical program is described as just its C sources:
+Отже, типова програма описується як список файлів з її кодом мовою C:
 
  virt_v2v_SOURCES = ... utils-c.c xml-c.c
 
-For programs that have no explicit C sources, we create an empty F<dummy.c>
-file, and list that instead:
+Для програм, які не містять явних початкових текстів мовою C ми створюємо
+порожній файл F<dummy.c> і додаємо його до списку замість справжніх файлів:
 
  virt_resize_SOURCES = dummy.c
 
-The OCaml objects which contain most of the code are listed as automake
-dependencies (other dependencies may also be listed):
+Об'єкти OCaml, які містять більшу частину коду, потрапляють до списку як
+залежності automake (інші залежності також можуть потрапляти до списку):
 
  virt_v2v_DEPENDENCIES = ... cmdline.cmx v2v.cmx
 
-The only other special thing we need to do is to provide a custom link
-command.  This is needed because automake won't assemble the ocamlopt
-command, the list of objects and the C<-cclib> libraries in the correct
-order otherwise.
+Окрім того, єдиною іншою річчю, яку нам слід зробити, є надання нетипової
+команди компонування. Ця команда потрібна, оскільки інакше automake не зможе
+зібрати команду ocamlopt, список об'єктів та бібліотеки C<-cclib> у
+належному порядку.
 
  virt_v2v_LINK = \
      $(top_srcdir)/ocaml-link.sh -cclib '-lutils -lgnu' -- ...
 
-The actual rules, which you can examine in F<v2v/Makefile.am>, are a little
-bit more complicated than this because they have to handle:
+Справжні правила, із якими ви можете ознайомитися у файлі F<v2v/Makefile.am>
+є дещо складнішими за ці, оскільки у них ще треба обробити:
 
 =over 4
 
 =item *
 
-Компіляція у байткод або природний код системи.
+Компіляцію у байткод або природний код системи.
 
 =item *
 
 Взірцеві правила, потрібні для збирання коду OCaml у об'єкти.
 
-These are now kept in F<subdir-rules.mk> at the top level, which is included
-in every subdirectory F<Makefile.am>.
+Ці правила тепер зберігаються у F<subdir-rules.mk> на верхньому рівні
+ієрархії коду. Цей файл включається до усіх підкаталогів F<Makefile.am>.
 
 =item *
 
 Додавання файлів початкового коду OCaml до C<EXTRA_DIST>.
 
-Automake isn't aware of the complete list of sources for a binary, so it
-will not add them all automatically.
+Automake не зможе визначити повний список початкових кодів для виконуваного
+файла, тому програма не зможе додати відповідні файли автоматично.
 
 =back
 
 =head2 VIRT-V2V
 
-First a little history.  Virt-v2v has been through at least two complete
-rewrites, so this is probably about the third version (but we don't intend
-to rewrite it again).  The previous version was written in Perl and can be
-found here: L<https://git.fedorahosted.org/git/virt-v2v.git>
+Спочатку трохи історії. Протягом свого існування програма virt-v2v зазнала
+принаймні двох повних переписувань, тому поточна версія є принаймні третьою
+(ми не маємо планів переписувати її ще раз). Попередню версію було написано
+мовою Perl. Її код і досі зберігається тут:
+L<https://git.fedorahosted.org/git/virt-v2v.git>
 
-The current version started out as almost a line-for-line rewrite of the
-Perl code in OCaml + C, and it still has a fairly similar structure.
-Therefore if there are details of this code that you don't understand
-(especially in the details of guest conversion), checking the Perl code may
-help.
+Поточну версію було започатковано як майже порядково переписану з Perl на
+OCaml + C, і вона все ще зберігає повністю подібну структуру. Тому, якщо ви
+не розумієте якихось подробиць щодо коду (особливо подробиць щодо
+перетворення гостьових систем), вам може допомогти читання коду мовою Perl.
 
 Ось файли, з яких варто розпочати читання цього коду:
 
@@ -966,54 +1001,61 @@ F<v2v.ml>
 
 =back
 
-F<types.mli> defines all the structures used and passed around when
-communicating between different bits of the program.  F<v2v.ml> controls how
-the program runs in stages.
+У F<types.mli> визначаються усі структури, які використовуються і
+передаються під час обміну даними між різними частинами програми. У
+F<v2v.ml> реалізовано керування роботою програми на різних етапах.
 
-After studying those files, you may want to branch out into the input
-modules (F<input_*>), the output modules (F<output_*>) or the conversion
-modules (F<convert_*>).  The input and output modules define I<-i> and I<-o>
-options (see the manual).  The conversion modules define what guest types we
-can handle and the detailed steps involved in converting them.
+Після вивчення цих файлів ви можете перейти до вивчення модулів вхідних
+даних (F<input_*>), модулів вихідних даних (F<output_*>) або модулів
+перетворення (F<convert_*>). Модулі вхідних і вихідних даних визначають
+перелік варіантів для параметрів I<-i> та I<-o> (див. підручник). Модулі
+перетворення визначають, із якими типами гостьових систем ми можемо
+працювати і які конкретно кроки слід виконати для їхнього перетворення.
 
-Every other file in this directory is a support module / library of some
-sort.  Some code is written in C, especially where we want to use an
-external C library such as libxml2.
+Усі інші файли у цьому каталозі є певним чином супровідними модулями або
+бібліотеками. Частину коду написано мовою C, особливо там, де ми хотіли
+використати зовнішні бібліотеки C, зокрема libxml2.
 
 =head2 VIRT-P2V
 
-Virt-p2v is a front end on virt-v2v.  ie. All it does is act as a GUI front
-end, and it calls out to virt-v2v to perform the actual conversion.
-Therefore most of the C code in the F<p2v/> subdirectory is Gtk (GUI) code,
-or supporting code for talking to the remote conversion server.  There is no
-special support for physical machines in virt-v2v.  They are converted in
-the same way as foreign VMs.
+Virt-p2v є оболонкою над virt-v2v. Інакше кажучи, усе, що робить ця
+програма, — це працює як оболонка із графічним інтерфейсом, для виконання
+самого перетворення ця програма викликає virt-v2v. Тому, більша частина коду
+мовою C у підкаталозі F<p2v/> є кодом Gtk (графічного інтерфейсу) або
+супутнім кодом для обміну даними із віддаленим сервером перетворення. У
+virt-v2v немає ніякого спеціальної підтримки фізичних машин. Дані фізичним
+машин перетворюються у той самий спосіб, що і дані сторонніх віртуальних
+машин.
 
 =head3 Як запустити virt-p2v
 
-You can run the F<p2v/virt-p2v> binary directly, but it will try to convert
-your machine’s real F</dev/sda> which is unlikely to work well.  However
-virt-p2v also has a test mode in which you can supply a test disk:
+Ви можете запустити виконуваний файл F<p2v/virt-p2v> безпосередньо, але
+програма спробує перетворити справжній диск F</dev/sda> вашої системи, що
+навряд чи дасть бажані результати. Втім, virt-p2v також має тестовий режим,
+у якому ви можете вказати тестовий диск:
 
  make -C p2v run-virt-p2v-directly
 
-This is a wrapper around the L<virt-p2v(1)> I<--test-disk> option.  You can
-control the "physical machine" disk by setting C<PHYSICAL_MACHINE> to point
-to a disk image.
+Це обгортка до параметра I<--test-disk> L<virt-p2v(1)>. Ви можете керувати
+диском «фізичної машини» встановленням значення C<PHYSICAL_MACHINE>, яке
+вказує на образ диска.
 
-A more realistic test is to run virt-p2v inside a VM on the local machine.
-To do that, do:
+Реалістичнішим тестом є запуск virt-p2v у віртуальній машині на локальній
+машині. Для цього зробіть так:
 
  make -C p2v run-virt-p2v-in-a-vm
 
-This also runs qemu with the "physical machine" disk (which you can set by
-setting C<PHYSICAL_MACHINE>), a virtual CD, and a variety of network cards
-for testing.  You can change the qemu binary and add extra qemu options by
-setting C<QEMU> and/or C<QEMU_OPTIONS> on the make commandline.
+Ця команда також запускає qemu для диска «фізичної машини» (вказати яку
+можна за допомогою встановлення значення змінної C<PHYSICAL_MACHINE>),
+віртуального компакт-диска та різноманітних мережевих карток для
+тестування. Ви можете змінити виконуваний файл qemu і додати параметри
+команди qemu встановленням значень параметрів C<QEMU> і/або C<QEMU_OPTIONS>
+у командному рядку make.
 
-A third way to run virt-p2v simulates fairly accurately the program being
-downloaded over PXE and then doing an automatic conversion of the source
-physical machine (the non-GUI path -- see next section below):
+Запущена у третій спосіб програма virt-p2v досить точно імітує програму, що
+отримується за допомогою PXE, а потім виконує автоматичне перетворення
+початкової фізичної машини (спосіб без графічного інтерфейсу —
+див. наступний розділ нижче):
 
  make -C p2v run-virt-p2v-non-gui-conversion
 
@@ -1021,58 +1063,59 @@ physical machine (the non-GUI path -- see next section below):
 
 I<Див. також:> L<virt-p2v(1)/ЯК ПРАЦЮЄ VIRT-P2V>
 
-There are two paths through the code, GUI or non-GUI (parsing the kernel
-command line):
+Існує два шляхи крізь код, з графічним інтерфейсом або без графічного
+інтерфейсу (обробка командного рядка ядра):
 
  main.c ──────┬─────▶ gui.c ──────┬─────▶ conversion.c
               │                   │
               │                   │
               └────▶ kernel.c ────┘
 
-but both paths call back to the F<conversion.c> function C<start_conversion>
-to run the remote virt-v2v.
+але обидва шляхи виконують зворотний виклик функції C<start_conversion> з
+F<conversion.c> для запуску віддаленого virt-v2v.
 
-The main task of F<gui.c>/F<kernel.c> is to populate the virt-v2v
-configuration (F<config.c>).
+Основним завданням F<gui.c>/F<kernel.c> є заповнення параметрів
+налаштовування virt-v2v (F<config.c>).
 
-During conversion, we need to establish ssh connections, and that is done
-using two libraries:
+Під час перетворення слід встановити з'єднання ssh, і це виконується за
+допомогою двох бібліотек:
 
  conversion.c ──────▶ ssh.c ──────▶ miniexpect.c
 
-where F<ssh.c> is responsible for managing ssh connections overall, and
-F<miniexpect.c> implements "expect-like" functionality for talking
-interactively to the remote virt-v2v conversion server.
+де F<ssh.c> відповідає за керування з'єднаннями ssh взагалі, а
+F<miniexpect.c> реалізує expect-подібні функціональні можливості для
+інтерактивного обміну даними із віддаленим сервером перетворення virt-v2v.
 
-(Note that miniexpect is a separate library with its own upstream, so if you
-patch miniexpect.c, then please make sure the changes get reflected in
-miniexpect’s upstream too:
-F<http://git.annexia.org/?p=miniexpect.git;a=summary>)
+(Зауважте, що miniexpect є окремою бібліотекою із власною основною гілкою
+розробки, отже, якщо ви накладаєте латку на miniexpect.c, будь ласка,
+переконайтеся, що зміни також надіслано до основної гілки розробки
+miniexpect: F<http://git.annexia.org/?p=miniexpect.git;a=summary>)
 
 =head1 ЗАВДАННЯ ІЗ СУПРОВОДУ
 
-=head2 MAINTAINER MAKEFILE TARGETS
+=head2 ЦІЛІ ДЛЯ СУПРОВІДНИКІВ У MAKEFILE
 
-These C<make> targets probably won’t work and aren't useful unless you are a
-libguestfs maintainer.
+Ці цілі C<make>, ймовірно, не працюватимуть або не будуть корисними, якщо ви
+не є супровідником пакунків libguestfs.
 
 =head3 make maintainer-commit
 
-This commits everything in the working directory with the commit message
-C<Version $(VERSION).>.  You must update F<configure.ac>, clean and rebuild
-first.
+Ця ціль вносить усі зміни із робочого каталогу до системи керування сховищем
+коду із повідомленням щодо внеску C<Version $(VERSION).>. Вам слід спочатку
+оновити F<configure.ac>, очистити ієрархію коду та виконати повторне
+збирання.
 
 =head3 make maintainer-tag
 
-This tags the current HEAD commit with the tag C<v$(VERSION)> and one of the
-messages:
+Ця команда створює мітку для поточного внеску у HEAD зі значенням мітки
+C<v$(VERSION)> і одним із таких повідомлень:
 
  Version $(VERSION) stable
 
  Version $(VERSION) development
 
-(See L<guestfs(3)/LIBGUESTFS VERSION NUMBERS> for the difference between a
-stable and development release.)
+(Опис відмінностей між стабільним випуском і випуском, який перебуває у
+розробці, наведено у розділі L<guestfs(3)/НУМЕРАЦІЯ ВЕРСІЙ LIBGUESTFS>.)
 
 =head3 make maintainer-check-authors
 
@@ -1081,22 +1124,22 @@ stable and development release.)
 
 =head3 make maintainer-check-extra-dist
 
-This rule must be run after C<make dist> (so there is a tarball in the
-working directory).  It compares the contents of the tarball with the
-contents of git to ensure that no files have been missed from F<Makefile.am>
-C<EXTRA_DIST> rules.
+Це правило слід запускати після C<make dist> (щоб у робочому каталозі уже
+був архів tar). Воно порівнює вміст архіву tar із даними у git з метою
+переконатися, що не пропущено жодного файла із правил C<EXTRA_DIST> у
+F<Makefile.am>.
 
 =head3 make maintainer-upload-website
 
-This is used by the software used to automate libguestfs releases to copy
-the libguestfs website to another git repository before it is uploaded to
-the web server.
+Це правило використовується програмним забезпеченням автоматизації випусків
+libguestfs для копіювання сайта libguestfs до іншого сховища git до його
+вивантаження на вебсервер.
 
 =head2 СТВОРЕННЯ СТАБІЛЬНОГО ВИПУСКУ
 
-When we make a stable release, there are several steps documented here.  See
-L<guestfs(3)/LIBGUESTFS VERSION NUMBERS> for general information about the
-stable branch policy.
+Тут наведено документацію щодо створення стабільних випусків. Загальні
+правила щодо створення стабільних випусків наведено у розділі
+L<guestfs(3)/НУМЕРАЦІЯ ВЕРСІЙ LIBGUESTFS>.
 
 =over 4
 
@@ -1182,7 +1225,7 @@ L<http://libguestfs.org/download>.
 =item *
 
 Встановіть значення номера наступної версії для розробки і запишіть його до
-сховища. Можна також створити повноціниий випуск із гілки для розробки.
+сховища. Можна також створити повноцінний випуск із гілки для розробки.
 
 =back
 
@@ -1192,13 +1235,13 @@ L<http://libguestfs.org/download>.
 різноманітних допоміжних програм. Вміст цього розділу буде цікавим лише для
 розробників libguestfs.
 
-This section is autogenerated from C</**> comments in source files, which
-are marked up in POD format.
+Цей розділ створено автоматично на основі тих коментарів C</**> у файлах
+початкового коду, які форматовано для використання у форматі POD.
 
 B<Ці функції не експортуються відкрито (public). Їх може бути змінено або
 вилучено у будь-якій новішій версії.>
 
-__ВНУТРІШНЯ_ДОКУМЕНТАЦІЯ__
+__INTERNAL_DOCUMENTATION__
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -1214,5 +1257,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

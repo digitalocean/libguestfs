@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -287,6 +287,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_equal, NULL)
   PHP_FE (guestfs_exists, NULL)
   PHP_FE (guestfs_extlinux, NULL)
+  PHP_FE (guestfs_f2fs_expand, NULL)
   PHP_FE (guestfs_fallocate, NULL)
   PHP_FE (guestfs_fallocate64, NULL)
   PHP_FE (guestfs_feature_available, NULL)
@@ -387,6 +388,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_inspect_get_major_version, NULL)
   PHP_FE (guestfs_inspect_get_minor_version, NULL)
   PHP_FE (guestfs_inspect_get_mountpoints, NULL)
+  PHP_FE (guestfs_inspect_get_osinfo, NULL)
   PHP_FE (guestfs_inspect_get_package_format, NULL)
   PHP_FE (guestfs_inspect_get_package_management, NULL)
   PHP_FE (guestfs_inspect_get_product_name, NULL)
@@ -506,6 +508,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_lvm_canonical_lv_name, NULL)
   PHP_FE (guestfs_lvm_clear_filter, NULL)
   PHP_FE (guestfs_lvm_remove_all, NULL)
+  PHP_FE (guestfs_lvm_scan, NULL)
   PHP_FE (guestfs_lvm_set_filter, NULL)
   PHP_FE (guestfs_lvremove, NULL)
   PHP_FE (guestfs_lvrename, NULL)
@@ -6429,6 +6432,39 @@ PHP_FUNCTION (guestfs_extlinux)
   RETURN_TRUE;
 }
 
+PHP_FUNCTION (guestfs_f2fs_expand)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  guestfs_string_length device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: f2fs_expand: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_f2fs_expand (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
 PHP_FUNCTION (guestfs_fallocate)
 {
   zval *z_g;
@@ -9857,6 +9893,41 @@ PHP_FUNCTION (guestfs_inspect_get_mountpoints)
     free (r[c+1]);
   }
   free (r);
+}
+
+PHP_FUNCTION (guestfs_inspect_get_osinfo)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *root;
+  guestfs_string_length root_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &root, &root_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (root) != root_size) {
+    fprintf (stderr, "libguestfs: inspect_get_osinfo: parameter 'root' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_inspect_get_osinfo (g, root);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  GUESTFS_RETURN_STRING (r_copy, 0);
 }
 
 PHP_FUNCTION (guestfs_inspect_get_package_format)
@@ -14573,6 +14644,33 @@ PHP_FUNCTION (guestfs_lvm_remove_all)
 
   int r;
   r = guestfs_lvm_remove_all (g);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_lvm_scan)
+{
+  zval *z_g;
+  guestfs_h *g;
+  zend_bool activate;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rb",
+        &z_g, &activate) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_lvm_scan (g, activate);
 
   if (r == -1) {
     RETURN_FALSE;

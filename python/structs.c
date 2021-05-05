@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1264,7 +1264,11 @@ guestfs_int_py_put_xattr (struct guestfs_xattr *xattr)
   if (value == NULL)
     goto err;
   PyDict_SetItemString (dict, "attrname", value);
+#if PY_MAJOR_VERSION >= 3
+  value = PyBytes_FromStringAndSize (xattr->attrval, xattr->attrval_len);
+#else
   value = guestfs_int_py_fromstringsize (xattr->attrval, xattr->attrval_len);
+#endif
   if (value == NULL)
     goto err;
   PyDict_SetItemString (dict, "attrval", value);

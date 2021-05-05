@@ -9,49 +9,51 @@ virt-format — витирання і створення порожнього д
 
 =head1 ОПИС
 
-Virt-format takes an existing disk file (or it can be a host partition, LV
-etc), B<erases all data on it>, and formats it as a blank disk.  It can
-optionally create partition tables, empty filesystems, logical volumes and
-more.
+Virt-format отримує назву наявного файла на диску (або розділу, логічного
+тому основної системи), B<витирає з нього усі дані> і форматує його як
+порожній диск. Якщо потрібно, програма може створити таблиці розділів,
+порожні файлові системи, логічні томи тощо.
 
-To create a disk containing data, you may be better to use
-L<virt-make-fs(1)>.  If you are creating a blank disk to use in
-L<guestfish(1)>, you should instead use the guestfish I<-N> option.
+Для створення диска, що містить дані, краще скористатися
+L<virt-make-fs(1)>. Якщо ви створюєте порожній диск для використання у
+L<guestfish(1)>, вам слід скористатися для цього параметром I<-N> guestfish.
 
-Normal usage would be something like this:
+Зазвичай, програмою слід користуватися десь так:
 
  virt-format -a диск.qcow
 
-or this:
+або так:
 
  virt-format -a /dev/VG/LV
 
-F<disk.qcow> or F</dev/VG/LV> must exist already.  B<Any data on these disks
-will be erased by these commands>.  These commands will create a single
-empty partition covering the whole disk, with no filesystem inside it.
+F<disk.qcow> або F</dev/VG/LV> має вже існувати. B<У результаті виконання
+команд усі дані на вказаних дисках буде витерто>. Ці команди створять єдиний
+порожній розділ, який займатиме увесь диск, без файлових систем на ньому.
 
-Additional parameters can be used to control the creation of partitions,
-filesystems, etc.  The most commonly used options are:
+Додатковими параметрами команди можна скористатися для керування створенням
+розділів, файлових систем тощо. Найрозповсюдженішим є використання таких
+параметрів:
 
 =over 4
 
 =item B<--filesystem=[ext3|ntfs|vfat|...]>
 
-Create an empty filesystem (C<ext3>, C<ntfs> etc) inside the partition.
+Створити на розділі порожню файлову систему (C<ext3>, C<ntfs> тощо).
 
 =item B<--lvm[=/dev/VG/LV]>
 
-Create a Linux LVM2 logical volume on the disk.  When used with
-I<--filesystem>, the filesystem is created inside the LV.
+Створити логічний том Linux LVM2 на диску. Якщо використовується разом із
+I<--filesystem>, на логічному томі створюється файлова система.
 
 =back
 
-For more information about these and other options, see L</OPTIONS> below.
+Щоб дізнатися більше про ці та інші параметри, ознайомтеся із розділом
+L</ПАРАМЕТРИ> нижче.
 
-The format of the disk is normally auto-detected, but you can also force it
-by using the I<--format> option (q.v.).  In situations where you do not
-trust the existing content of the disk, then it is advisable to use this
-option to avoid possible exploits.
+Зазвичай, формат диска визначається автоматично, але ви також можете вказати
+його за допомогою параметра I<--format>. У випадках, коли ви вважаєте
+ненадійним наявний вміст диска, радимо скористатися цим параметром для
+знищення можливого коду зловмисників.
 
 =head1 ПАРАМЕТРИ
 
@@ -65,7 +67,8 @@ option to avoid possible exploits.
 
 =item B<--add> файл
 
-Add I<file>, a disk image, host partition, LV, external USB disk, etc.
+Додати I<файл>, який має бути образом диска, розділом основної системи,
+логічним томом, зовнішнім диском USB тощо.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -81,8 +84,8 @@ B<Всі поточні дані на диску буде витерто.>
 
 =item B<--filesystem=ext3|ntfs|vfat|...>
 
-Create an empty filesystem of the specified type.  Many filesystem types are
-supported by libguestfs.
+Створити порожню файлову систему вказаного типу. У libguestfs передбачено
+підтримку багатьох файлових систем.
 
 =item B<--filesystem=none>
 
@@ -121,12 +124,12 @@ supported by libguestfs.
 
 =item B<--lvm=/dev/I<VG>/I<LV>>
 
-Create a Linux LVM2 logical volume called F</dev/I<VG>/I<LV>>.  You can
-change the name of the volume group and logical volume.
+Створити логічний том LVM2 Linux із назвою F</dev/I<VG>/I<LV>>. Ви можете
+змінити назву групи томів і логічного тому.
 
 =item B<--lvm>
 
-Create a Linux LVM2 logical volume with the default name (F</dev/VG/LV>).
+Створити логічний том Linux LVM2 на із типовою назвою (F</dev/VG/LV>).
 
 =item B<--lvm=none>
 
@@ -134,8 +137,8 @@ Create a Linux LVM2 logical volume with the default name (F</dev/VG/LV>).
 
 =item B<--partition>
 
-Create either an MBR or GPT partition covering the whole disk.  MBR is
-chosen if the disk size is E<lt> 2 TB, GPT if E<ge> 2 TB.
+Створити розділ MBR або GPT для усього диска. MBR буде вибрано, якщо розмір
+диска E<lt> 2 ТБ, GPT — якщо E<ge> 2 ТБ.
 
 Типове значення.
 
@@ -149,8 +152,8 @@ chosen if the disk size is E<lt> 2 TB, GPT if E<ge> 2 TB.
 
 =item B<--partition=none>
 
-Create no partition table.  Note that Windows may not be able to see these
-disks.
+Не створювати таблиці розділів. Зауважте, що такі диски можуть бути
+невидимими для Windows.
 
 =item B<-v>
 
@@ -166,13 +169,13 @@ disks.
 
 =item B<--wipe>
 
-Normally virt-format does not wipe data from the disk (because that takes a
-long time).  Thus if there is data on the disk, it is only hidden and
-partially overwritten by virt-format, and it might be recovered by disk
-editing tools.
+У поточній версії virt-format не витирає дані з диска (оскільки ця дія є
+надто тривалою). Тому, якщо на диску є дані, їх буде лише приховано і
+частково перезаписано virt-format. Ймовірно, такі дані можна відновити за
+допомогою інструментів для редагування дисків.
 
-If you use this option, virt-format writes zeroes over the whole disk so
-that previous data is not recoverable.
+Якщо ви скористаєтеся цим параметром, virt-format перезапише нулями увесь
+диск, щоб попередньо записані дані не можна було відновити.
 
 =item B<-x>
 
@@ -182,7 +185,8 @@ that previous data is not recoverable.
 
 =head1 СТАН ВИХОДУ
 
-This program returns C<0> on success, or C<1> on failure.
+Ця програма повертає C<0>, якщо роботу виконано успішно, і C<1>, якщо
+сталися помилки.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 

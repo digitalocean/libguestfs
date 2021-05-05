@@ -22,7 +22,7 @@ __CUSTOMIZE_SYNOPSIS__
 диска) встановленням пакунків, редагуванням файлів налаштувань тощо.
 
 Virt-customize вносить зміни до гостьової системи або образу диска I<на
-місці>. Гостьова система має бути вимкненою. Якщо ви зочете зберегти наявний
+місці>. Гостьова система має бути вимкненою. Якщо ви хочете зберегти наявний
 вміст гостьової системи, I<вам слід спочатку зробити її знімок, скопіювати
 або клонувати її диск>.
 
@@ -144,6 +144,23 @@ TEMPEST-нападів, або у вашій кімнаті нікого, окр
 форматі, вам слід скористатися цим параметром для визначення формату
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
+
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
 
 =item B<--keys-from-stdin>
 
@@ -316,5 +333,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2018 Red Hat Inc.
+Copyright (C) 2011-2019 Red Hat Inc.
 

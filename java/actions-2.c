@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1363,6 +1363,29 @@ Java_com_redhat_et_libguestfs_GuestFS__1luks_1kill_1slot  (JNIEnv *env, jobject 
 
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jkey, key);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1lvm_1scan  (JNIEnv *env, jobject obj, jlong jg, jboolean jactivate)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  int activate;
+
+  activate = jactivate;
+
+  r = guestfs_lvm_scan (g, activate);
+
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

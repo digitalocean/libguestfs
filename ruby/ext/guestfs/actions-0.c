@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1598,6 +1598,9 @@ guestfs_int_ruby_hivex_value_type (VALUE gv, VALUE valuehv)
  * 
  * "gentoo"
  * Gentoo.
+ * 
+ * "kalilinux"
+ * Kali Linux.
  * 
  * "linuxmint"
  * Linux Mint.

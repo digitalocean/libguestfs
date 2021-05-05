@@ -1,0 +1,135 @@
+
+=head1 НАЗВА
+
+virt-v2v-input-xen - Using virt-v2v to convert guests from Xen
+
+=head1 КОРОТКИЙ ОПИС
+
+ export LIBGUESTFS_BACKEND=direct
+ virt-v2v -ic 'xen+ssh://root@xen.example.com' GUEST_NAME [-o* options]
+
+=head1 ОПИС
+
+This page documents how to use L<virt-v2v(1)> to convert guests from RHEL 5
+Xen, or SLES and OpenSUSE Xen hosts.
+
+=head1 ВХІДНІ ДАНІ З XEN
+
+=head2 Set up ssh-agent access to Xen host
+
+У поточній версії вам слід уможливити безпарольний доступ SSH до віддаленого
+вузла Xen з боку сервера перетворення virt-v2v.
+
+Вам також слід скористатися ssh-agent і додати ваш відкритий ключ ssh до
+F</root/.ssh/authorized_keys> (на вузлі Xen).
+
+Після налаштовування вам слід перевірити працездатність безпарольного
+доступу з боку сервера virt-v2v на вузлі Xen. Приклад:
+
+ $ ssh root@xen.example.com
+ [ журналювання безпосередньо до оболонки, пароль не потрібен ]
+
+Зауважте, що підтримки інтерактивного режиму введення пароля та доступу за
+допомогою Kerberos B<не> передбачено. Вам B<доведеться> налаштувати доступ
+ssh за допомогою ssh-agent і authorized_keys.
+
+У деяких сучасних реалізаціях ssh застарілі правила шифрування, потрібні для
+взаємодії із sshd RHEL 5 вимкнено. Щоб увімкнути ці правила у вас може
+виникнути потреба у запуску вказаної нижче команди на сервері перетворення
+(тобто клієнті ssh), втім, спочатку ознайомтеся зі сторінкою підручника щодо
+L<update-crypto-policies(8)>:
+
+ # update-crypto-policies LEGACY
+
+=head2 Test libvirt connection to remote Xen host
+
+Скористайтеся командою L<virsh(1)> для отримання списку гостьових систем на
+віддаленому вузлі Xen:
+
+ $ virsh -c xen+ssh://root@xen.example.com list --all
+  Id    Name                           State
+ ----------------------------------------------------
+  0     Domain-0                       running
+  -     rhel49-x86_64-pv               shut off
+
+Крім того, вам слід спробувати створити дамп метаданих з будь-якої гостьової
+системи на вашому сервері, ось так:
+
+ $ virsh -c xen+ssh://root@xen.example.com dumpxml rhel49-x86_64-pv
+ <domain type='xen'>
+   <name>rhel49-x86_64-pv</name>
+   [...]
+ </domain>
+
+B<Якщо наведені вище команди не дають бажаного результату, virt-v2v також не
+працюватиме>.  Перш ніж продовжувати, виправте ваші налаштування на
+віддаленому сервері.
+
+B<If the guest disks are located on a host block device>, then the
+conversion will fail.  See L</Xen or ssh conversions from block devices>
+below for a workaround.
+
+=head2 Importing a guest
+
+Щоб імпортувати певну гостьову систему з сервера Xen, віддайте такі команди:
+
+ $ LIBGUESTFS_BACKEND=direct \
+       virt-v2v -ic 'xen+ssh://root@xen.example.com' \
+           rhel49-x86_64-pv \
+           -o local -os /var/tmp
+
+де C<rhel49-x86_64-pv> — назва гостьової системи (яку має бути вимкнено).
+
+У цьому випадку прапорці виведення встановлено так, щоб перетворена гостьова
+система записувалася до тимчасового каталогу, оскільки це лише приклад, але
+ви також можете записати перетворену систему до libvirt або будь-якого
+іншого підтримуваного призначення.
+
+Встановлення для L<модуля|guestfs(3)/МОДУЛЬ> значення C<direct> є тимчасовим
+обхідним заходом, доки не буде виправлено L<ваду libvirt
+1140166|https://bugzilla.redhat.com/1140166>.
+
+=head2 Xen or ssh conversions from block devices
+
+У поточній версії virt-v2v не може безпосередньо отримувати доступ до
+гостьової системи Xen (або будь-якої іншої гостьової системи, доступ до якої
+здійснюється віддалено за допомогою ssh), якщо диски цієї гостьової системи
+розташовано на блокових пристроях основної системи.
+
+Щоб визначити, чи використовує гостьова система Xen блокові пристрої
+основної системи, зверніться до вмісту XML гостьової системи. Там ви
+побачите таке:
+
+  <disk type='block' device='disk'>
+    ...
+    <source dev='/dev/VG/guest'/>
+
+де C<type='block'>, C<source dev=> і C</dev/...> усі вказують на тек, що
+диск розташовано на блоковому пристрої основної системи.
+
+Причиною проблем є те, що драйвер блокових пристроїв із доступом за
+допомогою ssh у qemu, яким ми користуємося для доступу до віддалених дисків,
+використовує протокол sftp ssh, а цей протокол не може правильно визначати
+розмір блокових пристроїв основної системи.
+
+Обійти проблему можна скопіювавши гостьову систему на сервер перетворення за
+допомогою окремої програми L<virt-v2v-copy-to-local(1)>, а потім запустивши
+virt-v2v. Вам знадобиться достатньо вільного місця на дисках сервера
+перетворення, щоб зберегти повну копію гостьової системи.
+
+ virt-v2v-copy-to-local -ic xen+ssh://root@xen.example.com guest
+ virt-v2v -i libvirtxml guest.xml -o local -os /var/tmp
+ rm guest.xml guest-disk*
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<virt-v2v(1)>.
+
+=head1 АВТОР
+
+Richard W.M. Jones
+
+=head1 АВТОРСЬКІ ПРАВА
+
+Copyright (C) 2009-2019 Red Hat Inc.
+

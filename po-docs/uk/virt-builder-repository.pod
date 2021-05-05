@@ -8,79 +8,85 @@
 
 =head1 НАЗВА
 
-virt-builder-repository - Build virt-builder source repository easily
+virt-builder-repository — засіб для полегшення побудови сховищ початкових
+даних  virt-builder
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-builder-repository /path/to/repository
-    [-i|--interactive] [--gpg-key KEYID]
+ virt-builder-repository /шлях/до/сховища
+    [-i|--interactive] [--gpg-key ІДЕНТИФІКАТОР_КЛЮЧА]
 
 =head1 ОПИС
 
-Virt-builder is a tool for quickly building new virtual machines. It can be
-configured to use template repositories. However creating and maintaining a
-repository involves many tasks which can be automated.
-virt-builder-repository is a tool helping to manage these repositories.
+Virt-builder — засіб для швидкої побудови нових віртуальних машин. Його
+можна налаштувати на використання сховищ шаблонів. Втім, створення і
+супровід сховища включає багато завдань, які можна
+автоматизувати. virt-builder-repository — саме той інструмент, який допоможе
+вам у керуванні такими сховищами.
 
-Virt-builder-repository loops over the files in the directory specified as
-argument, compresses the files with a name ending by C<qcow2>, C<raw>,
-C<img> or without extension, extracts data from them and creates or updates
-the C<index> file.
+Virt-builder-repository циклічно обробляє файли у каталозі, вказаному за
+допомогою аргументу команди, стискає файли із назвою, яка завершується
+суфіксом C<qcow2>, C<raw>, C<img>, або файли без суфікса назви, видобуває
+дані з цих файлів і створює або оновлює файл C<index> (покажчик).
 
-Some of the image-related data needed for the index file can’t be computed
-from the image file. virt-builder-repository first tries to find them in the
-existing index file. If data are still missing after this, they are prompted
-in interactive mode, otherwise an error will be triggered.
+Деякі з потрібних для побудови файла покажчика даних, пов'язаних із образом,
+не можна визначати на основі файла образу. virt-builder-repository спочатку
+намагається знайти ці дані у наявному файлі покажчика. Якщо після цієї
+спроби буде виявлено нестачу певних даних, програма попросить користувача
+вказати їх у інтерактивному режимі. Якщо ж отримати ці дані не вдасться,
+буде показано повідомлення про помилку.
 
-If a C<KEYID> is provided, the generated index file will be signed with this
-GPG key.
+Якщо вказано C<ІДЕНТИФІКАТОР_КЛЮЧА>, створений файл покажчика буде підписано
+цим ключем GPG.
 
 =head1 ПРИКЛАДИ
 
-=head2 Create the initial repository
+=head2 Створення початкового сховища
 
-Create a folder and copy the disk image template files in it. Then run a
-command like the following one:
+Створіть теку і скопіюйте до неї файли шаблонів образів дисків.  Дані
+віддайте команду, подібну до такої:
 
- virt-builder-repository --gpg-key "joe@hacker.org" -i /path/to/folder
+ virt-builder-repository --gpg-key "joe@hacker.org" -i /шлях/до/теки
 
-Note that this example command runs in interactive mode. To run in automated
-mode, a minimal index file needs to be created before running the command
-containing sections like this one:
+Зауважте, що вказана у нашому прикладі команда працюватиме у інтерактивному
+режимі. Щоб її було виконано у автоматизованому режимі, слід створити перед
+відданням команди мінімальний файл покажчика, який міститиме розділи,
+подібні до такого:
 
- [template_id]
- file=template_filename.qcow.xz
+ [ідентифікатор_шаблона]
+ file=назва_файла_шаблона.qcow.xz
 
-The file value needs to match the image name extended with the C<.xz> suffix
-if the I<--no-compression> parameter is not provided or the image name if no
-compression is involved. Other optional data can be prefilled. Default
-values are computed by inspecting the disk image.  For more informations,
-see L<virt-builder(1)/Creating and signing the index file>.
+Значення file має збігатися із назвою образу із додаванням суфікса C<.xz>,
+якщо не вказано параметра I<--no-compression>, або назвою образу, якщо
+стискання не використовується. Можна попередньо вказати інші необов'язкові
+дані. Типові значення буде визначено шляхом аналізу образу диска. Щоб
+дізнатися більше, ознайомтеся із розділом L<virt-builder(1)/Створення і
+підписування файла покажчика>.
 
-=head2 Update images in an existing repository
+=head2 Оновлення образів у наявному сховищі
 
 In this use case, a new image or a new revision of an existing image needs
 to be added to the repository. Place the corresponding image template files
 in the repository folder.
 
-To update the revision of an image, the file needs to have the same name
-than the existing one (without the C<xz> extension).
+Щоб оновити модифікацію образу, файл повинен мати таку саму назву, що і
+наявний (без суфікса назви C<xz>).
 
-As in the repository creation use case, a minimal fragment can be added to
-the index file for the automated mode. This can be done on the signed index
-even if it may sound a strange idea: the index will be signed again by the
-tool.
+Як і у випадку створення сховища, для автоматизації процесу до файла
+покажчика можна додати мінімальний фрагмент. Зробити це можна для
+підписаного покажчика, хоча це і може видатися доволі дивною ідеєю, — файл
+буде знову підписано самою програмою.
 
-To remove an image from the repository, just remove the corresponding image
-file before running virt-builder-repository.
+Щоб вилучити файл образу зі сховища, просто вилучіть відповідний файл образу
+до запуску virt-builder-repository.
 
-Then running the following command will complete and update the index file:
+Далі віддайте таку команду, щоб доповнити і оновити файл покажчика:
 
- virt-builder-repository --gpg-key "joe@hacker.org" -i /path/to/folder
+ virt-builder-repository --gpg-key "joe@hacker.org" -i /шлях/до/теки
 
-virt-builder-repository works in a temporary folder inside the repository
-one. If anything wrong happens when running the tool, the repository is left
-untouched.
+virt-builder-repository працює у тимчасовій теці у теці сховища. Якщо під
+час роботи програми трапиться якась прикра несподіванка, сховище лишиться
+незміненим.
 
 =head1 ПАРАМЕТРИ
 
@@ -98,36 +104,41 @@ untouched.
 
  virt-builder-repository --gpg "gpg --homedir /tmp" [...]
 
-This can also be used to avoid gpg asking for the key passphrase:
+Цим також можна скористатися, щоб засоби gpg не просили ввести пароль до
+ключа:
 
  virt-builder-repository --gpg "gpg --passphrase-file /tmp/pass --batch" [...]
 
-=item B<-K> KEYID
+=item B<-K> ІДЕНТИФІКАТОР_КЛЮЧА
 
-=item B<--gpg-key> KEYID
+=item B<--gpg-key> ІДЕНТИФІКАТОР_КЛЮЧА
 
-Specify the GPG key to be used to sign the repository index file.  If not
-provided, the index will left unsigned. C<KEYID> is used to identify the GPG
-key to use. This value is passed to gpg’s I<--default-key> option and can
-thus be an email address or a fingerprint.
+Вказати ключ GPG, який буде використано для підписування файла покажчика
+сховища. Якщо ключ не вказано, файл покажчика підписано не
+буде. C<ІДЕНТИФІКАТОР_КЛЮЧА> використовується для визначення ключа GPG, яким
+слід скористатися. Це значення передається до параметра I<--default-key>
+gpg, а отже може бути адресою електронної пошти або відбитком.
 
-B<NOTE>: by default, virt-builder-repository searches for the key in the
-user’s GPG keyring.
+B<ЗАУВАЖЕННЯ>: типово, virt-builder-repository виконує пошук ключа у сховищі
+ключів GPG користувача.
 
 =item B<-i>
 
 =item B<--interactive>
 
-Prompt for missing data. Default values are computed from the disk image.
+Надсилати запит щодо даних, яких не вистачатиме. Типові значення
+визначатимуться за образом диска.
 
-When prompted for data, inputting C<-> corresponds to leaving the value
-empty. This can be used to avoid setting the default computed value.
+У запитах щодо даних введення C<-> відповідає порожньому значенню. Цим можна
+скористатися, щоб уникнути встановлення автоматично визначеного значення.
 
 =item B<--no-compression>
 
-Don’t compress the template images.
+Не стискати образи шаблонів.
 
 =item B<--machine-readable>
+
+=item B<--machine-readable>=format
 
 За допомогою цього параметра можна зробити виведені дані придатнішими для
 обробки комп'ютером, якщо для цієї обробки використовуються інші
@@ -172,18 +183,23 @@ Don’t compress the template images.
 
 =head1 ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ
 
-The I<--machine-readable> option can be used to make the output more machine
-friendly, which is useful when calling virt-builder-repository from other
-programs, GUIs etc.
+Для виведення даних у зручному для машинної обробки форматі можна
+скористатися параметром I<--machine-readable>. Додавання цього параметра
+робить зручним використання virt-builder-repository з інших програм,
+графічних інтерфейсів тощо.
 
-Use the option on its own to query the capabilities of the
-virt-builder-repository binary.  Typical output looks like this:
+Скористайтеся цим параметром окремо, щоб опитати систему щодо можливостей
+виконуваного файла virt-builder-repository.  Типово виведені дані
+виглядатимуть якось так:
 
  $ virt-builder-repository --machine-readable
  virt-builder-repository
 
 Виводиться список можливостей, по одній на рядок, і програма завершує роботу
 зі станом 0.
+
+It is possible to specify a format string for controlling the output; see
+L<guestfs(3)/ADVANCED MACHINE READABLE OUTPUT>.
 
 =head1 СТАН ВИХОДУ
 
@@ -200,5 +216,5 @@ Cédric Bosdonnat L<mailto:cbosdonnat@suse.com>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2016-2018 SUSE Inc.
+Copyright (C) 2016-2019 SUSE Inc.
 

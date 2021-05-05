@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -880,6 +880,19 @@ run_luks_kill_slot (ETERM *args_tuple)
   r = guestfs_luks_kill_slot (g, device, key, keyslot);
   if (r == -1)
     return make_error ("luks_kill_slot");
+
+  return erl_mk_atom ("ok");
+}
+
+ETERM *
+run_lvm_scan (ETERM *args_tuple)
+{
+  int activate = get_bool (ARG (0));
+  int r;
+
+  r = guestfs_lvm_scan (g, activate);
+  if (r == -1)
+    return make_error ("lvm_scan");
 
   return erl_mk_atom ("ok");
 }

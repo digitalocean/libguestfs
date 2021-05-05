@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,10 @@ open Common_gettext.Gettext
 open Types
 open Utils
 
+let find_target_disk targets { s_disk_id = id } =
+  try List.find (fun t -> t.target_overlay.ov_source.s_disk_id = id) targets
+  with Not_found -> assert false
+
 class output_qemu dir qemu_boot =
 object
   inherit output
@@ -32,13 +36,11 @@ object
   method as_options =
     sprintf "-o qemu -os %s%s" dir (if qemu_boot then " --qemu-boot" else "")
 
-  method prepare_targets source targets =
+  method prepare_targets source overlays _ _ _ _ =
     List.map (
-      fun t ->
-        let target_file =
-          TargetFile (dir // source.s_name ^ "-" ^ t.target_overlay.ov_sd) in
-        { t with target_file }
-    ) targets
+      fun (_, ov) ->
+        TargetFile (dir // source.s_name ^ "-" ^ ov.ov_sd)
+    ) overlays
 
   method supported_firmware = [ TargetBIOS; TargetUEFI ]
 
@@ -47,7 +49,7 @@ object
     | TargetBIOS -> ()
     | TargetUEFI -> error_unless_uefi_firmware guestcaps.gcaps_arch
 
-  method create_metadata source _ target_buses guestcaps inspect
+  method create_metadata source targets target_buses guestcaps inspect
                          target_firmware =
     let name = source.s_name in
     let file = dir // name ^ ".sh" in
@@ -56,16 +58,24 @@ object
       match target_firmware with
       | TargetBIOS -> None
       | TargetUEFI -> Some (find_uefi_firmware guestcaps.gcaps_arch) in
-    let secure_boot_required =
-      match uefi_firmware with
-      | Some { Uefi.flags }
-           when List.mem Uefi.UEFI_FLAG_SECURE_BOOT_REQUIRED flags -> true
-      | _ -> false in
-    (* Currently these are required by secure boot, but in theory they
-     * might be independent properties.
-     *)
-    let machine_q35 = secure_boot_required in
+    let machine, secure_boot_required =
+      match guestcaps.gcaps_machine, uefi_firmware with
+      | _, Some { Uefi.flags }
+           when List.mem Uefi.UEFI_FLAG_SECURE_BOOT_REQUIRED flags ->
+         (* Force machine type to Q35 because PC does not support
+          * secure boot.  We must remove this when we get the
+          * correct machine type from libosinfo in future. XXX
+          *)
+         Q35, true
+      | machine, _ ->
+         machine, false in
     let smm = secure_boot_required in
+
+    let machine =
+      match machine with
+      | I440FX -> "pc"
+      | Q35 -> "q35"
+      | Virt -> "virt" in
 
     (* Construct the command line.  Note that the [Qemuopts]
      * module deals with shell and qemu comma quoting.
@@ -80,8 +90,15 @@ object
 
     flag "-no-user-config"; flag "-nodefaults";
     arg "-name" source.s_name;
-    arg_list "-machine" (if machine_q35 then ["q35"] else [] @
-                         if smm then ["smm=on"] else [] @
+
+    (match source.s_genid with
+     | None -> ()
+     | Some genid ->
+        arg_list "-device" ["vmgenid"; sprintf "guid=%s" genid; "id=vmgenid0"]
+    );
+
+    arg_list "-machine" (machine ::
+                         (if smm then ["smm=on"] else []) @
                          ["accel=kvm:tcg"]);
 
     (match uefi_firmware with
@@ -114,7 +131,10 @@ object
     let make_disk if_name i = function
     | BusSlotEmpty -> ()
 
-    | BusSlotTarget t ->
+    | BusSlotDisk d ->
+       (* Find the corresponding target disk. *)
+       let t = find_target_disk targets d in
+
        let target_file =
          match t.target_file with
          | TargetFile s -> s
@@ -137,7 +157,10 @@ object
     let make_scsi i = function
     | BusSlotEmpty -> ()
 
-    | BusSlotTarget t ->
+    | BusSlotDisk d ->
+       (* Find the corresponding target disk. *)
+       let t = find_target_disk targets d in
+
        let target_file =
          match t.target_file with
          | TargetFile s -> s
@@ -168,11 +191,11 @@ object
     List.iteri (
       fun i nic ->
         arg_list "-netdev" ["user"; "id=net" ^ string_of_int i];
-        arg_list "-device" [net_bus;
-                            sprintf "netdev=net%d%s" i
-                                    (match nic.s_mac with
-                                     | None -> ""
-                                     | Some mac -> "mac=" ^ mac)]
+        arg_list "-device" ([net_bus;
+                             sprintf "netdev=net%d" i] @
+                             (match nic.s_mac with
+                              | None -> []
+                              | Some mac -> ["mac=" ^ mac]))
     ) source.s_nics;
 
     (* Add a display. *)

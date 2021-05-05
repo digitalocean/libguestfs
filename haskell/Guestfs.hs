@@ -4,7 +4,7 @@
             and from the code in the generator/ subdirectory.
    ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
   
-   Copyright (C) 2009-2018 Red Hat Inc.
+   Copyright (C) 2009-2019 Red Hat Inc.
   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -138,6 +138,7 @@ module Guestfs (
   equal,
   exists,
   extlinux,
+  f2fs_expand,
   fallocate,
   fallocate64,
   feature_available,
@@ -223,6 +224,7 @@ module Guestfs (
   inspect_get_major_version,
   inspect_get_minor_version,
   inspect_get_mountpoints,
+  inspect_get_osinfo,
   inspect_get_package_format,
   inspect_get_package_management,
   inspect_get_product_name,
@@ -314,6 +316,7 @@ module Guestfs (
   lvm_canonical_lv_name,
   lvm_clear_filter,
   lvm_remove_all,
+  lvm_scan,
   lvm_set_filter,
   lvremove,
   lvrename,
@@ -1938,6 +1941,18 @@ extlinux h directory = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_f2fs_expand" c_f2fs_expand
+  :: GuestfsP -> CString -> IO CInt
+
+f2fs_expand :: GuestfsH -> String -> IO ()
+f2fs_expand h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_f2fs_expand p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
 foreign import ccall unsafe "guestfs.h guestfs_fallocate" c_fallocate
   :: GuestfsP -> CString -> CInt -> IO CInt
 
@@ -2963,6 +2978,18 @@ inspect_get_mountpoints h root = do
       arr <- peekArray0 nullPtr r
       arr <- mapM peekCString arr
       return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_osinfo" c_inspect_get_osinfo
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_osinfo :: GuestfsH -> String -> IO String
+inspect_get_osinfo h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_osinfo p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
 
 foreign import ccall unsafe "guestfs.h guestfs_inspect_get_package_format" c_inspect_get_package_format
   :: GuestfsP -> CString -> IO CString
@@ -4062,6 +4089,18 @@ foreign import ccall unsafe "guestfs.h guestfs_lvm_remove_all" c_lvm_remove_all
 lvm_remove_all :: GuestfsH -> IO ()
 lvm_remove_all h = do
   r <- withForeignPtr h (\p -> c_lvm_remove_all p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_lvm_scan" c_lvm_scan
+  :: GuestfsP -> CInt -> IO CInt
+
+lvm_scan :: GuestfsH -> Bool -> IO ()
+lvm_scan h activate = do
+  r <- withForeignPtr h (\p -> c_lvm_scan p (fromBool activate))
   if (r == -1)
     then do
       err <- last_error h

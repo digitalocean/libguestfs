@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1239,6 +1239,33 @@ struct command_entry luks_kill_slot_cmd_entry = {
           "",
   .synopsis = "luks-kill-slot device keyslot",
   .run = run_luks_kill_slot
+};
+
+struct command_entry lvm_scan_cmd_entry = {
+  .name = "lvm-scan",
+  .help = "NAME\n"
+          "    lvm-scan - scan for LVM physical volumes, volume groups and logical\n"
+          "    volumes\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     lvm-scan activate\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    This scans all block devices and rebuilds the list of LVM physical\n"
+          "    volumes, volume groups and logical volumes.\n"
+          "\n"
+          "    If the \"activate\" parameter is \"true\" then newly found volume groups and\n"
+          "    logical volumes are activated, meaning the LV /dev/VG/LV devices become\n"
+          "    visible.\n"
+          "\n"
+          "    When a libguestfs handle is launched it scans for existing devices, so\n"
+          "    you do not normally need to use this API. However it is useful when you\n"
+          "    have added a new device or deleted an existing device (such as when the\n"
+          "    \"luks_open\" API is used).\n"
+          "\n"
+          "",
+  .synopsis = "lvm-scan activate",
+  .run = run_lvm_scan
 };
 
 struct command_entry mkdir_cmd_entry = {

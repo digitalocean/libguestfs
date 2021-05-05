@@ -11,33 +11,37 @@ virt-sparsify — зробити диск віртуальної машини р
 
 =head1 ОПИС
 
-Virt-sparsify is a tool which can make a virtual machine disk (or any disk
-image) sparse a.k.a. thin-provisioned.  This means that free space within
-the disk image can be converted back to free space on the host.
+Virt-sparsify — інструмент, який може зробити диск віртуальної машини (або
+будь-який образ диска) розрідженим, тобто спеціально зменшеним. Це означає,
+що вільне місце в образі диска можна буде перетворити на вільне місце в
+основній системі.
 
-Virt-sparsify can locate and sparsify free space in most filesystems
-(eg. ext2/3/4, btrfs, NTFS, etc.), and also in LVM physical volumes.
+Virt-sparsify може знаходити і розріджувати вільне місце у більшості
+файлових систем (наприклад у ext2/3/4, btrfs, NTFS тощо), а також у фізичних
+томах LVM.
 
-Virt-sparsify can also convert between some disk formats, for example
-converting a raw disk image to a thin-provisioned qcow2 image.
+Крім того, програма virt-sparsify може перетворювати диски з одного формату
+на інший, наприклад, перетворити образ диска у простому форматі (raw) на
+розріджений образ у форматі qcow2.
 
-Virt-sparsify can operate on any disk image, not just ones from virtual
-machines.  However if a virtual machine has multiple disks and uses volume
-management, then virt-sparsify will work but not be very effective
-(L<http://bugzilla.redhat.com/887826>).
+Virt-sparsify може працювати з будь-яким образом диска, не лише з образами
+віртуальних машин. Втім, якщо у вашій віртуальній машині декілька дисків і
+використано керування томами, virt-sparsify працюватиме, але не дуже
+ефективно (L<http://bugzilla.redhat.com/887826>).
 
-=head2 IMPORTANT NOTE ABOUT SPARSE OUTPUT IMAGES
+=head2 ВАЖЛИВЕ ЗАУВАЖЕННЯ ЩОДО РОЗРІДЖЕНИХ ВИВЕДЕНИХ ОБРАЗІВ
 
-If the input is raw, then the default output is raw sparse.  B<You must
-check the output size using a tool that understands sparseness> such as C<du
--sh>.  It can make a huge difference:
+Якщо вхідними даними є образ raw, буде виведено розріджені дані raw. B<Вам
+слід перевірити розмір виведених даних за допомогою інструмента, який
+обробляє розріджені дані>, наприклад C<du -sh>. Різниця може бути досить
+значною:
 
  $ ls -lh test1.img
  -rw-rw-r--. 1 rjones rjones 100M Aug  8 08:08 test1.img
  $ du -sh test1.img
  3.6M	test1.img
 
-(Compare the apparent size B<100M> vs the actual size B<3.6M>)
+(Порівняйте видимий розмір у B<100 МБ> зі справжнім розміром у B<3,6 МБ>)
 
 =head2 ВАЖЛИВІ ОБМЕЖЕННЯ
 
@@ -45,41 +49,45 @@ check the output size using a tool that understands sparseness> such as C<du
 
 =item *
 
-The virtual machine I<must be shut down> before using this tool.
+До використання цього інструмента віртуальну машину I<слід зупинити>.
 
 =item *
 
-Virt-sparsify may require up to 2x the virtual size of the source disk image
-(1 temporary copy + 1 destination image).  This is in the worst case and
-usually much less space is required.
+Virt-sparsify може потребувати для роботи удвічі більшого місця на диску,
+ніж розмір початкового образу диска (1 тимчасова копія + 1 образ
+призначення). Ця оцінка є максимальною, і зазвичай потрібно набагато менше
+місця.
 
-If you are using the I<--in-place> option, then large amounts of temporary
-space are B<not> required.
-
-=item *
-
-Virt-sparsify cannot resize disk images.  To do that, use L<virt-resize(1)>.
+Якщо ви використовуєте параметр I<--in-place>, значні обсяги місця на диску
+для тимчасового зберігання даних B<не> знадобляться.
 
 =item *
 
-Virt-sparsify cannot handle encrypted disks.  Libguestfs supports encrypted
-disks, but encrypted disks themselves cannot be sparsified.
+Virt-sparsify не може змінювати розміри образів дисків. Для зміни розмірів
+дисків скористайтеся L<virt-resize(1)>.
 
 =item *
 
-Virt-sparsify cannot yet sparsify the space between partitions.  Note that
-this space is often used for critical items like bootloaders so it's not
-really unused.
+Virt-sparsify не може працювати із зашифрованими дисками. У libguestfs
+передбачено підтримку самих зашифрованих дисків, але зашифровані диски не
+може бути розріджено.
 
 =item *
 
-In copy mode, qcow2 internal snapshots are not copied over to the
-destination image.
+Virt-sparsify ще не може розріджувати місце між розділами. Зауважте, що це
+місце часто використовується для критичних даних, зокрема завантажувачів,
+тому, насправді, воно може бути зовсім не таким зайвим, як може здатися.
+
+=item *
+
+У режимі копіювання внутрішні знімки qcow2 не копіюються на образ
+призначення.
 
 =back
 
-You may also want to read the manual pages for the associated tools
-L<virt-filesystems(1)> and L<virt-df(1)> before starting.
+Перш ніж розпочати користування цією програмою, вам також варто ознайомитися
+зі сторінками підручника щодо пов'язаних із нею інструментів,
+L<virt-filesystems(1)> та L<virt-df(1)>.
 
 =head1 ПРИКЛАДИ
 
@@ -87,25 +95,28 @@ L<virt-filesystems(1)> and L<virt-df(1)> before starting.
 
  virt-sparsify вхідний_диск вихідний_диск
 
-which copies C<indisk> to C<outdisk>, making the output sparse.  C<outdisk>
-is created, or overwritten if it already exists.  The format of the input
-disk is detected (eg. qcow2) and the same format is used for the output
-disk.
+Ця команда копіює C<вхідний_диск> на диск C<вихідний_диск>, роблячи
+результат розрідженим. Диск C<вихідний_диск> буде створено або перезаписано,
+якщо такий диск уже існує. Програма сама визначить формат вхідного диска
+(наприклад qcow2) і використає той самий формат для вихідного диска.
 
-To convert between formats, use the I<--convert> option:
+Для перетворення диска з одного формату на інший скористайтеся параметром
+I<--convert>:
 
  virt-sparsify disk.raw --convert qcow2 disk.qcow2
 
-Virt-sparsify tries to zero and sparsify free space on every filesystem it
-can find within the source disk image.  You can get it to ignore (don't zero
-free space on) certain filesystems by doing:
+Virt-sparsify намагається занулити і розрідити вільне місце на усіх файлових
+системах, які вдасться знайти на початковому образі диска. Ви можете
+наказати програмі ігнорувати (не занулювати вільне місце) певні файлові
+системи за допомогою такої команди:
 
- virt-sparsify --ignore /dev/sda1 indisk outdisk
+ virt-sparsify --ignore /dev/sda1 вхідний_диск вихідний_диск
 
-See L<virt-filesystems(1)> to get a list of filesystems within a disk image.
+Щоб отримати список файлових систем на образі диска, скористайтеся командою
+L<virt-filesystems(1)>.
 
-Since virt-sparsify E<ge> 1.26, you can now sparsify a disk image in place
-by doing:
+Починаючи з версії virt-sparsify E<ge> 1.26, ви можете розріджувати образ
+диска на місці, ось так:
 
  virt-sparsify --in-place disk.img
 
@@ -125,8 +136,9 @@ by doing:
 
 =item B<--check-tmpdir> B<fail>
 
-Check if L</TMPDIR> or I<--tmp> directory has enough space to complete the
-operation.  This is just an estimate.
+Переконайтеся, чи достатньо вільного місця у каталозі, вказаному за
+допомогою змінної середовища L</TMPDIR> або параметра I<--tmp>, для
+завершення дії. Це лише оцінка.
 
 Якщо під час перевірки буде виявлено проблему, ви можете піти одним з таких
 шляхів:
@@ -139,7 +151,7 @@ B<ігнорувати> її,
 
 =item *
 
-вивести попередженян і B<продовжити>,
+вивести попередження і B<продовжити>,
 
 =item *
 
@@ -148,11 +160,11 @@ B<попередити> і почекати, доки користувач на�
 
 =item *
 
-B<вивести попердження про помилку> і завершити роботу.
+B<вивести попередження про помилку> і завершити роботу.
 
 =back
 
-You cannot use this option and I<--in-place> together.
+Цей параметр не можна поєднувати із параметром I<--in-place>.
 
 =item B<--colors>
 
@@ -166,10 +178,10 @@ You cannot use this option and I<--in-place> together.
 
 =item B<--compress>
 
-Compress the output file.  This I<only> works if the output format is
-C<qcow2>.
+Стиснути файл виведених даних. Це працює, I<лише> якщо форматом виведення
+даних є C<qcow2>.
 
-You cannot use this option and I<--in-place> together.
+Цей параметр не можна поєднувати із параметром I<--in-place>.
 
 =item B<--convert> raw
 
@@ -177,20 +189,24 @@ You cannot use this option and I<--in-place> together.
 
 =item B<--convert> [інші формати]
 
-Use C<output-format> as the format for the destination image.  If this is
-not specified, then the input format is used.
+Використовувати C<формат виведення> як формат образу призначення. Якщо цей
+параметр не вказано, буде використано той самий формат, що і у вхідних
+даних.
 
-Supported and known-working output formats are: C<raw>, C<qcow2>, C<vdi>.
+Підтримуваними і працездатними форматами виведення є такі: C<raw>, C<qcow2>,
+C<vdi>.
 
-You can also use any format supported by the L<qemu-img(1)> program,
-eg. C<vmdk>, but support for other formats is reliant on qemu.
+Ви також можете скористатися будь-яким іншим форматом, підтримку якого
+передбачено у програми L<qemu-img(1)>, наприклад C<vmdk>, але підтримка
+інших форматів повністю залежить від можливостей qemu.
 
-Specifying the I<--convert> option is usually a good idea, because then
-virt-sparsify doesn't need to try to guess the input format.
+Зазвичай, варто визначати формат за допомогою I<--convert>, оскільки тоді
+virt-sparsify не доведеться вгадувати формат вхідних даних.
 
-For fine-tuning the output format, see: I<--compress>, I<-o>.
+Скоригувати формат виведення даних можна за допомогою параметрів
+I<--compress>, I<-o>.
 
-You cannot use this option and I<--in-place> together.
+Цей параметр не можна поєднувати із параметром I<--in-place>.
 
 =item B<--echo-keys>
 
@@ -203,8 +219,8 @@ TEMPEST-нападів, або у вашій кімнаті нікого, окр
 
 =item B<--format> qcow2
 
-Specify the format of the input disk image.  If this flag is not given then
-it is auto-detected from the image itself.
+Вказати формат образу диска вхідних даних. Якщо цей прапорець не вказано,
+його буде автоматично визначено на основі даних самого образу.
 
 Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
 ненадійних джерел, вам слід завжди вказувати назву формату.
@@ -215,20 +231,39 @@ it is auto-detected from the image itself.
 
 Ігнорувати вказану файлову систему.
 
-When not using I<--in-place>: Free space on the filesystem will not be
-zeroed, but existing blocks of zeroes will still be sparsified.
+Якщо не використовується I<--in-place>, вільне місце у файловій системі не
+буде занулено, але наявні нульові блоки все одно буде розріджено.
 
-When using I<--in-place>, the filesystem is ignored completely.
+Якщо використовується I<--in-place>, файлову систему буде повністю
+проігноровано.
 
-In the second form, this ignores the named volume group.  Use the volume
-group name without the F</dev/> prefix, eg. I<--ignore vg_foo>
+У другій формі команда призведе до ігнорування вказаної за назвою групи
+томів. Використовуйте назву групи томів без префікса F</dev/>, наприклад
+I<--ignore vg_foo>
 
 Цей параметр можна вказувати декілька разів.
 
 =item B<--in-place>
 
-Do in-place sparsification instead of copying sparsification.  See
-L</IN-PLACE SPARSIFICATION> below.
+Виконати розрідження на місці замість розрідження копіюванням. Див. розділ
+L</РОЗРІДЖЕННЯ НА МІСЦІ> нижче.
+
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
 
 =item B<--keys-from-stdin>
 
@@ -238,15 +273,17 @@ L</IN-PLACE SPARSIFICATION> below.
 
 =item B<--machine-readable>
 
+=item B<--machine-readable>=format
+
 За допомогою цього параметра можна зробити виведені дані придатнішими для
 обробки комп'ютером, якщо для цієї обробки використовуються інші
 програми. Див. L</ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ> нижче.
 
 =item B<-o> параметр[,параметр,...]
 
-Pass I<-o> option(s) to the L<qemu-img(1)> command to fine-tune the output
-format.  Options available depend on the output format (see I<--convert>)
-and the installed version of the qemu-img program.
+Передати параметри I<-o> до програми L<qemu-img(1)> для коригування формату
+виведення даних.  Перелік доступних параметрів залежить від формату
+виведення (див. I<--convert>) і встановленої версії програми qemu-img.
 
 Вам слід скористатися I<-o> не більше одного разу. Щоб передати декілька
 параметрів, відокремте їх комами. Приклад:
@@ -254,54 +291,56 @@ and the installed version of the qemu-img program.
  virt-sparsify --convert qcow2 \
    -o cluster_size=512,preallocation=metadata ...
 
-You cannot use this option and I<--in-place> together.
+Цей параметр не можна поєднувати із параметром I<--in-place>.
 
 =item B<-q>
 
 =item B<--quiet>
 
-This disables progress bars and other unnecessary output.
+Цей параметр вимикає смужки поступу та інші необов'язкові до виведення дані.
 
 =item B<--tmp> блоковий_пристрій
 
 =item B<--tmp> каталог
 
-In copying mode only, use the named device or directory as the location of
-the temporary overlay (see also L</TMPDIR> below).
+Лише у режимі копіювання, використати вказаний за назвою пристрій або
+каталог як місце для тимчасової накладки (див. також L</TMPDIR> нижче).
 
-If the parameter given is a block device, then the block device is written
-to directly.  B<Note this erases the existing contents of the block device>.
+Якщо як параметр вказано блоковий пристрій, блоковий пристрій буде записано
+безпосередньо. B<Зауважте, що при цьому з блокового пристрою буде повністю
+витерто наявні дані>.
 
-If the parameter is a directory, then this is the same as setting the
-L</TMPDIR> environment variable.
+Якщо як параметр вказано каталог, визначення параметра буде рівнозначним
+заданню значення змінної середовища L</TMPDIR>.
 
-You cannot use this option and I<--in-place> together.
+Цей параметр не можна поєднувати із параметром I<--in-place>.
 
-=item B<--tmp> prebuilt:file
+=item B<--tmp> prebuilt:файл
 
-In copying mode only, the specialized option I<--tmp prebuilt:file> (where
-C<prebuilt:> is a literal string) causes virt-sparsify to use the qcow2
-C<file> as temporary space.
+Лише у режимі копіювання, спеціалізований параметр I<--tmp prebuilt:файл>
+(де C<prebuilt:> слід записувати буквально) наказує virt-sparsify
+використовувати як місце зберігання тимчасових даних файл qcow2 C<файл>.
 
 =over 4
 
 =item *
 
-The file B<must> be freshly formatted as qcow2, with indisk as the backing
-file.
+Файл B<має> бути наново форматовано як qcow2, а вхідний диск буде резервним
+файлом.
 
 =item *
 
-If you rerun virt-sparsify, you B<must> recreate the file before each run.
+Якщо ви повторно запускатимете virt-sparsify, вам B<слід> повторно
+створювати файл перед кожним запуском.
 
 =item *
 
-Virt-sparsify does not delete the file.
+Virt-sparsify не вилучає цей файл.
 
 =back
 
-This option is used by oVirt which requires a specially formatted temporary
-file.
+Цей параметр використовується oVirt, де потрібен спеціальним чином
+форматований тимчасовий файл.
 
 =item B<-v>
 
@@ -323,28 +362,32 @@ file.
 
 =item B<--zero> логічний_том
 
-Zero the contents of the named partition or logical volume in the guest.
-All data on the device is lost, but sparsification is excellent! You can
-give this option multiple times.
+Занулити вміст вказаного за назвою розділу або логічного тому у гостьовій
+системі. Усі дані на пристрої буде втрачено, але буде досягнуто чудової
+розрідженості! Цей параметр можна вказувати в одній команді декілька разів.
 
 =back
 
-=head1 IN-PLACE SPARSIFICATION
+=head1 РОЗРІДЖЕННЯ НА МІСЦІ
 
-Since virt-sparsify E<ge> 1.26, the tool is able to do in-place
-sparsification (instead of copying from an input disk to an output disk).
-This is more efficient.  It is not able to recover quite as much space as
-copying sparsification.
+Починаючи з virt-sparsify E<ge> 1.26, програма може виконувати розрідження
+на місці (замість копіювання з вхідного диска до вихідного диска). Таке
+розрідження є ефективнішим. Втім, за його використання не можна отримати
+більше місця у основній системі, якщо порівнювати із розрідженням із
+копіюванням.
 
-To use this mode, specify a disk image which will be modified in place:
+Щоб скористатися цим режимом, вкажіть образ диска, який буде змінено на
+місці:
 
  virt-sparsify --in-place disk.img
 
-Some options are not compatible with this mode: I<--convert>, I<--compress>
-and I<-o> because they require wholesale disk format changes;
-I<--check-tmpdir> because large amounts of temporary space are not required.
+Деякі параметри несумісні із цим режимом: I<--convert>, I<--compress> і
+I<-o>, оскільки їхнє використання вимагає загальної зміни формату диска;
+I<--check-tmpdir>, оскільки великі обсяги для зберігання тимчасових даних не
+потрібні.
 
-In-place sparsification works using discard (a.k.a trim or unmap)  support.
+Розрідження на місці працює завдяки підтримці відкидання (або обрізання чи
+скасування отримання пам'яті).
 
 =head1 ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ
 
@@ -367,8 +410,9 @@ In-place sparsification works using discard (a.k.a trim or unmap)  support.
 Виводиться список можливостей, по одній на рядок, і програма завершує роботу
 зі станом 0.
 
-Secondly use the option in conjunction with other options to make the
-regular program output more machine friendly.
+По-друге, можна скористатися цим параметром у поєднанні із іншими
+параметрами для того, щоб зробити звичайні виведені програмою дані
+придатнішими для подальшої машинної обробки.
 
 У поточній версії це означає таке:
 
@@ -376,32 +420,37 @@ regular program output more machine friendly.
 
 =item 1.
 
-Progress bar messages can be parsed from stdout by looking for this regular
-expression:
+Повідомлення смужки поступу можна обробляти зі стандартного виведення,
+шукаючи їх за таким формальним виразом:
 
  ^[0-9]+/[0-9]+$
 
 =item 2.
 
-The calling program should treat messages sent to stdout (except for
-progress bar messages) as status messages.  They can be logged and/or
-displayed to the user.
+Програма, яка надсилає виклик, має обробляти повідомлення, надіслані до
+стандартного виведення, (окрім повідомлень смужки поступу) як повідомлення
+щодо стану. Ці повідомлення може бути записано до журналу і/або показано
+користувачеві.
 
 =item 3.
 
-The calling program should treat messages sent to stderr as error messages.
-In addition, virt-sparsify exits with a non-zero status code if there was a
-fatal error.
+Програма, яка надсилає виклик, має обробляти повідомлення, надіслані до
+stderr як повідомлення про помилки. Крім того, virt-sparcify завершує роботу
+із ненульовим кодом стану, якщо станеться критична помилка.
 
 =back
 
 Підтримку параметра I<--machine-readable> передбачено у всіх версіях
 virt-sparsify.
 
+It is possible to specify a format string for controlling the output; see
+L<guestfs(3)/ADVANCED MACHINE READABLE OUTPUT>.
+
 =head1 WINDOWS 8
 
-Windows 8 "fast startup" can prevent virt-sparsify from working.  See
-L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
+«Швидкий запуск» Windows 8 може заважати роботі
+virt-sparsify. Див. L<guestfs(3)/ПРИСИПЛЯННЯ WINDOWS  ТА ШВИДКИЙ ЗАПУСК
+WINDOWS 8>.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -409,28 +458,31 @@ L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
 =item ТИМЧАСОВИЙ КАТАЛОГ
 
-Location of the temporary directory used for the potentially large temporary
-overlay file.
+Розташування каталогу тимчасових даних, який використовуватиметься для
+потенційно великих тимчасових файлів-накладок.
 
-In virt-sparsify E<ge> 1.28, you can override this environment variable
-using the I<--tmp> option.
+У virt-sparsify E<ge> 1.28 ви можете перевизначити цю змінну середовища за
+допомогою параметра I<--tmp>.
 
-You should ensure there is enough free space in the worst case for a full
-copy of the source disk (I<virtual> size), or else set C<$TMPDIR> to point
-to another directory that has enough space.
+На диску має бути достатньо вільного місця для найгіршого варіанта для
+повної копії початкового диска (I<віртуального> розміру). Якщо місця
+недостатньо, слід встановити для C<$TMPDIR> значення, яке вказує на інший
+каталог, де достатньо місця.
 
 Типовим значенням є F</tmp>.
 
-Note that if C<$TMPDIR> is a tmpfs (eg. if F</tmp> is on tmpfs, or if you
-use C<TMPDIR=/dev/shm>), tmpfs defaults to a maximum size of I<half> of
-physical RAM.  If virt-sparsify exceeds this, it will hang.  The solution is
-either to use a real disk, or to increase the maximum size of the tmpfs
-mountpoint, eg:
+Зауважте, що якщо файловою системою у C<$TMPDIR> є tmpfs (наприклад, якщо
+файловою системою F</tmp> є tmpfs, або якщо ви використовуєте
+C<TMPDIR=/dev/shm>), типовим розміром tmpfs є максимальне значення
+I<половини> фізичної оперативної пам'яті. Якщо virt-sparsify знадобиться
+більше місця, програма просто «повисне». Якщо ви побоюєтеся такого перебігу
+подій, або скористайтеся реальним диском, або збільште максимальний розмір
+точки монтування tmpfs, наприклад так:
 
  mount -o remount,size=10G /tmp
 
-If you are using the I<--in-place> option, then large amounts of temporary
-space are B<not> required.
+Якщо ви використовуєте параметр I<--in-place>, значні обсяги місця на диску
+для тимчасового зберігання даних B<не> знадобляться.
 
 =back
 
@@ -439,14 +491,14 @@ VARIABLES>.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 if the operation completed without errors.  (This
-doesn't necessarily mean that space could be freed up.)
+Ця програма повертає 0, якщо дію виконано без жодної помилки (це не
+обов'язково означає, що місце на диску звільнилося).
 
-A non-zero exit code indicates an error.
+Ненульовий код виходу вказує на помилку.
 
-If the exit code is C<3> and the I<--in-place> option was used, that
-indicates that discard support is not available in libguestfs, so copying
-mode must be used instead.
+Якщо повернуто код виходу C<3> і було використано параметр I<--in-place>, це
+означає, що у libguestfs не передбачено підтримки відкидання зайвого місця
+на диску, отже, доведеться користуватися режимом копіювання.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -460,5 +512,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2018 Red Hat Inc.
+Copyright (C) 2011-2019 Red Hat Inc.
 

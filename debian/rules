@@ -30,6 +30,9 @@ RUBY_VERSIONS   := ""
 LUA_VERSIONS    := ""
 PHP_VERSIONS    := ""
 
+# Use private Go build cache
+export GOCACHE = $(CURDIR)/debian/gocache
+
 # Determine the number of builds needed due to script language version
 # variants
 BUILD_COUNT := 1
@@ -81,6 +84,9 @@ $(CURDIR)/debian/build/build-stamp:
 
 override_dh_auto_build:: $(CURDIR)/debian/build/build-stamp
 
+override_dh_autoreconf:
+	dh_autoreconf -- debian/dh-autoreconf.sh
+
 override_dh_auto_test:
 ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
 	printenv
@@ -98,8 +104,11 @@ override_dh_install:
 # main libguestfs0 can avoid depending on everything.
 	debian/split-appliance.sh
 
-	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d \
-	    --list-missing
+	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d
+
+override_dh_missing:
+	dh_missing --fail-missing \
+		-X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d
 
 # Add packages (except essential packages) from appliance packagelist
 # to libguestfs* dependencies
@@ -109,8 +118,6 @@ override_dh_php:
 	dh_php -p php-guestfs
 override_dh_python3:
 	dh_python3 -p python3-guestfs
-override_dh_python2:
-	dh_python2 -p python-guestfs -V 2.6-
 override_dh_shlibdeps:
 	dh_shlibdeps
 # Add libraries needed by guestfsd to libguestfs0 dependencies
@@ -119,7 +126,11 @@ override_dh_shlibdeps:
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"
 override_dh_makeshlibs:
-	dh_makeshlibs -X/jni/ -X/python2/ -X/python3/
+	dh_makeshlibs -X/jni/ -X/python3/
+# Workaround for
+# dwz: debian/ruby-guestfs/usr/lib/x86_64-linux-gnu/ruby/vendor_ruby/2.5.0/_guestfs.so: DWARF version 0 unhandled
+override_dh_dwz:
+	dh_dwz -X/vendor_ruby/
 
 %:
 	dh $@ --without=python-support

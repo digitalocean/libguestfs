@@ -11,16 +11,18 @@ virt-resize — програма для зміни розмірів дисків
 
 =head1 ОПИС
 
-Virt-resize is a tool which can resize a virtual machine disk, making it
-larger or smaller overall, and resizing or deleting any partitions contained
-within.
+Virt-resize — програма, за допомогою якої можна змінити розміри диска
+віртуальної машини, зробивши його більшим або меншим чи змінивши розміри
+розділів, які містяться на диску, або вилучивши їх.
 
-Virt-resize B<cannot> resize disk images in-place.  Virt-resize B<should
-not> be used on live virtual machines - for consistent results, shut the
-virtual machine down before resizing it.
+Virt-resize B<не може> змінювати розмір образів дисків «на
+місці». Virt-resize B<не слід> використовувати для активних віртуальних
+машин — щоб отримати належний результат, перш ніж змінювати розміри дисків,
+зупиніть роботу віртуальної машини.
 
-If you are not familiar with the associated tools: L<virt-filesystems(1)>
-and L<virt-df(1)>, we recommend you go and read those manual pages first.
+Якщо ви ще не знайомі з принципами роботи пов'язаних інструментів,
+L<virt-filesystems(1)> і L<virt-df(1)>, рекомендуємо вам спершу ознайомитися
+із документацією щодо цих інструментів.
 
 =head1 ПРИКЛАДИ
 
@@ -28,10 +30,11 @@ and L<virt-df(1)>, we recommend you go and read those manual pages first.
 
 =item 1.
 
-This example takes C<olddisk> and resizes it into C<newdisk>, extending one
-of the guest’s partitions to fill the extra 5GB of space:
+У цьому прикладі ми візьмемо C<старий_диск>, змінимо його розміри і запишемо
+як C<новий_диск>, розширивши один із розділів гостьової системи на додаткові
+5 ГБ:
 
- virt-filesystems --long -h --all -a olddisk
+ virt-filesystems --long -h --all -a старий_диск
  
  truncate -r старий_диск новий_диск
  truncate -s +5G новий_диск
@@ -41,24 +44,25 @@ of the guest’s partitions to fill the extra 5GB of space:
 
 =item 2.
 
-As above, but make the /boot partition 200MB bigger, while giving the
-remaining space to /dev/sda2:
+Те саме, що і вище, але зі збільшенням розділу /boot на 200 МБ, з наданням
+решти місця для /dev/sda2:
 
  virt-resize --resize /dev/sda1=+200M --expand /dev/sda2 \
-   olddisk newdisk
+   старий_диск новий_диск
 
 =item 3.
 
-As in the first example, but expand a logical volume as the final step.
-This is what you would typically use for Linux guests that use LVM:
+Як у першому прикладі, але із розширенням логічного тому на останньому
+кроці. Саме цю команду типово використовують для гостьових систем Linux, де
+використовується LVM:
 
  virt-resize --expand /dev/sda2 --LV-expand /dev/vg_guest/lv_root \
-   olddisk newdisk
+   старий_диск новий_диск
 
 =item 4.
 
-As in the first example, but the output format will be qcow2 instead of a
-raw disk:
+Як у першому прикладі, але дані буде виведено у форматі qcow2, а не у
+простому (raw) форматі:
 
  qemu-img create -f qcow2 -o preallocation=metadata newdisk.qcow2 15G
  virt-resize --expand /dev/sda2 olddisk newdisk.qcow2
@@ -73,20 +77,22 @@ raw disk:
 
 =item 1. Припиніть роботу віртуальної машини
 
-=item 2. Locate input disk image
+=item 2. Встановіть розташування образу диска із вхідними даними
 
-Locate the input disk image (ie. the file or device on the host containing
-the guest’s disk).  If the guest is managed by libvirt, you can use C<virsh
-dumpxml> like this to find the disk image name:
+Встановіть розташування образу диска із вхідними даними (тобто файла або
+пристрою у основній системі, де містяться дані диска гостьової
+системи). Якщо гостьовою системою керує libvirt, ви можете скористатися для
+визначення назви образу диска командою C<virsh dumpxml>, ось так:
 
  # virsh dumpxml guestname | xpath /domain/devices/disk/source
- Found 1 nodes:
+ Знайдено 1 вузли:
  -- NODE --
  <source dev="/dev/vg/lv_guest" />
 
-=item 3. Look at current sizing
+=item 3. Визначте поточні розміри
 
-Use L<virt-filesystems(1)> to display the current partitions and sizes:
+Скористайтеся програмою L<virt-filesystems(1)> для перегляду списку поточних
+розділів і їхніх розмірів:
 
  # virt-filesystems --long --parts --blkdevs -h -a /dev/vg/lv_guest
  Name       Type       Size  Parent
@@ -94,57 +100,61 @@ Use L<virt-filesystems(1)> to display the current partitions and sizes:
  /dev/sda2  partition  7.9G  /dev/sda
  /dev/sda   device     8.0G  -
 
-(This example is a virtual machine with an 8 GB disk which we would like to
-expand up to 10 GB).
+(У цьому прикладі маємо справу з віртуальною машиною з диском у 8 ГБ, який
+ми хочемо розширити до 10 ГБ).
 
-=item 4. Create output disk
+=item 4. Створіть диск для виведення даних
 
-Virt-resize cannot do in-place disk modifications.  You have to have space
-to store the resized output disk.
+Virt-resize не може виконувати внесення змін до дисків «на місці». У вашій
+системі має бути достатньо місця для зберігання диска-результату зі зміненим
+розміром.
 
-To store the resized disk image in a file, create a file of a suitable size:
+Для збереження образу диска зі зміненим розміром створіть файл відповідного
+розміру:
 
  # rm -f outdisk
  # truncate -s 10G outdisk
 
-Or use L<lvcreate(1)> to create a logical volume:
+Або скористайтеся L<lvcreate(1)> для створення логічного тому:
 
  # lvcreate -L 10G -n lv_name vg_name
 
-Or use L<virsh(1)> vol-create-as to create a libvirt storage volume:
+Або скористайтеся L<virsh(1)> vol-create-as для створення тому сховища даних
+libvirt:
 
  # virsh pool-list
  # virsh vol-create-as poolname newvol 10G
 
 =item 5. Зміна розміру
 
-virt-resize takes two mandatory parameters, the input disk and the output
-disk (both can be e.g. a device, a file, or a URI to a remote disk).  The
-output disk is the one created in the previous step.
+virt-resize має отримати два обов'язкових параметри, назву диска із вхідними
+даними і назву диска із вихідними даними (обидві можуть бути, наприклад,
+пристроями, файлами або адресами на віддаленому диску). Диском з виведеними
+даними має бути диск, створений на попередньому кроці.
 
  # virt-resize indisk outdisk
 
-This command just copies disk image C<indisk> to disk image C<outdisk>
-I<without> resizing or changing any existing partitions.  If C<outdisk> is
-larger, then an extra, empty partition is created at the end of the disk
-covering the extra space.  If C<outdisk> is smaller, then it will give an
-error.
+Ця команда просто копіює образ диска C<indisk> до образу диска C<outdisk>
+I<без> зміни розмірів або будь-яких змін у наявних розділах. Якщо диск
+C<outdisk> є завеликим для даних, створюється додатковий порожній розділ
+наприкінці диска, розмір якого відповідатиме зайвому місцю. Якщо диск
+C<outdisk> виявиться замалим, програма повідомить про помилку.
 
-More realistically you'd want to expand existing partitions in the disk
-image by passing extra options (for the full list see the L</OPTIONS>
-section below).
+Реалістичнішим буде варіант, коли вам потрібно розширити наявні розділи на
+образі диска передаванням додаткових параметрів (повний список параметрів
+наведено у розділі L</ПАРАМЕТРИ> нижче).
 
-L</--expand> is the most useful option.  It expands the named partition
-within the disk to fill any extra space:
+L</--expand> є найкориснішим параметром. За його допомогою можна розширити
+вказаний за назвою розділ на диску так, щоб він зайняв усе зайве місце:
 
  # virt-resize --expand /dev/sda2 indisk outdisk
 
-(In this case, an extra partition is I<not> created at the end of the disk,
-because there will be no unused space).
+(У цьому випадку наприкінці диска I<не> створюватиметься додаткових
+розділів, оскільки невикористаного місця просто не буде).
 
-L</--resize> is the other commonly used option.  The following would
-increase the size of /dev/sda1 by 200M, and expand /dev/sda2 to fill the
-rest of the available space:
+L</--resize> — ще один широковживаний параметр. Наступна команда збільшить
+розмір /dev/sda1 на 200 МБ і розширить /dev/sda2 так, щоб той заповнив решту
+доступного місця:
 
  # virt-resize --resize /dev/sda1=+200M --expand /dev/sda2 \
      indisk outdisk
@@ -152,111 +162,121 @@ rest of the available space:
 If the expanded partition in the image contains a filesystem or LVM PV, then
 if virt-resize knows how, it will resize the contents, the equivalent of
 calling a command such as L<pvresize(8)>, L<resize2fs(8)>, L<ntfsresize(8)>,
-L<btrfs(8)> or L<xfs_growfs(8)>.  However virt-resize does not know how to
-resize some filesystems, so you would have to online resize them after
-booting the guest.
+L<btrfs(8)>, L<xfs_growfs(8)>, or L<resize.f2fs(8)>.  However virt-resize
+does not know how to resize some filesystems, so you would have to online
+resize them after booting the guest.
 
  # virt-resize --expand /dev/sda2 nbd://example.com outdisk
 
-The input disk can be a URI, in order to use a remote disk as the source.
-The URI format is compatible with guestfish.  See L<guestfish(1)/ADDING
-REMOTE STORAGE>.
+Диском із вхідними даними може бути адреса, якщо як джерело слід використати
+віддалений диск. Формат адреси є сумісним із
+guestfish. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
-Other options are covered below.
+Інші параметри описано нижче.
 
 =item 6. Перевірка
 
-Thoroughly test the new disk image I<before> discarding the old one.
+Виконайте належне тестування нового образу диска, I<перш ніж> витирати
+старий.
 
-If you are using libvirt, edit the XML to point at the new disk:
+Якщо ви користуєтеся libvirt, внесіть зміни до XML так, щоб він вказував на
+новий диск:
 
  # virsh edit назва_гостьової_системи
 
-Change E<lt>source ...E<gt>, see
-L<http://libvirt.org/formatdomain.html#elementsDisks>
+Змініть E<lt>source ...E<gt>,
+див. L<http://libvirt.org/formatdomain.html#elementsDisks>
 
-Then start up the domain with the new, resized disk:
+Далі, запустіть домен з новим диском, розмір якого було змінено:
 
- # virsh start guestname
+ # virsh start назва_гостьової_системи
 
-and check that it still works.  See also the L</NOTES> section below for
-additional information.
+і перевірте, чи все лишається працездатним. Див. також додаткові зауваження
+у розділі L</ПРИМІТКИ> нижче.
 
-=item 7. Resize LVs etc inside the guest
+=item 7. Зміна розмірів логічних томів та інших сховищ у гостьовій системі
 
-(This can also be done offline using L<guestfish(1)>)
+(Це завдання можна виконати без завантаження гостьової системи за допомогою
+L<guestfish(1)>)
 
-Once the guest has booted you should see the new space available, at least
-for filesystems that virt-resize knows how to resize, and for PVs.  The user
-may need to resize LVs inside PVs, and also resize filesystem types that
-virt-resize does not know how to expand.
+Після завантаження гостьової системи у ній має з'явитися вільне місце,
+принаймні для файлових систем, способи зміни розмірів яких відомі
+virt-resize, та фізичних томів. Користувачеві, ймовірно, слід буде змінити
+логічні томи у фізичних томах, а також змінити розміри типів файлових
+систем, способи розширення яких не відомі virt-resize.
 
 =back
 
-=head2 SHRINKING A VIRTUAL MACHINE DISK
+=head2 ЗМЕНШЕННЯ РОЗМІРІВ ДИСКА ВІРТУАЛЬНОЇ МАШИНИ
 
-Shrinking is somewhat more complex than expanding, and only an overview is
-given here.
+Зменшення розмірів є дещо складнішим завданням за збільшення. У цьому
+розділі наведено лише загальний огляд.
 
-Firstly virt-resize will not attempt to shrink any partition content (PVs,
-filesystems).  The user has to shrink content before passing the disk image
-to virt-resize, and virt-resize will check that the content has been shrunk
-properly.
+По-перше, virt-resize не робитиме спроб стиснути будь-який вміст розділу
+(фізичні томи, файлові системи). Користувачеві слід подбати про зменшення
+розмірів вмісту до передавання диска на обробку до virt-resize, і
+virt-resize перевірить, чи було стиснено вміст належним чином.
 
-(Shrinking can also be done offline using L<guestfish(1)>)
+(Зменшення розмірів також можна виконати без завантаження системи за
+допомогою L<guestfish(1)>)
 
-After shrinking PVs and filesystems, shut down the guest, and proceed with
-steps 3 and 4 above to allocate a new disk image.
+Після стискання фізичних томів і файлових систем, вимкніть гостьову систему
+і виконайте описані вище кроки 3 і 4 для розміщення нового образу диска.
 
-Then run virt-resize with any of the I<--shrink> and/or I<--resize> options.
+Потім запустіть virt-resize із відповідними параметрами I<--shrink> і/або
+I<--resize>.
 
 =head2 ІГНОРУВАННЯ І ВИЛУЧЕННЯ РОЗДІЛІВ
 
-virt-resize also gives a convenient way to ignore or delete partitions when
-copying from the input disk to the output disk.  Ignoring a partition speeds
-up the copy where you don't care about the existing contents of a
-partition.  Deleting a partition removes it completely, but note that it
-also renumbers any partitions after the one which is deleted, which can
-leave some guests unbootable.
+Крім того, virt-resize надає вам зручний спосіб ігнорувати або вилучати
+розділи при копіюванні з диска вхідних даних на диск вихідних
+даних. Ігнорування розділу пришвидшує копіювання там, де вам все одно що
+станеться із наявним вмістом розділу. Вилучення розділу вилучає його
+повністю, але зауважте, що це також призводить до перенумерування усіх
+розділів після вилучено, що може призвести до неможливості завантаження
+деяких гостьових систем.
 
-=head2 QCOW2 AND NON-SPARSE RAW FORMATS
+=head2 QCOW2 І НЕРОЗРІДЖЕНІ ФОРМАТИ RAW
 
-If the input disk is in qcow2 format, then you may prefer that the output is
-in qcow2 format as well.  Alternately, virt-resize can convert the format on
-the fly.  The output format is simply determined by the format of the empty
-output container that you provide.  Thus to create qcow2 output, use:
+Якщо дисх вхідних даних записано у форматі qcow2, ймовірно, варто записати
+вихідні дані теж у форматі qcow2. Крім того, virt-resize може перетворювати
+дані з одного формату на інший «на льоту». Формат виведених даних просто
+визначається форматом порожнього контейнера для виведення даних, який ви
+надасте. Таким чином, щоб записати виведені дані у форматі qcow2,
+скористайтеся такою командою:
 
- qemu-img create -f qcow2 -o preallocation=metadata outdisk [size]
+ qemu-img create -f qcow2 -o preallocation=metadata outdisk [розмір]
 
 замість команди truncate.
 
-Similarly, to get non-sparse raw output use:
+Так само, щоб отримати дані у нерозрідженому простому форматі (raw)
+скористайтеся такою командою:
 
  fallocate -l розмір вихідний_диск
 
-(on older systems that don’t have the L<fallocate(1)> command use C<dd
-if=/dev/zero of=outdisk bs=1M count=..>)
+(у застарілих системах, де немає команди L<fallocate(1)>, скористайтеся
+командою C<dd if=/dev/zero of=outdisk bs=1M count=..>)
 
 =head2 ЛОГІЧНІ РОЗДІЛИ
 
-Logical partitions (a.k.a. F</dev/sda5+> on disks using DOS partition
-tables) cannot be resized.
+Розміри логічних розділів (тобто F</dev/sda5+> на дисках із таблицею
+розділів DOS) не може бути змінено.
 
-To understand what is going on, firstly one of the four partitions
-F</dev/sda1-4> will have MBR partition type C<05> or C<0f>.  This is called
-the B<extended partition>.  Use L<virt-filesystems(1)> to see the MBR
-partition type.
+Щоб розібратися у тому, що відбувається, по-перше, слід пам'ятати, що один
+із чотирьох розділів F</dev/sda1-4> матиме тип розділу MBR C<05> або
+C<0f>. Такий розділ називається B<розширеним розділом>. Для перегляду типу
+розділу MBR скористайтеся L<virt-filesystems(1)>.
 
-Logical partitions live inside the extended partition.
+Логічні розділи містяться у розширеному розділі.
 
-The extended partition can be expanded, but not shrunk (unless you force it,
-which is not advisable).  When the extended partition is copied across, all
-the logical partitions contained inside are copied over implicitly.
-Virt-resize does not look inside the extended partition, so it copies the
-logical partitions blindly.
+Розширений розділ може бути збільшено, але не може бути зменшено (це можна
+зробити у примусовому режимі, але ми не радимо так робити). При копіюванні
+розширеного розділу неявним чином копіюються усі логічні розділи, які на
+ньому містяться. Virt-resize не зазирає до розширеного розділу, отже сліпо
+копіює логічні розділи.
 
-You cannot specify a logical partition (F</dev/sda5+>) at all on the command
-line.  Doing so will give an error.
+Вказати логічний розділ (F</dev/sda5+>) у рядку команди не можна. Якщо ви це
+зробите, програма повідомить про помилку.
 
 =head1 ПАРАМЕТРИ
 
@@ -272,51 +292,55 @@ line.  Doing so will give an error.
 
 =item B<--align-first> B<always>
 
-Align the first partition for improved performance (see also the
-I<--alignment> option).
+Вирівняти перший розділ, щоб підвищити швидкодію (див. параметр
+I<--alignment>).
 
-The default is I<--align-first auto> which only aligns the first partition
-if it is safe to do so.  That is, only when we know how to fix the
-bootloader automatically, and at the moment that can only be done for
-Windows guests.
+Типовою поведінкою є використання параметра I<--align-first auto>, який
+вирівнює лише перший розділ, якщо це безпечно робити. Тобто, лише якщо
+програмі достеменно відомо, як виправити завантажувач автоматично, і, у
+поточній версії, лише для гостьових систем Windows.
 
-I<--align-first never> means we never move the first partition.  This is the
-safest option.  Try this if the guest does not boot after resizing.
+I<--align-first never> означає, що пересування першого розділу ніколи не
+відбуватиметься. Це найбезпечніший варіант. Скористайтеся ним, якщо після
+зміни розмірів гостьова система відмовляється завантажуватися.
 
-I<--align-first always> means we always align the first partition (if it
-needs to be aligned).  For some guests this will break the bootloader,
-making the guest unbootable.
+I<--align-first always> означає, що завжди відбуватиметься вирівнювання
+першого розділу (якщо його треба вирівнювати). Для деяких гостьових систем
+це може завадити роботи завантажувача, зробивши гостьову систему непридатною
+до завантаження.
 
 =item B<--alignment> N
 
-Set the alignment of partitions to C<N> sectors.  The default in virt-resize
-E<lt> 1.13.19 was 64 sectors, and after that is 128 sectors.
+Встановити вирівнювання розділів на межу C<N> секторів. Типовою у
+virt-resize E<lt> 1.13.19 було межа у 64 сектори. Після цієї версії типове
+значення було змінено на 128 секторів.
 
-Assuming 512 byte sector size inside the guest, here are some suitable
-values for this:
+Якщо припускати розмір сектора у гостьовій системі у 512 байтів, ось
+придатні значення для цього параметра:
 
 =over 4
 
 =item I<--alignment 1> (512 байтів)
 
-The partitions would be packed together as closely as possible, but would be
-completely unaligned.  In some cases this can cause very poor performance.
-See L<virt-alignment-scan(1)> for further details.
+Розділи буде розташовано поруч один із одним якомога ближче, але буде не
+вирівняно. У деяких випадках це може призвести до жахливої втрати
+швидкодії. Докладніший опис можна знайти на сторінці підручника щодо
+L<virt-alignment-scan(1)>.
 
 =item I<--alignment 8> (4K)
 
-This would be the minimum acceptable alignment for reasonable performance on
-modern hosts.
+Це мінімальне прийнятне вирівнювання для придатного значення швидкодії на
+сучасних основних системах.
 
 =item I<--alignment 128> (64K)
 
-This alignment provides good performance when the host is using high end
-network storage.
+Таке вирівнювання надасть змогу скористатися непоганою швидкодією, якщо
+основна система зберігається на високоякісних носіях для мережі.
 
 =item I<--alignment 2048> (1M)
 
-This is the standard alignment used by all newly installed guests since
-around 2008.
+Це стандартне вирівнювання, яке використовується в усіх нововстановлених
+гостьових системах з приблизно 2008 року.
 
 =back
 
@@ -340,25 +364,28 @@ around 2008.
 
 =item B<--delete> РОЗДІЛ
 
-Delete the named partition.  It would be more accurate to describe this as
-"don't copy it over", since virt-resize doesn't do in-place changes and the
-original disk image is left intact.
+Вилучити вказаний за назвою розділ. Точнішим визначенням цієї дії буде «не
+копіювати», оскільки virt-resize не вносить зміни до початкового образу
+диска.
 
-Note that when you delete a partition, then anything contained in the
-partition is also deleted.  Furthermore, this causes any partitions that
-come after to be I<renumbered>, which can easily make your guest unbootable.
+Зауважте, що коли ви вилучаєте розділ, вилучаються і усі дані, які
+зберігалися на ньому. Більше того, у результаті усі розділи за вилученим
+I<перенумеровуються>, що може призвести до неможливості завантаження
+гостьової системи.
 
 Цей параметр можна вказувати декілька разів.
 
 =item B<--expand> РОЗДІЛ
 
-Expand the named partition so it uses up all extra space (space left over
-after any other resize changes that you request have been done).
+Розширити вказаний за назвою розділ так, щоб він зайняв усе вільне місце
+(місце, яке лишатиметься вільним після усіх інших вказаних вами змін у
+розмірах).
 
-If virt-resize knows how, it will expand the direct content of the
-partition.  For example, if the partition is an LVM PV, it will expand the
-PV to fit (like calling L<pvresize(8)>).  Virt-resize leaves any other
-content it doesn't know about alone.
+Якщо virt-resize відомий спосіб, програма розширить безпосередній вміст
+розділу. Наприклад, якщо розділ є фізичним томом LVM, програма розширить
+фізичний том так, щоб він зайняв усе місце (подібно до виклику
+L<pvresize(8)>). Якщо спосіб розширення виявиться невідомим virt-resize,
+програма не чіпатиме вмісту розділу.
 
 У поточній версії virt-resize може змінювати розміри таких файлових систем:
 
@@ -372,81 +399,91 @@ content it doesn't know about alone.
 
 Файлових систем NTFS, якщо libguestfs було зібрано з підтримкою NTFS.
 
-The filesystem must have been shut down consistently last time it was used.
-Additionally, L<ntfsresize(8)> marks the resized filesystem as requiring a
-consistency check, so at the first boot after resizing Windows will check
-the disk.
+Роботу файлової системи під час її останнього використання має бути
+завершено у штатному режимі. Крім того, L<ntfsresize(8)> позначає файлові
+системи зі зміненими розмірами як такі, що потребують перевірки, отже під
+час першого наступного запуску Windows на розділі зі зміненим розміром буде
+виконано перевірку диска.
 
 =item *
 
-LVM PVs (physical volumes).  virt-resize does not usually resize anything
-inside the PV, but see the I<--LV-expand> option.  The user could also
-resize LVs as desired after boot.
+Фізичні томи LVM. Зазвичай, virt-resize не змінює розміри вмісту фізичних
+томів, втім, див. параметр I<--LV-expand>. Користувач також може змінити
+розміри логічних томів бажаним чином після завантаження системи.
 
 =item *
 
-Btrfs filesystems, if libguestfs was compiled with support for btrfs.
+Файлові системи btrfs, якщо libguestfs було зібрано із підтримкою btrfs.
 
 =item *
 
-XFS filesystems, if libguestfs was compiled with support for XFS.
+Файлові системи XFS, якщо libguestfs було зібрано із підтримкою XFS.
 
 =item *
 
 Розділи резервної пам'яті на диску Linux.
 
-Please note that libguestfs I<destroys> the existing swap content by
-recreating it with C<mkswap>, so this should not be used when the guest is
-suspended.
+Будь ласка, зауважте, що libguestfs I<знищує> наявний вміст розділу
+резервної пам'яті на диску, відтворюючи його за допомогою C<mkswap>, тому
+такі розділи не слід використовувати, якщо гостьова система присипляється.
+
+=item *
+
+f2fs filesystems, if libguestfs was compiled with support for f2fs.
 
 =back
 
-Note that you cannot use I<--expand> and I<--shrink> together.
+Зауважте, що параметри I<--expand> і I<--shrink> не можна використовувати у
+одній і тій самій команді.
 
 =item B<--format> B<raw>
 
-Specify the format of the input disk image.  If this flag is not given then
-it is auto-detected from the image itself.
+Вказати формат образу диска вхідних даних. Якщо цей прапорець не вказано,
+його буде автоматично визначено на основі даних самого образу.
 
 Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
 ненадійних джерел, вам слід завжди вказувати назву формату.
 
-Note that this option I<does not> affect the output format.  See L</QCOW2
-AND NON-SPARSE RAW FORMATS>.
+Зауважте, що цей параметр I<не> впливає на формат виведених
+даних. Див. L</QCOW2 І НЕРОЗРІДЖЕНІ ФОРМАТИ RAW>.
 
 =item B<--ignore> РОЗДІЛ
 
-Ignore the named partition.  Effectively this means the partition is
-allocated on the destination disk, but the content is not copied across from
-the source disk.  The content of the partition will be blank (all zero
-bytes).
+Ігнорувати вказаний за назвою розділ. По суті, це означає, що розділ
+розміщується на диску призначення, але його вміст з початкового диска не
+копіюється. Розділ лишатиметься порожнім (заповненим нулями).
 
 Цей параметр можна вказувати декілька разів.
 
 =item B<--LV-expand> ЛОГІЧНИЙ_ТОМ
 
-This takes the logical volume and, as a final step, expands it to fill all
-the space available in its volume group.  A typical usage, assuming a Linux
-guest with a single PV F</dev/sda2> and a root device called
-F</dev/vg_guest/lv_root> would be:
+Цій команді передається логічний том і, як останній крок, вона розширює цей
+том так, щоб він зайняв усе вільне місце, яке доступне у групі
+томів. Типовим використанням, якщо припускати, що ви працюєте із гостьовою
+системою Linux із єдиним фізичним томом PV F</dev/sda2> і кореневим
+пристроєм із назвою F</dev/vg_guest/lv_root>, є:
 
  virt-resize indisk outdisk \
    --expand /dev/sda2 --LV-expand /dev/vg_guest/lv_root
 
-This would first expand the partition (and PV), and then expand the root
-device to fill the extra space in the PV.
+Ця команда спершу розширить розділ (і фізичний том), а потім розширить
+кореневий пристрій так, що він займе усе наявне зайве місце на фізичному
+томі.
 
-The contents of the LV are also resized if virt-resize knows how to do
-that.  You can stop virt-resize from trying to expand the content by using
-the option I<--no-expand-content>.
+Розмір вмісту логічного тому також буде змінено, якщо virt-resize відомий
+спосіб, як це зробити. Ви можете заборонити virt-resize змінювати розміри
+вмісту за допомогою параметра I<--no-expand-content>.
 
-Use L<virt-filesystems(1)> to list the filesystems in the guest.
+Скористайтеся L<virt-filesystems(1)> для отримання списку файлових систем у
+гостьовій системі.
 
-You can give this option multiple times, I<but> it doesn't make sense to do
-this unless the logical volumes you specify are all in different volume
-groups.
+Ви можете вказати у одній команді цей параметр декілька разів, I<але> сенсу
+у цьому небагато, хіба що вказані вами логічні томи належать до різних груп
+томів.
 
 =item B<--machine-readable>
+
+=item B<--machine-readable>=format
 
 За допомогою цього параметра можна зробити виведені дані придатнішими для
 обробки комп'ютером, якщо для цієї обробки використовуються інші
@@ -456,60 +493,63 @@ groups.
 
 =item B<--dry-run>
 
-Print a summary of what would be done, but don’t do anything.
+Вивести резюме щодо дій, але не виконувати ці дії.
 
 =item B<--no-copy-boot-loader>
 
-By default, virt-resize copies over some sectors at the start of the disk
-(up to the beginning of the first partition).  Commonly these sectors
-contain the Master Boot Record (MBR) and the boot loader, and are required
-in order for the guest to boot correctly.
+Типово, virt-resize копіює деякі сектори на початку диска (аж до початку
+першого розділу). Найчастіше, у цих секторах міститься Master Boot Record
+(MBR) та завантажувач. Вони потрібні для того, щоб гостьова система
+завантажувалася належним чином.
 
-If you specify this flag, then this initial copy is not done.  You may need
-to reinstall the boot loader in this case.
+Якщо ви вкажете цей прапорець, це початкове копіювання не
+виконуватиметься. У цьому випадку може виникнути потреба у перевстановленні
+завантажувача.
 
 =item B<--no-extra-partition>
 
-By default, virt-resize creates an extra partition if there is any extra,
-unused space after all resizing has happened.  Use this option to prevent
-the extra partition from being created.  If you do this then the extra space
-will be inaccessible until you run fdisk, parted, or some other partitioning
-tool in the guest.
+Типово, virt-resize створює додатковий розділ, якщо буде виявлено зайве
+невикористане місце після усіх змін розмірів. Скористайтеся цим параметром
+для того, щоб запобігти створенню цього додаткового розділу. Якщо ви так
+зробите, зайве місце буде недоступним, аж доки ви не запустите fdisk, parted
+або якийсь інший інструмент поділу на розділи у гостьовій системі.
 
-Note that if the surplus space is smaller than 10 MB, no extra partition
-will be created.
+Зауважте, що якщо зайвого місця виявиться менше за 10 МБ, додатковий розділ
+не створюватиметься.
 
 =item B<--no-expand-content>
 
-By default, virt-resize will try to expand the direct contents of
-partitions, if it knows how (see I<--expand> option above).
+Типово, virt-resize намагатиметься розширити безпосередній вміст розділів,
+якщо програмі відомий спосіб виконати таке розширення (див. параметр
+I<--expand> вище).
 
-If you give the I<--no-expand-content> option then virt-resize will not
-attempt this.
+Якщо ви вкажете параметр I<--no-expand-content>, virt-resize не виконуватиме
+таких спроб.
 
 =item B<--no-sparse>
 
-Turn off sparse copying.  See L</SPARSE COPYING> below.
+Вимкнути розріджене копіювання. Див. L</РОЗРІДЖЕНЕ КОПІЮВАННЯ> нижче.
 
 =item B<--ntfsresize-force>
 
-Pass the I<--force> option to L<ntfsresize(8)>, allowing resizing even if
-the NTFS disk is marked as needing a consistency check.  You have to use
-this option if you want to resize a Windows guest multiple times without
-booting into Windows between each resize.
+Передавання параметра I<--force> до L<ntfsresize(8)> уможливить зміну
+розмірів, навіть якщо диск NTFS буде позначено як такий, що потребує
+перевірки коректності. Вам доведеться скористатися цим параметром, якщо ви
+хочете змінити розміри гостьової системи Windows без потреби у завантаженні
+Windows кожного разу між командами зміни розмірів.
 
 =item B<--output-format> B<raw>
 
-Specify the format of the output disk image.  If this flag is not given then
-it is auto-detected from the image itself.
+Визначає формат виведеного образу диска. Якщо цей прапорець не вказано,
+формат буде автоматично визначено на основі даних щодо образу диска.
 
 Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
 ненадійних джерел, вам слід завжди вказувати назву формату.
 
-Note that this option I<does not create> the output format.  This option
-just tells libguestfs what it is so it doesn't try to guess it.  You still
-need to create the output disk with the right format.  See L</QCOW2 AND
-NON-SPARSE RAW FORMATS>.
+Зауважте, що цей параметр I<не створює> образ диска у визначеному
+форматі. Цей параметр призначено лише для того, щоб libguestfs не намагалася
+вгадати формат. Створити диск у належному форматі маєте ви
+самі. Див. L</QCOW2 І НЕРОЗРІДЖЕНІ ФОРМАТИ RAW>.
 
 =item B<-q>
 
@@ -519,12 +559,12 @@ NON-SPARSE RAW FORMATS>.
 
 =item B<--resize> РОЗДІЛ=РОЗМІР
 
-Resize the named partition (expanding or shrinking it) so that it has the
-given size.
+Змінити розмір вказаного за назвою розділу (розширити або стиснути його)
+так, щоб він мав вказаний розмір.
 
-C<SIZE> can be expressed as an absolute number followed by b/K/M/G to mean
-bytes, Kilobytes, Megabytes, or Gigabytes; or as a percentage of the current
-size; or as a relative number or percentage.  For example:
+C<РОЗМІР> можна вказати як значення за модулем із додаванням суфікса b/K/M/G
+на позначення байтів, кілобайтів, мегабайтів або гігабайтів, або як відсоток
+від поточного розміру, або як відносну частку. Приклад:
 
  --resize /dev/sda2=10G
 
@@ -540,42 +580,48 @@ size; or as a relative number or percentage.  For example:
 
  --resize /dev/sda1=-10%
 
-You can increase the size of any partition.  Virt-resize will expand the
-direct content of the partition if it knows how (see I<--expand> above).
+Ви можете збільшити розмір будь-якого розділу. Virt-resize розширить
+безпосередній вміст розділу, якщо програмі відомий спосіб виконати таке
+розширення (див. I<--expand> вище).
 
-You can only I<decrease> the size of partitions that contain filesystems or
-PVs which have already been shrunk.  Virt-resize will check this has been
-done before proceeding, or else will print an error (see also
-I<--resize-force>).
+I<Зменшити> розмір розділів, які містять файлові системи або фізичні томи,
+можна лише якщо ці файлові системи або фізичні томи вже зменшено у розмірах
+всередині розділу. Virt-resize виконає перевірку виконання цієї умови до
+того, як розпочне обробку даних. Якщо умову не виконано, програма повідомить
+про помилку (див. також I<--resize-force>).
 
 Цей параметр можна вказувати декілька разів.
 
 =item B<--resize-force> РОЗДІЛ=РОЗМІР
 
-This is the same as I<--resize> except that it will let you decrease the
-size of any partition.  Generally this means you will lose any data which
-was at the end of the partition you shrink, but you may not care about that
-(eg. if shrinking an unused partition, or if you can easily recreate it such
-as a swap partition).
+Це те саме, що і I<--resize>, але із можливістю зменшувати розміри будь-яких
+розділів. Загалом, це означає, що ви можете втратити якісь дані, які
+зберігалися наприкінці зменшуваного розділу, але, можливо, ви цим не
+переймаєтеся (наприклад, якщо зменшуєте розмір невикористаного розділу або
+можете легко відтворити вміст розділу, зокрема розділу резервної пам'яті на
+диску).
 
 Див. також опис параметра I<--ignore>.
 
 =item B<--shrink> РОЗДІЛ
 
-Shrink the named partition until the overall disk image fits in the
-destination.  The named partition B<must> contain a filesystem or PV which
-has already been shrunk using another tool (eg. L<guestfish(1)> or other
-online tools).  Virt-resize will check this and give an error if it has not
-been done.
+Зменшити вказаний за назвою розділ у розмірах так, щоб увесь образ диска
+вмістився у образ призначення. Вказаний за назвою розділ B<має> містити
+файлову систему або фізичний том, які вже було зменшено у розмірах за
+допомогою іншого засобу (наприклад L<guestfish(1)> або інших
+програм). Virt-resize виконає перевірку виконання цієї умови і повідомить
+про помилку, якщо попереднього зменшення файлової системи або фізичного тому
+не виконано.
 
-The amount by which the overall disk must be shrunk (after carrying out all
-other operations requested by the user) is called the "deficit".  For
-example, a straight copy (assume no other operations)  from a 5GB disk image
-to a 4GB disk image results in a 1GB deficit.  In this case, virt-resize
-would give an error unless the user specified a partition to shrink and that
-partition had more than a gigabyte of free space.
+Об'єм, на який має бути зменшено увесь диск (після виконання усіх інших дій,
+вказаних користувачем), називається «дефіцитом». Наприклад, просте
+копіювання (якщо не виконується жодних інших дій) з образу диска у 5 ГБ на
+образ диска у 4 ГБ дає дефіцит у 1 ГБ. У цьому випадку virt-resize
+повідомить про помилку, якщо користувач не вказав такий розділ для
+стискання, на якому є понад гігабайт вільного місця.
 
-Note that you cannot use I<--expand> and I<--shrink> together.
+Зауважте, що параметри I<--expand> і I<--shrink> не можна використовувати у
+одній і тій самій команді.
 
 =item B<--unknown-filesystems> B<ignore>
 
@@ -583,19 +629,22 @@ Note that you cannot use I<--expand> and I<--shrink> together.
 
 =item B<--unknown-filesystems> B<error>
 
-Configure the behaviour of virt-resize when asking to expand a filesystem,
-and neither libguestfs has the support it, nor virt-resize knows how to
-expand the content of the filesystem.
+Налаштувати поведінку virt-resize, якщо програмі надійшла команда розширити
+файлову систему, а у libguestfs не передбачено її підтримки і virt-resize не
+знає способу, як розширити вміст файлової системи.
 
-I<--unknown-filesystems ignore> will cause virt-resize to silently ignore
-such filesystems, and nothing is printed about them.
+Використання параметра I<--unknown-filesystems ignore> призведе до того, що
+virt-resize без додаткових повідомлень ігноруватиме такі файлові системи і
+нічого не виводитиме щодо них.
 
-I<--unknown-filesystems warn> (the default behaviour) will cause virt-resize
-to warn for each of the filesystem that cannot be expanded, but still
-continuing to resize the disk.
+Використання параметра I<--unknown-filesystems warn> (типове поведінка)
+призводитиме до того, що virt-resize попереджатиме про кожну файлову
+систему, яку не може бути розширено, але продовжуватиме зміну розмірів
+розділів на диску.
 
-I<--unknown-filesystems error> will cause virt-resize to error out at the
-first filesystem that cannot be expanded.
+Використання параметра I<--unknown-filesystems error> призведе до того, що
+virt-resize повідомлятиме про помилку, якщо виявить файлову систему, розміри
+якої не можна збільшити.
 
 Див. також L</"unknown/unavailable method for expanding the TYPE filesystem
 on DEVICE/LV">.
@@ -627,8 +676,9 @@ on DEVICE/LV">.
 
 Існує два способи використання цього параметра.
 
-Firstly use the option on its own to query the capabilities of the
-virt-resize binary.  Typical output looks like this:
+По-перше, можна скористатися ним без інших параметрів для того, щоб
+дізнатися про можливості виконуваного файла virt-resize. Типові виведені
+дані виглядатимуть так:
 
  $ virt-resize --machine-readable
  virt-resize
@@ -640,8 +690,9 @@ virt-resize binary.  Typical output looks like this:
 Виводиться список можливостей, по одній на рядок, і програма завершує роботу
 зі станом 0.
 
-Secondly use the option in conjunction with other options to make the
-regular program output more machine friendly.
+По-друге, можна скористатися цим параметром у поєднанні із іншими
+параметрами для того, щоб зробити звичайні виведені програмою дані
+придатнішими для подальшої машинної обробки.
 
 У поточній версії це означає таке:
 
@@ -649,22 +700,23 @@ regular program output more machine friendly.
 
 =item 1.
 
-Progress bar messages can be parsed from stdout by looking for this regular
-expression:
+Повідомлення смужки поступу можна обробляти зі стандартного виведення,
+шукаючи їх за таким формальним виразом:
 
  ^[0-9]+/[0-9]+$
 
 =item 2.
 
-The calling program should treat messages sent to stdout (except for
-progress bar messages) as status messages.  They can be logged and/or
-displayed to the user.
+Програма, яка надсилає виклик, має обробляти повідомлення, надіслані до
+стандартного виведення, (окрім повідомлень смужки поступу) як повідомлення
+щодо стану. Ці повідомлення може бути записано до журналу і/або показано
+користувачеві.
 
 =item 3.
 
-The calling program should treat messages sent to stderr as error messages.
-In addition, virt-resize exits with a non-zero status code if there was a
-fatal error.
+Програма, яка надсилає виклик, має обробляти повідомлення, надіслані до
+stderr як повідомлення про помилки. Крім того, virt-resize завершує роботу
+із ненульовим кодом стану, якщо станеться критична помилка.
 
 =back
 
@@ -672,21 +724,25 @@ fatal error.
 I<--machine-readable>. Якщо цей параметр буде використано для такої версії,
 програма поверне повідомлення про помилку.
 
+It is possible to specify a format string for controlling the output; see
+L<guestfs(3)/ADVANCED MACHINE READABLE OUTPUT>.
+
 =head1 ПРИМІТКИ
 
 =head2 «Розділ 1 не закінчується на межі циліндра.»
 
-Virt-resize aligns partitions to multiples of 128 sectors (see the
-I<--alignment> parameter).  Usually this means the partitions will not be
-aligned to the ancient CHS geometry.  However CHS geometry is meaningless
-for disks manufactured since the early 1990s, and doubly so for virtual hard
-drives.  Alignment of partitions to cylinders is not required by any modern
-operating system.
+Virt-resize вирівнює розділи на позиції, кратні до 128 секторів
+(див. параметр I<--alignment>). Зазвичай, це означає, що розділи не буде
+вирівняно за давньою геометрією CHS (циліндр-голівка-сектор). Втім,
+геометрія CHS не має сенсу для дисків, які вироблено після ранніх 1990-х, і
+зовсім не має сенсу для віртуальних жорстких дисків. Вирівнювання розділів
+за циліндрами не є вимогою жодної сучасної операційної системи.
 
 =head2 ЗАВАНТАЖЕННЯ ГОСТЬОВОЇ СИСТЕМИ ЗУПИНЯЄТЬСЯ НА «GRUB»
 
-If a Linux guest does not boot after resizing, and the boot is stuck after
-printing C<GRUB> on the console, try reinstalling grub.
+Якщо гостьова система Linux не завантажується після зміни розміру, і
+завантаження зупиняється після виведення слова C<GRUB> до консолі, спробуйте
+перевстановити grub.
 
  guestfish -i -a newdisk
  ><fs> cat /boot/grub/device.map
@@ -695,65 +751,74 @@ printing C<GRUB> on the console, try reinstalling grub.
  ><fs> grub-install / /dev/vda
  ><fs> exit
 
-For more flexible guest reconfiguration, including if you need to specify
-other parameters to grub-install, use L<virt-rescue(1)>.
+Для гнучкішого переналаштовування гостьової системи, зокрема випадків, коли
+вам потрібно вказати інші параметри grub-install, скористайтеся
+L<virt-rescue(1)>.
 
 =head2 ЗМІНА РОЗМІРІВ ЗАВАНТАЖУВАЛЬНИХ РОЗДІЛІВ WINDOWS
 
-In Windows Vista and later versions, Microsoft switched to using a separate
-boot partition.  In these VMs, typically F</dev/sda1> is the boot partition
-and F</dev/sda2> is the main (C:) drive.  Resizing the first (boot)
-partition causes the bootloader to fail with C<0xC0000225> error.  Resizing
-the second partition (ie. C: drive)  should work.
+У Windows Vista і новіших версіях компанія Microsoft перейшла до
+використання окремого розділу завантаження. У віртуальних машинах із цими
+операційними системами, типово, F</dev/sda1> є розділом завантаження, а
+F</dev/sda2> є основним диском (C:). Зміна розмірів першого розділу (розділу
+завантаження) спричиняє помилку завантажувача C<0xC0000225>. Зміна розмірів
+другого розділу (тобто диска C:) має працювати.
 
 =head2 WINDOWS CHKDSK
 
-Windows disks which use NTFS must be consistent before virt-resize can be
-used.  If the ntfsresize operation fails, try booting the original VM and
-running C<chkdsk /f> on all NTFS partitions, then shut down the VM cleanly.
-For further information see:
-L<https://bugzilla.redhat.com/show_bug.cgi?id=975753>
+Диск Windows, на якому використовується NTFS, має бути коректним, перш ніж
+virt-resize зможе ним скористатися. Якщо спроба виконати дію ntfsresize
+завершиться повідомленням про помилку, спробуйте завантажити початкову
+віртуальну машину і запустіть C<chkdsk /f> для усіх розділів NTFS, потім
+завершіть роботу віртуальної машини у штатний спосіб. Докладнішу інформацію
+наведено тут: L<https://bugzilla.redhat.com/show_bug.cgi?id=975753>
 
-I<After resize> Windows may initiate a lengthy "chkdsk" on first boot if
-NTFS partitions have been expanded.  This is just a safety check and (unless
-it find errors) is nothing to worry about.
+I<Після зміни розмірів> Windows може ініціювати тривалу обробку chkdsk при
+першому завантаженні, якщо було розширено розділи NTFS. Це усього лише для
+забезпечення надійного зберігання даних, і (якщо не буде знайдено помилок)
+ви можете бути спокійні.
 
-=head2 WINDOWS UNMOUNTABLE_BOOT_VOLUME BSOD
+=head2 СИНІЙ ЕКРАН СМЕРТІ UNMOUNTABLE_BOOT_VOLUME У WINDOWS
 
-After sysprepping a Windows guest and then resizing it with virt-resize, you
-may see the guest fail to boot with an C<UNMOUNTABLE_BOOT_VOLUME> BSOD.
-This error is caused by having C<ExtendOemPartition=1> in the sysprep.inf
-file.  Removing this line before sysprepping should fix the problem.
+Після приготування системи гостьової операційної системи Windows із
+наступною зміною її розміру за допомогою virt-resize ви можете отримати
+непридатну до завантаження систему, яка показуватиме синій екран смерті із
+помилкою C<UNMOUNTABLE_BOOT_VOLUME>. Цю помилку спричинено наявністю рядка
+C<ExtendOemPartition=1> у файлі sysprep.inf. Якщо вилучити цей рядок до
+обробки sysprep, проблема зникає.
 
 =head2 WINDOWS 8
 
-Windows 8 "fast startup" can prevent virt-resize from resizing NTFS
-partitions.  See L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST
-STARTUP>.
+«Швидкий запуск» Windows 8 може заважати virt-resize змінювати розмір
+розділів NTFS. Див. L<guestfs(3)/ПРИСИПЛЯННЯ WINDOWS  ТА ШВИДКИЙ ЗАПУСК
+WINDOWS 8>.
 
-=head2 SPARSE COPYING
+=head2 РОЗРІДЖЕНЕ КОПІЮВАННЯ
 
-You should create a fresh, zeroed target disk image for virt-resize to use.
+Вам слід створити новий, заповнений нулями образ диска призначення, який
+використовуватиме virt-resize.
 
-Virt-resize by default performs sparse copying.  This means that it does not
-copy blocks from the source disk which are all zeroes.  This improves speed
-and efficiency, but will produce incorrect results if the target disk image
-contains unzeroed data.
+Virt-resize типово виконує розріджене копіювання. Це означає, що програма не
+копіює ті блоки з початкового диска, які заповнено лише нулями. Це підвищує
+швидкість та ефективність роботи, але може призвести до некоректних
+результатів, якщо на образі диска призначення є незанулені дані.
 
-The main time this can be a problem is if the target is a host partition
-(eg. S<C<virt-resize source.img /dev/sda4>>) because the usual partitioning
-tools tend to leave whatever data happened to be on the disk before.
+В основному, така проблема виникає, якщо образом призначення є розділ
+основної системи (наприклад, S<C<virt-resize source.img /dev/sda4>>),
+оскільки звичайні інструменти поділу диска на розділи лишають недоторканними
+усі дані, які раніше зберігалися на диску.
 
-If you have to reuse a target which contains data already, you should use
-the I<--no-sparse> option.  Note this can be much slower.
+Якщо ви змушені використатися образ призначення, на якому вже зберігалися
+дані, вам слід скористатися параметром I<--no-sparse>. Зауважте, що це
+значно уповільнить роботу програми.
 
 =head2 "unknown/unavailable method for expanding the TYPE filesystem on DEVICE/LV"
 
-Virt-resize was asked to expand a partition or a logical volume containing a
-filesystem with the type C<TYPE>, but there is no available nor known
-expanding method for that filesystem.
+Virt-resize було наказано розширити розділ або логічний том, на якому
+міститься файлова система типу C<TYPE>, але програмі недоступний або
+невідомий спосіб розширення цієї файлової системи.
 
-This may be due to either of the following:
+Причиною може бути будь-що із наведеного нижче:
 
 =over 4
 
@@ -761,53 +826,54 @@ This may be due to either of the following:
 
 There corresponding filesystem is not available in libguestfs, because there
 is no proper package in the host with utilities for it.  This is usually the
-case for C<btrfs>, C<ntfs>, and C<xfs> filesystems.
+case for C<btrfs>, C<ntfs>, C<xfs>, and C<f2fs> filesystems.
 
-Check the results of:
+Спробуйте такі команди:
 
  virt-resize --machine-readable
  guestfish -a /dev/null run : available
  guestfish -a /dev/null run : filesystem_available TYPE
 
-In this case, it is enough to install the proper packages adding support for
-them.  For example, C<libguestfs-xfs> on Red Hat Enterprise Linux, CentOS,
-Debian, Ubuntu, and distributions derived from them, for supporting the
-C<xfs> filesystem.
+У цьому випадку достатньо встановити належні пакунки із підтримкою файлових
+систем. Наприклад, достатньо встановити C<libguestfs-xfs> у Red Hat
+Enterprise Linux, CentOS, Debian, Ubuntu та дистрибутивах, які від них
+походять, щоб можна було працювати із файловою системою C<xfs>.
 
 =item 2.
 
 У virt-resize не передбачено підтримки розширення цього типу файлових
 систем.
 
-In this case, there’s nothing that can be done to let virt-resize expand
-that type of filesystem.
+У цьому випадку нічого не поробиш: virt-resize не зможе розширити файлову
+систему цього типу.
 
 =back
 
 In both cases, virt-resize will not expand the mentioned filesystem; the
 result (unless I<--unknown-filesystems error> is specified)  is that the
 partitions containing such filesystems will be actually bigger as requested,
-but the filesystems will still be usable at the their older sizes.
+but the filesystems will still be usable at their older sizes.
 
 =head1 АЛЬТЕРНАТИВНІ ІНСТРУМЕНТИ
 
-There are several proprietary tools for resizing partitions.  We won't
-mention any here.
+Існує декілька пропрієтарних інструментів для зміни розмірів розділів. Тут
+ми не будемо згадувати назви жодного з таких інструментів.
 
-L<parted(8)> and its graphical shell gparted can do some types of resizing
-operations on disk images.  They can resize and move partitions, but I don't
-think they can do anything with the contents, and they certainly don't
-understand LVM.
+L<parted(8)> і її графічний інтерфейс, gparted, можуть виконувати певні типи
+дій із зміни розміру образів дисків. Ці програми можуть змінювати розмір і
+пересувати розділи, але не слід вважати, що вони можуть виконувати будь-які
+дії із вмістом розділів, і, звичайно ж, вони не можуть працювати з LVM.
 
-L<guestfish(1)> can do everything that virt-resize can do and a lot more,
-but at a much lower level.  You will probably end up hand-calculating sector
-offsets, which is something that virt-resize was designed to avoid.  If you
-want to see the guestfish-equivalent commands that virt-resize runs, use the
-I<--debug> flag.
+L<guestfish(1)> може виконувати усі ті дії, які може виконувати virt-resize,
+і набагато більше, але на суттєво нижчому рівні. Ймовірно, вам доведеться
+вручну обчислювати відступи у секторах, робити те, що за означенням має
+робити virt-resize. Якщо хочете дізнатися, які команди у guestfish запускає
+virt-resize, скористайтеся параметром I<--debug>.
 
-L<dracut(8)> includes a module called C<dracut-modules-growroot> which can
-be used to grow the root partition when the guest first boots up.  There is
-documentation for this module in an associated README file.
+До складу L<dracut(8)> включено модуль із назвою C<dracut-modules-growroot>,
+яким можна скористатися для збільшення розмірів кореневого розділу під час
+першого завантаження гостьової системи. Документацію з цього модуля наведено
+у пов'язаному із ним файлі README.
 
 =head1 СТАН ВИХОДУ
 
@@ -818,10 +884,10 @@ documentation for this module in an associated README file.
 
 L<virt-filesystems(1)>, L<virt-df(1)>, L<guestfs(3)>, L<guestfish(1)>,
 L<lvm(8)>, L<pvresize(8)>, L<lvresize(8)>, L<resize2fs(8)>,
-L<ntfsresize(8)>, L<btrfs(8)>, L<xfs_growfs(8)>, L<virsh(1)>, L<parted(8)>,
-L<truncate(1)>, L<fallocate(1)>, L<grub(8)>, L<grub-install(8)>,
-L<virt-rescue(1)>, L<virt-sparsify(1)>, L<virt-alignment-scan(1)>,
-L<http://libguestfs.org/>.
+L<ntfsresize(8)>, L<btrfs(8)>, L<xfs_growfs(8)>, L<resize.f2fs(8)>,
+L<virsh(1)>, L<parted(8)>, L<truncate(1)>, L<fallocate(1)>, L<grub(8)>,
+L<grub-install(8)>, L<virt-rescue(1)>, L<virt-sparsify(1)>,
+L<virt-alignment-scan(1)>, L<http://libguestfs.org/>.
 
 =head1 АВТОР
 

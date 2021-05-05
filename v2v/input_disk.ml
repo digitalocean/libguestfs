@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,13 +72,15 @@ class input_disk input_format disk = object
     let network = {
       s_mac = None;
       s_nic_model = None;
-      s_vnet = "default"; s_vnet_orig = "default";
-      s_vnet_type = Network
+      s_vnet = "default";
+      s_vnet_type = Network;
+      s_mapping_explanation = None
     } in
 
     let source = {
       s_hypervisor = UnknownHV;
       s_name = name; s_orig_name = name;
+      s_genid = None;
       s_memory = 2048L *^ 1024L *^ 1024L; (* 2048 MB *)
       s_vcpu = 1;                         (* 1 vCPU is a safe default *)
       s_cpu_vendor = None;

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,9 @@ let readahead_for_copying = Some (64 * 1024 * 1024)
 
 (* Subclass specialized for handling VMware vCenter over https. *)
 class input_libvirt_vcenter_https
-        password libvirt_uri parsed_uri server guest =
+        input_conn input_password parsed_uri server guest =
 object
-  inherit input_libvirt password libvirt_uri guest
+  inherit input_libvirt input_conn input_password guest
 
   val saved_source_paths = Hashtbl.create 13
   val mutable dcPath = ""
@@ -64,8 +64,9 @@ object
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)
      *)
-    let xml = Libvirt_utils.dumpxml ?password ?conn:libvirt_uri guest in
-    let source, disks = parse_libvirt_xml ?conn:libvirt_uri xml in
+    let xml = Libvirt_utils.dumpxml ?password_file:input_password
+                                    ?conn:input_conn guest in
+    let source, disks = parse_libvirt_xml ?conn:input_conn xml in
 
     (* Find the <vmware:datacenterpath> element from the XML.  This
      * was added in libvirt >= 1.2.20.
@@ -102,7 +103,7 @@ object
       | { p_source_disk = disk; p_source = P_dont_rewrite } -> disk
       | { p_source_disk = disk; p_source = P_source_file path } ->
         let { VCenter.qemu_uri } =
-          VCenter.map_source ?readahead ?password
+          VCenter.map_source ?readahead ?password_file:input_password
                              dcPath parsed_uri server path in
 
         (* The libvirt ESX driver doesn't normally specify a format, but
@@ -123,7 +124,7 @@ object
     | Some orig_path ->
       let readahead = readahead_for_copying in
       let { VCenter.qemu_uri = backing_qemu_uri } =
-        VCenter.map_source ?readahead ?password
+        VCenter.map_source ?readahead ?password_file:input_password
                            dcPath parsed_uri server orig_path in
 
       (* Rebase the qcow2 overlay to adjust the readahead parameter. *)

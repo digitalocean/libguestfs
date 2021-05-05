@@ -9,11 +9,11 @@ libguestfs-test-tool — діагностика libguestfs
 
 =head1 ОПИС
 
-libguestfs-test-tool is a test program shipped with libguestfs to allow you
-to check basic libguestfs functionality is working.  This is needed because
-libguestfs occasionally breaks for reasons beyond our control: usually
-because of changes in the underlying qemu or kernel packages, or the host
-environment.
+libguestfs-test-tool — програма для тестування, яка постачається разом із
+libguestfs для уможливлення перевірки того, чи працюють базові можливості
+libguestfs. Ця програма потрібна, оскільки функціональність libguestfs може
+бути порушено з неконтрольованих розробниками причин: зазвичай, через зміни
+у базових пакунках qemu або ядра чи зміни у середовищі основної системи.
 
 Якщо ви вважаєте, що проблема полягає у libguestfs, просто віддайте таку
 команду:
@@ -29,10 +29,10 @@ environment.
 
 і засіб тестування завершить роботу із кодом виходу 0.
 
-If it fails (and/or exits with non-zero error code), please paste the
-I<complete, unedited> output of the test tool into a bug report.  More
-information about reporting bugs can be found on the
-L<http://libguestfs.org/> website.
+Якщо виконання програми завершиться помилкою (і/або виходом із ненульовим
+кодом завершення), будь ласка, додайте I<повні, нередаговані> виведені
+засобом тестування дані до звіту щодо вади у програмі. Докладніші дані щодо
+звітування про вади наведено на сайті L<http://libguestfs.org/>.
 
 =head1 ПАРАМЕТРИ
 
@@ -42,22 +42,24 @@ L<http://libguestfs.org/> website.
 
 Показати коротку довідку з користування і завершити роботу.
 
-=item B<--qemu виконуваний_файл_qemu>
+=item B<--qemu> qemu_binary
 
-If you have downloaded another qemu binary, point this option at the full
-path of the binary to try it.
+Якщо вами було отримано інший виконуваний файл qemu, вкажіть за допомогою
+цього параметра повний шлях до цього виконуваного файла, щоб програма
+перевірила його.
 
-=item B<--qemudir каталог_коду_qemu>
+=item B<--qemudir> qemu_source_dir
 
-If you have compiled qemu from source, point this option at the source
-directory to try it.
+Якщо вами було зібрано qemu з початкових кодів, вкажіть за допомогою цього
+параметра шлях до каталогу з кодом, щоб програма перевірила його.
 
-=item B<-t N>
+=item B<-t> N
 
-=item B<--timeout N>
+=item B<--timeout> N
 
-Set the launch timeout to C<N> seconds.  The default is 600 seconds (10
-minutes) which does not usually need to be adjusted.
+Встановити час очікування на запуск у значення C<N> секунд. Типовим є
+значення у 600 секунд (10 хвилин). Зазвичай, це значення не потребує
+коригування.
 
 =item B<-V>
 
@@ -67,105 +69,114 @@ minutes) which does not usually need to be adjusted.
 
 =back
 
-=head1 TRYING OUT A DIFFERENT VERSION OF QEMU
+=head1 ТЕСТУВАННЯ ІНШОЇ ВЕРСІЇ QEMU
 
-If you have compiled another version of qemu from source and would like to
-try that, then you can use the I<--qemudir> option to point to the qemu
-source directory.
+Якщо вами було зібрано якусь іншу версію qemu з початкових кодів і ви хочете
+виконати її тестування, ви можете скористатися параметром I<--qemudir>, щоб
+вказати каталог з початковими кодами qemu.
 
-If you have downloaded a qemu binary from somewhere, use the I<--qemu>
-option to point to the binary.
+Якщо вами звідкись було отримано інший виконуваний файл qemu, скористайтеся
+параметром I<--qemu>, щоб вказати цей виконуваний файл.
 
-Note when using these options, you can ignore the business of qemu wrapper
-scripts (L<guestfs(3)/QEMU WRAPPERS>), since libguestfs-test-tool writes a
-wrapper script for you if one is needed.
+Зауважте, що користуючись цими параметрами, ви можете не перейматися
+написанням скриптів-обгорток qemu (L<guestfs(3)/ОБГОРТКИ QEMU>), оскільки
+libguestfs-test-tool автоматично створює такий скрипт-обгортку, якщо він
+потрібен.
 
-=head1 TRYING OUT A DIFFERENT KERNEL
+=head1 ТЕСТУВАННЯ ІНШОГО ЯДРА
 
-You can tell supermin to try a different kernel.  You do this by setting the
-environment variables C<SUPERMIN_KERNEL>, C<SUPERMIN_KERNEL_VERSION> and/or
-C<SUPERMIN_MODULES>.
+Ви можете наказати supermin спробувати скористатися іншим ядром. Зробити це
+можна за допомогою змінних середовища C<SUPERMIN_KERNEL>,
+C<SUPERMIN_KERNEL_VERSION> і/або C<SUPERMIN_MODULES>.
 
-Refer to L<supermin(1)/ENVIRONMENT VARIABLES> for further information.
+Щоб дізнатися більше про це, зверніться до розділу L<supermin(1)/ЗМІННІ
+СЕРЕДОВИЩА>.
 
-=head1 TRYING OUT A DIFFERENT VERSION OF LIBVIRT
+=head1 ТЕСТУВАННЯ ІНШОЇ ВЕРСІЇ LIBVIRT
 
-To find out which backend is the default in your libguestfs package, do:
+Щоб дізнатися, який із модулів обробки є типовим у вашому пакунку
+libguestfs, скористайтеся такою командою:
 
  unset LIBGUESTFS_BACKEND
  guestfish get-backend
 
-If you are using the libvirt backend, then you can try out a different
-(eg. upstream) version of libvirt by running these commands (I<not> as
-root):
+Якщо ви користуєтеся модулем libvirt, ви можете спробувати іншу (наприклад
+створену розробниками) версію libvirt, віддавши такі команди (I<не> від
+імені root):
 
  killall libvirtd lt-libvirtd
  ~/шлях/до/libvirt/run libguestfs-test-tool
 
-The first command kills any session C<libvirtd> process(es) that may be
-running on the machine.  The second command uses libvirt’s C<run> script (in
-the top-level libvirt build directory) to set some environment variables so
-that the alternate version of libvirt is used to run the program.
+Перша команда припиняє роботу усіх процесів C<libvirtd> сеансу, які могло
+бути запущено у системі. Друга команда використовує скрипт C<run> libvirt
+(зберігається у кореневому каталозі збирання libvirt) для встановлення
+деяких змінних середовища так, щоб для запуску програми використовувалася
+альтернативна версія libvirt.
 
-=head1 TRYING OUT WITH / WITHOUT LIBVIRT
+=head1 ТЕСТУВАННЯ З І БЕЗ LIBVIRT
 
-To find out which backend is the default in your libguestfs package, do:
+Щоб дізнатися, який із модулів обробки є типовим у вашому пакунку
+libguestfs, скористайтеся такою командою:
 
  unset LIBGUESTFS_BACKEND
  guestfish get-backend
 
-If you are using the libvirt backend, you can try without (ie. libguestfs
-directly launching qemu) by doing:
+Якщо ви користуєтеся модулем libvirt, ви можете спробувати попрацювати без
+нього (тобто наказати libguestfs напряму запускати qemu), ось так:
 
  export LIBGUESTFS_BACKEND=direct
 
-Or if you are using the default (direct) backend, then you can try libvirt:
+Або, якщо ви використовуєте типовий модуль обробки (direct), ви можете
+перейти на модуль libvirt:
 
  export LIBGUESTFS_BACKEND=libvirt
 
-or with libvirt and a specific L<libvirt URI|http://libvirt.org/uri.html>:
+або libvirt і специфічну L<адресу libvirt|http://libvirt.org/uri.html>:
 
  export LIBGUESTFS_BACKEND=libvirt:qemu:///сеанс
 
-=head1 TRYING OUT DIFFERENT SELINUX SETTINGS
+=head1 ТЕСТУВАННЯ ІНШИХ ПАРАМЕТРІВ SELINUX
 
-To find out which backend is the default in your libguestfs package, do:
+Щоб дізнатися, який із модулів обробки є типовим у вашому пакунку
+libguestfs, скористайтеся такою командою:
 
  unset LIBGUESTFS_BACKEND
  guestfish get-backend
 
-To find out if SELinux is being used, do:
+Щоб перевірити, чи використовується SELinux, віддайте таку команду:
 
  getenforce
 
-If you are using libvirt, SELinux and sVirt, then you can try to see if
-changing SELinux to "permissive" mode makes any difference.  Use this
-command as root:
+Якщо ви користуєтеся libvirt, SELinux та sVirt, ви можете перевірити, чи
+змінить роботу системи встановлення у SELinux режиму
+«permissive». Скористайтеся для цього такою командою від імені користувача
+root:
 
  setenforce Permissive
 
-If this makes a difference, look in the audit logs for recent failures
-("AVCs"):
+Якщо виникнуть проблеми, пошукайте у журналі аудиту повідомлення про
+нещодавні помилки («AVC»):
 
  ausearch -m avc -ts recent
 
-You can convert AVCs into suggested SELinux policy rules using tools like
-L<audit2allow(1)>.  For more information, see the "Security Enhanced Linux
-User Guide".
+Ви можете перетворити AVC у пропоновані правила SELinux за допомогою
+програм, подібних до L<audit2allow(1)>.   Щоб дізнатися більше, ознайомтеся
+із документом «Security Enhanced Linux User Guide».
 
-To reenable SELinux and sVirt, do:
+Щоб знову увімкнути SELinux і sVirt, зробіть так:
 
  setenforce Enforcing
 
 =head1 САМОДІАГНОСТИКА
 
-Refer to L<guestfs(3)/APPLIANCE BOOT PROCESS> to understand the messages
-produced by libguestfs-test-tool and/or possible errors.
+Зверніться до розділу L<guestfs(3)/ПРОЦЕС ЗАВАНТАЖЕННЯ БАЗОВОЇ СИСТЕМИ>, щоб
+зрозуміти повідомлення, які виводяться libguestfs-test-tool і/або можливі
+причини помилок.
 
 =head1 СТАН ВИХОДУ
 
-libguestfs-test-tool returns I<0> if the tests completed without error, or
-I<1> if there was an error.
+libguestfs-test-tool повертає I<0>, якщо команди виконано без помилок, або
+I<1>, якщо сталася помилка.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -182,5 +193,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

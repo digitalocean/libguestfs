@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -420,7 +420,7 @@ let get_tar_offet_and_size tar filename =
               with Failure _ ->
                 failwithf (f_"invalid size returned by tar: %S") size in
 
-            (* Note: Offset is actualy block number and there is a single
+            (* Note: Offset is actually block number and there is a single
              * block with tar header at the beginning of the file. So skip
              * the header and convert the block number to bytes before
              * returning.

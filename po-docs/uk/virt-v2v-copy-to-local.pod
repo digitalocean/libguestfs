@@ -10,85 +10,70 @@ virt-v2v-copy-to-local — копіювання віддаленої гость�
 
  virt-v2v-copy-to-local -ic xen+ssh://root@xen.example.com xen_guest
 
- virt-v2v-copy-to-local -ic esx://root@esxi.example.com vmware_guest
-
 =head1 ОПИС
 
-C<virt-v2v-copy-to-local> copies a guest from a remote hypervisor to the
-local machine, in preparation for conversion by L<virt-v2v(1)>.  Note this
-tool alone B<does not> do the virt-v2v conversion.
+C<virt-v2v-copy-to-local> копіює гостьову систему з віддаленого гіпервізору
+на локальну машину, готуючи її для перетворення за допомогою
+L<virt-v2v(1)>. Зауважте, що сама ця програма B<не> виконує перетворення
+virt-v2v.
 
 =head2 Умови використання цієї програми
 
-This tool is not usually necessary, but there are a few special cases (see
-list below) where you might need it.
+Зазвичай, потреби у безпосередньому використанні цієї програми немає, але
+існує декілька особливих випадків (див. наведений нижче список), коли у ній
+може виникнути потреба.
 
-If your case does not fit one of these special cases, then ignore this tool
-and read L<virt-v2v(1)> instead.  The virt-v2v-copy-to-local process is
-slower than using virt-v2v directly, because it has to copy unused parts of
-the guest disk.
+Якщо ваш випадок не вписується у одних з цих особливих випадків, ігноруйте
+цю програму і ознайомтеся краще зі сторінкою підручника щодо
+L<virt-v2v(1)>. Процес virt-v2v-copy-to-local є повільнішим за безпосереднє
+використання virt-v2v, оскільки під час його виконання копіюються
+невикористані частини диска гостьової системи.
 
 =over 4
 
 =item *
 
-You have a Xen guest using host block devices.  Virt-v2v cannot convert such
-guests directly.
+Якщо ви маєте справу з гостьовою системою Xen, де використовуються блокові
+пристрої. Програма virt-v2v не здатна перетворювати такі гостьові системи
+безпосередньо.
 
-Див. L<virt-v2v(1)/XEN OR SSH CONVERSIONS FROM BLOCK DEVICES>.
-
-=item *
-
-You have VMware ESXi hypervisors, and are not using VMware vCenter to manage
-them.  Virt-v2v cannot directly access ESXi hypervisor, so you either have
-to export the guest as an OVA (eg. using VMware's C<ovftool>); or you can
-use this tool to copy the guest to a local file on the conversion server,
-from where virt-v2v will be able to access it.
-
-Див. L<virt-v2v(1)/INPUT FROM VMWARE ESXi HYPERVISOR>.
+See L<virt-v2v-input-xen(1)>.
 
 =back
 
 =head2 Як працює ця програма
 
-This tool uses libvirt to get the libvirt XML (metadata) of the remote
-guest, essentially equivalent to running C<virsh dumpxml guest>.
+Ця програма використовує libvirt для отримання XML libvirt (метаданих) з
+віддаленої гостьової системи. По суті, її робота еквівалентна до команди
+C<virsh dumpxml гостьова_система>.
 
 It then uses the XML to locate the remote guest disks, which are copied over
-using a hypervisor-specific method.  It uses ssh for remote Xen hypervisors,
-and HTTPS (curl) for remote ESXi hypervisors.
+using a hypervisor-specific method.  It uses ssh for remote Xen hypervisors.
 
-It then modifies the libvirt XML so that it points at the local copies of
-the guest disks.
+Далі, програма вносить зміни до XML libvirt, так, щоб файл вказував на
+локальні копії дисків гостьової системи.
 
-The libvirt XML is output to a file called F<guest.xml> (where I<guest> is
-the name of the guest).  The disk(s) are output to file(s)  called
-F<guest-disk1>, F<guest-disk2> and so on.
+XML libvirt виводиться до файла із назвою F<гостьова_система.xml> (де
+I<гостьова_система> є назвою гостьової системи). Диски виводяться до файлів
+із назвами F<гостьова_система-disk1>, F<гостьова_система-disk2> тощо.
 
-After copying the guest locally, you can convert it using:
+Після локального копіювання гостьової системи ви можете перетворити її за
+допомогою такої команди:
 
- virt-v2v -i libvirtxml гість.xml [-o параметри ...]
+ virt-v2v -i libvirtxml гостьова_система.xml [-o параметри ...]
 
-Virt-v2v finds the local copies of the disks by looking in the XML.
+Virt-v2v шукає локальні копії дисків за допомогою даних з XML.
 
 =head1 ПРИКЛАДИ
 
-=head2 Copy and convert from Xen hypervisor that uses host block devices
+=head2 Копіювання і перетворення гостьових систем гіпервізорів Xen, де
+використовуються блокові пристрої основної системи
 
-For full instructions, see L<virt-v2v(1)/XEN OR SSH CONVERSIONS FROM BLOCK
-DEVICES>.
+For full instructions, see L<virt-v2v-input-xen(1)>.
 
  virt-v2v-copy-to-local -ic xen+ssh://root@xen.example.com xen_guest
  virt-v2v -i libvirtxml xen_guest.xml -o local -os /var/tmp
  rm xen_guest.xml xen_guest-disk*
-
-=head2 Copy and convert from ESXi hypervisor
-
-For full instructions, see L<virt-v2v(1)/INPUT FROM VMWARE ESXi HYPERVISOR>.
-
- virt-v2v-copy-to-local -ic esx://root@esxi.example.com?no_verify=1 vmware_guest
- virt-v2v -i libvirtxml vmware_guest.xml -o local -os /var/tmp
- rm vmware_guest.xml vmware_guest-disk*
 
 =head1 ПАРАМЕТРИ
 
@@ -100,23 +85,24 @@ For full instructions, see L<virt-v2v(1)/INPUT FROM VMWARE ESXi HYPERVISOR>.
 
 =item B<-ic> адреса_libvirt
 
-Specify a libvirt connection URI
+Вкажіть адресу з'єднання libvirt
 
-=item B<--password-file> файл
+=item B<-ip> file
 
-Instead of asking for password(s) interactively, pass the password through a
-file.  Note the file should contain the whole password, B<without any
-trailing newline>, and for security the file should have mode C<0600> so
-that others cannot read it.
+Замість виведення паролів у інтерактивному режимі, передайте пароль за
+допомогою файла. Зауважте, що файл має містити увесь пароль, B<без
+завершального символу нового рядка>, і, з міркувань безпеки, для файла має
+бути встановлено режим доступу C<0600>, щоб інші користувачі не змогли його
+читати.
 
-Currently this option does not have any effect on xen+ssh transfers, but
-that is a bug.
+У поточній версії цей параметр не впливає на передавання даних xen+ssh, але
+це просто вада поточної реалізації.
 
 =item B<-q>
 
 =item B<--quiet>
 
-This disables progress bars and other unnecessary output.
+Цей параметр вимикає смужки поступу та інші необов'язкові до виведення дані.
 
 =item B<-v>
 
@@ -135,8 +121,7 @@ This disables progress bars and other unnecessary output.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<virt-v2v(1)>, L<virsh(1)>, L<http://libguestfs.org/>,
-L<https://libvirt.org/uri.html>, L<https://libvirt.org/remote.html>,
-L<https://libvirt.org/drvesx.html>.
+L<https://libvirt.org/uri.html>, L<https://libvirt.org/remote.html>.
 
 =head1 АВТОРИ
 
@@ -144,5 +129,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

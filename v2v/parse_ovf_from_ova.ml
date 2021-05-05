@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -238,8 +238,8 @@ and parse_nics xpathctx =
       s_mac = mac;
       s_nic_model = nic_model;
       s_vnet = vnet;
-      s_vnet_orig = vnet;
       s_vnet_type = vnet_type;
+      s_mapping_explanation = None
     } in
     List.push_front nic nics
   done;

@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,6 +268,7 @@ gchar **guestfs_session_egrepi (GuestfsSession *session, const gchar *regex, con
 gint8 guestfs_session_equal (GuestfsSession *session, const gchar *file1, const gchar *file2, GError **err);
 gint8 guestfs_session_exists (GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_extlinux (GuestfsSession *session, const gchar *directory, GError **err);
+gboolean guestfs_session_f2fs_expand (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_fallocate (GuestfsSession *session, const gchar *path, gint32 len, GError **err);
 gboolean guestfs_session_fallocate64 (GuestfsSession *session, const gchar *path, gint64 len, GError **err);
 gint8 guestfs_session_feature_available (GuestfsSession *session, gchar *const *groups, GError **err);
@@ -368,6 +369,7 @@ guint8 *guestfs_session_inspect_get_icon (GuestfsSession *session, const gchar *
 gint32 guestfs_session_inspect_get_major_version (GuestfsSession *session, const gchar *root, GError **err);
 gint32 guestfs_session_inspect_get_minor_version (GuestfsSession *session, const gchar *root, GError **err);
 GHashTable *guestfs_session_inspect_get_mountpoints (GuestfsSession *session, const gchar *root, GError **err);
+gchar *guestfs_session_inspect_get_osinfo (GuestfsSession *session, const gchar *root, GError **err);
 gchar *guestfs_session_inspect_get_package_format (GuestfsSession *session, const gchar *root, GError **err);
 gchar *guestfs_session_inspect_get_package_management (GuestfsSession *session, const gchar *root, GError **err);
 gchar *guestfs_session_inspect_get_product_name (GuestfsSession *session, const gchar *root, GError **err);
@@ -487,6 +489,7 @@ gboolean guestfs_session_lvcreate_free (GuestfsSession *session, const gchar *lo
 gchar *guestfs_session_lvm_canonical_lv_name (GuestfsSession *session, const gchar *lvname, GError **err);
 gboolean guestfs_session_lvm_clear_filter (GuestfsSession *session, GError **err);
 gboolean guestfs_session_lvm_remove_all (GuestfsSession *session, GError **err);
+gboolean guestfs_session_lvm_scan (GuestfsSession *session, gboolean activate, GError **err);
 gboolean guestfs_session_lvm_set_filter (GuestfsSession *session, gchar *const *devices, GError **err);
 gboolean guestfs_session_lvremove (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_lvrename (GuestfsSession *session, const gchar *logvol, const gchar *newlogvol, GError **err);

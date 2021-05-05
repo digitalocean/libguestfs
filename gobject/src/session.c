@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -7351,6 +7351,43 @@ guestfs_session_extlinux (GuestfsSession *session, const gchar *directory, GErro
 }
 
 /**
+ * guestfs_session_f2fs_expand:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * expand a f2fs filesystem
+ *
+ * This expands a f2fs filesystem to match the size of the underlying
+ * device.
+ * 
+ * This function depends on the feature "f2fs".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.39.3
+ */
+gboolean
+guestfs_session_f2fs_expand (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "f2fs_expand");
+    return FALSE;
+  }
+
+  int ret = guestfs_f2fs_expand (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_fallocate:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
@@ -11438,6 +11475,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * "gentoo"
  * Gentoo.
  * 
+ * "kalilinux"
+ * Kali Linux.
+ * 
  * "linuxmint"
  * Linux Mint.
  * 
@@ -11976,6 +12016,45 @@ guestfs_session_inspect_get_mountpoints (GuestfsSession *session, const gchar *r
   };
   g_free (ret);
   return h;
+}
+
+/**
+ * guestfs_session_inspect_get_osinfo:
+ * @session: (transfer none): A GuestfsSession object
+ * @root: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get a possible osinfo short ID corresponding to this operating system
+ *
+ * This function returns a possible short ID for libosinfo corresponding to
+ * the guest.
+ * 
+ * *Note:* The returned ID is only a guess by libguestfs, and nothing
+ * ensures that it actually exists in osinfo-db.
+ * 
+ * If no ID could not be determined, then the string @unknown is returned.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.39.1
+ */
+gchar *
+guestfs_session_inspect_get_osinfo (GuestfsSession *session, const gchar *root, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_osinfo");
+    return NULL;
+  }
+
+  char *ret = guestfs_inspect_get_osinfo (g, root);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
 }
 
 /**
@@ -17570,8 +17649,8 @@ guestfs_session_luks_kill_slot (GuestfsSession *session, const gchar *device, co
  * underlying @device respectively.
  * 
  * If this block device contains LVM volume groups, then calling
- * guestfs_session_vgscan() followed by guestfs_session_vg_activate_all()
- * will make them visible.
+ * guestfs_session_lvm_scan() with the @activate parameter @true will make
+ * them visible.
  * 
  * Use guestfs_session_list_dm_devices() to list all device mapper devices.
  * 
@@ -17824,6 +17903,49 @@ guestfs_session_lvm_remove_all (GuestfsSession *session, GError **err)
   }
 
   int ret = guestfs_lvm_remove_all (g);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_lvm_scan:
+ * @session: (transfer none): A GuestfsSession object
+ * @activate: (type gboolean):
+ * @err: A GError object to receive any generated errors
+ *
+ * scan for LVM physical volumes, volume groups and logical volumes
+ *
+ * This scans all block devices and rebuilds the list of LVM physical
+ * volumes, volume groups and logical volumes.
+ * 
+ * If the @activate parameter is @true then newly found volume groups and
+ * logical volumes are activated, meaning the LV /dev/VG/LV devices become
+ * visible.
+ * 
+ * When a libguestfs handle is launched it scans for existing devices, so
+ * you do not normally need to use this API. However it is useful when you
+ * have added a new device or deleted an existing device (such as when the
+ * guestfs_session_luks_open() API is used).
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.39.8
+ */
+gboolean
+guestfs_session_lvm_scan (GuestfsSession *session, gboolean activate, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvm_scan");
+    return FALSE;
+  }
+
+  int ret = guestfs_lvm_scan (g, activate);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;
@@ -28716,6 +28838,7 @@ guestfs_session_vgs_full (GuestfsSession *session, GError **err)
  * volumes, volume groups and logical volumes.
  * 
  * Returns: true on success, false on error
+ * Deprecated: In new code, use guestfs_session_lvm_scan() instead
  * Since: 1.3.2
  */
 gboolean

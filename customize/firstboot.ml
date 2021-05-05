@@ -1,5 +1,5 @@
 (* virt-customize
- * Copyright (C) 2012-2018 Red Hat Inc.
+ * Copyright (C) 2012-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,7 +158,7 @@ WantedBy=%s
       install_sysvinit_redhat g
     | "opensuse"|"sles"|"suse-based" ->
       install_sysvinit_suse g
-    | "debian" ->
+    | ("debian"|"kalilinux") ->
       install_sysvinit_debian g;
       if major <= 7 then try_update_rc_d g root
     | "ubuntu" ->
