@@ -7,8 +7,14 @@ libguestfs (1:1.40.2-7digitalocean0) UNRELEASED; urgency=medium
   * Remove 0016-relax-supermin-version-for-trusty.patch
   * Fix missing-build-dependency-for-dh_-command (php, python)
   * Remove the dh-autoreconf build-dep (not needed at compat 12)
+  * Not fixing remaining lintian issues:
+    - source-contains-prebuilt-windows-binary: Debian's upstream tag has these
+      files as well
+    - uses-dpkg-database-directly: the offending files are libguestfs{.so,.a}
+      itself
+    - Anything involving the upstream manpages
 
- -- Andrew James <ajames@digitalocean.com>  Tue, 04 May 2021 21:39:34 -0600
+ -- Andrew James <ajames@digitalocean.com>  Tue, 04 May 2021 22:13:41 -0600
 
 libguestfs (1:1.40.2-7) unstable; urgency=medium
 
