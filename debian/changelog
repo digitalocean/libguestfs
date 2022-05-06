@@ -1,3 +1,9 @@
+libguestfs (1:1.40.2-7digitalocean1) UNRELEASED; urgency=medium
+
+  * Fix error "Backing file specified without backing format"(SYS-3030)
+
+ -- Liang Yan <lyan@digitalocean.com>  Fri, 06 May 2022 14:02:32 -0400
+
 libguestfs (1:1.40.2-7digitalocean0) UNRELEASED; urgency=medium
 
   * Merge Debian's 1.40.2-7
