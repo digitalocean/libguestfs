@@ -1,0 +1,43 @@
+From 8c209d6fd5b9301262d3408c8de76b085b627ac6 Mon Sep 17 00:00:00 2001
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Date: Tue, 31 Aug 2021 08:27:15 +0100
+Subject: [PATCH] lib: Autodetect backing format for qemu-img create -b
+
+qemu 6.1 has decided to change qemu-img create so that a backing
+format (-F) is required if a backing file (-b) is specified.  Since we
+don't want to change the libguestfs API to force callers to specify
+this because that would be an API break, autodetect it.
+
+This is similar to commit c8c181e8d9 ("launch: libvirt: Autodetect
+backing format for readonly drive overlays").
+
+Fixes: https://bugzilla.redhat.com/show_bug.cgi?id=1998820
+---
+ lib/create.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/lib/create.c
++++ b/lib/create.c
+@@ -255,6 +255,7 @@
+                    const struct guestfs_disk_create_argv *optargs)
+ {
+   const char *backingformat = NULL;
++  CLEANUP_FREE char *backingformat_free = NULL;
+   const char *preallocation = NULL;
+   const char *compat = NULL;
+   int clustersize = -1;
+@@ -270,6 +271,14 @@
+       return -1;
+     }
+   }
++  else if (backingfile) {
++    /* Since qemu 6.1, qemu-img create has requires a backing format (-F)
++     * parameter if backing file (-b) is used (RHBZ#1998820).
++     */
++    backingformat = backingformat_free = guestfs_disk_format (g, backingfile);
++    if (!backingformat)
++      return -1;
++  }
+   if (optargs->bitmask & GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK) {
+     if (STREQ (optargs->preallocation, "off") ||
+         STREQ (optargs->preallocation, "sparse"))
