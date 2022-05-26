@@ -2,8 +2,11 @@ libguestfs (1:1.40.2-7digitalocean1) UNRELEASED; urgency=medium
 
   * Lower debhelper level to 11 for Bionic
   * Drop 0017-python-oneliner-for-realpath.patch
+  * Add lib-Autodetect-backing-format-for-qemu-img-create-backi.patch. This
+    specifies the backing format to qemu-img which is required in newer
+    versions. (Closes: VIRT-580)
 
- -- Andrew James <ajames@digitalocean.com>  Wed, 08 Jun 2022 17:17:33 -0600
+ -- Andrew James <ajames@digitalocean.com>  Wed, 08 Jun 2022 17:18:15 -0600
 
 libguestfs (1:1.40.2-7digitalocean0) UNRELEASED; urgency=medium
 

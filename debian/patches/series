@@ -21,3 +21,4 @@
 0002-golang-mv-struct-type-defs-to-separate-package.patch
 0003-golang-add-comment-to-disable-go-linting.patch
 0004-golang-use-CamelCase-for-exported-types.patch
+lib-Autodetect-backing-format-for-qemu-img-create-backi.patch
