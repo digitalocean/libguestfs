@@ -33,8 +33,6 @@ Build-Depends: debhelper (>= 11),
   dh-ocaml, ocaml-nox (>= 4.02.3~), ocaml-findlib, libpcre-ocaml-dev, libgettext-ocaml-dev,
 # python3-all-dev,
 # dh-python,
-# don't need python for the bindings but ocaml-dep.sh needs it
-  python-is-python2,
 # default-jdk,
 # gem2deb, rake, libjs-jquery,
   libmodule-build-perl,
