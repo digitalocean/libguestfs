@@ -1,0 +1,19 @@
+--- a/test-data/blank-disks/Makefile.am
++++ b/test-data/blank-disks/Makefile.am
+@@ -50,4 +50,4 @@ blank-disk-1M.qcow2:
+ 	qemu-img create -f qcow2 -o preallocation=metadata $@ 1M
+ 
+ blank-disk-with-backing.qcow2: blank-disk-1M.raw
+-	qemu-img create -f qcow2 -b $^ $@
++	qemu-img create -f qcow2 -F raw -b $^ $@
+--- a/test-data/blank-disks/Makefile.in
++++ b/test-data/blank-disks/Makefile.in
+@@ -1941,7 +1941,7 @@ blank-disk-1M.qcow2:
+ 	qemu-img create -f qcow2 -o preallocation=metadata $@ 1M
+ 
+ blank-disk-with-backing.qcow2: blank-disk-1M.raw
+-	qemu-img create -f qcow2 -b $^ $@
++	qemu-img create -f qcow2 -F raw -b $^ $@
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.

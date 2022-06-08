@@ -5,8 +5,9 @@ libguestfs (1:1.40.2-7digitalocean1) UNRELEASED; urgency=medium
   * Add lib-Autodetect-backing-format-for-qemu-img-create-backi.patch. This
     specifies the backing format to qemu-img which is required in newer
     versions. (Closes: VIRT-580)
+  * Specify the backing file format while testing
 
- -- Andrew James <ajames@digitalocean.com>  Wed, 08 Jun 2022 17:18:15 -0600
+ -- Andrew James <ajames@digitalocean.com>  Wed, 08 Jun 2022 17:21:14 -0600
 
 libguestfs (1:1.40.2-7digitalocean0) UNRELEASED; urgency=medium
 

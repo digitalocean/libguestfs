@@ -22,3 +22,4 @@
 0003-golang-add-comment-to-disable-go-linting.patch
 0004-golang-use-CamelCase-for-exported-types.patch
 lib-Autodetect-backing-format-for-qemu-img-create-backi.patch
+specify-backing-format-in-tests.patch
