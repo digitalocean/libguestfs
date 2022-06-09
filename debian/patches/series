@@ -17,8 +17,9 @@
 0017-python-Recognize-python-X.Y-embed-flavor-introduced-.patch
 0018-Link-.mli-files-corresponding-to-autorgenerated-.ml-.patch
 #DO patches below
-0017-python-oneliner-for-realpath.patch
 0001-golang-return-error-interface-instead-of-struct.patch
 0002-golang-mv-struct-type-defs-to-separate-package.patch
 0003-golang-add-comment-to-disable-go-linting.patch
 0004-golang-use-CamelCase-for-exported-types.patch
+lib-Autodetect-backing-format-for-qemu-img-create-backi.patch
+specify-backing-format-in-tests.patch
